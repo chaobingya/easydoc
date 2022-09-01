@@ -1,7 +1,7 @@
 {% extends 'app_admin/admin_base.html' %}
 {% load static %}
 {% load i18n %}
-{% block title %}文集权限管理{% endblock %}
+{% block title %}空间权限管理{% endblock %}
 {% block custom_element %}
 <link href="{% static 'tagsInput/tagsinput.css' %}?version={{mrdoc_version}}" rel="stylesheet" type="text/css"/>
 {% endblock %}
@@ -10,7 +10,7 @@
     <div class="layui-card-body">
         <div class="layui-row" style="padding-left:15px;">
             <span class="layui-breadcrumb" lay-separator=">">
-            <a href="{% url 'project_manage' %}">文集管理</a>
+            <a href="{% url 'project_manage' %}">空间管理</a>
             <a><cite>权限管理</cite></a>
             </span>
         </div>
@@ -20,7 +20,7 @@
     <div class="layui-card-body">
         <div class="layui-card-header" style="margin-bottom: 10px;">
         <div class="layui-row">
-            <span style="font-size:18px;">修改文集权限
+            <span style="font-size:18px;">修改空间权限
             </span>
         </div>
         </div>
@@ -28,14 +28,14 @@
             <form action="{% url 'admin_project_role' pro.id %}" method="post" class="layui-form">
                 {% csrf_token %}
                 <div class="layui-form-item">
-                    <label class="layui-form-label">文集作者</label>
+                    <label class="layui-form-label">空间作者</label>
                     <div class="layui-input-block">
                     <input type="text" name="title" required value="{{pro.create_user.username}}"  disabled class="layui-input">
                         <!--<span>{{pro.name}}</span>-->
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">文集名称</label>
+                    <label class="layui-form-label">空间名称</label>
                     <div class="layui-input-block">
                     <input type="text" name="title" required value="{{pro.name}}"  disabled class="layui-input">
                         <!--<span>{{pro.name}}</span>-->

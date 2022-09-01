@@ -1,12 +1,12 @@
 {% extends 'app_doc/user/user_base.html' %}
 {% load static %}
 {% load i18n %}
-{% block title %}{% trans "导入文集" %}{% endblock %}
+{% block title %}{% trans "导入空间" %}{% endblock %}
 {% block content %}
 <div class="layui-card">
     <div class="layui-card-body">
         <div class="layui-card-header" style="margin-bottom: 10px;">
-            <span style="font-size:18px;">{% trans "导入文集到MrDoc" %}</span>
+            <span style="font-size:18px;">{% trans "导入空间到MrDoc" %}</span>
         </div>
         <div>
             <div style="width: 142px;cursor: pointer;display: inline-block;" id="upload-zip" tooltip="{% trans '导入Markdown文件压缩包' %}" placement="bottom">
@@ -41,11 +41,11 @@
     </div>
 </div>
 
-<!-- 导入本地文档到文集 -->
+<!-- 导入本地文档到空间 -->
 <div class="layui-card">
     <div class="layui-card-body">
         <div class="layui-card-header" style="margin-bottom: 10px;">
-            <span style="font-size:18px;">{% trans "导入本地文档到文集" %}</span>
+            <span style="font-size:18px;">{% trans "导入本地文档到空间" %}</span>
         </div>
         <div>
             <a style="width: 142px;cursor: pointer;display: inline-block;" href="{% url 'import_doc_to_project' %}">
@@ -83,10 +83,10 @@
         done: function(res){
             //上传完毕回调
             layer.closeAll('loading'); //关闭loading
-            // 写入文集数据
+            // 写入空间数据
             $('input[name="project-name"]').val(res.project.name)
             $('input[name="project-desc"]').val(res.project.desc)
-            // 遍历文集的文档
+            // 遍历空间的文档
             var doc_ele = ""
             layui.each(res.data,function(index,item){ // 遍历一级文档
                 // console.log(index,item)
@@ -126,7 +126,7 @@
             // 打开排序弹出框
             var editor_import = layer.open({
                 type:1,
-                title:'编辑导入的文集',
+                title:'编辑导入的空间',
                 area:['700px','400px'],
                 content:$("#import-project-sort"),
                 btn:['保存文档','发布文档'],
@@ -144,13 +144,13 @@
                     // console.log(sort_data)
                     $.post('{% url "project_doc_sort" %}',sort_data,function(r){
                         if(r.status){
-                            layer.msg("完成文集导入",function(){
+                            layer.msg("完成空间导入",function(){
                                 layer.close(index)
                                 // window.location.href = "{% url 'manage_project' %}"
                             })
 
                         }else{
-                            layer.msg("修改导入文集出错")
+                            layer.msg("修改导入空间出错")
                         }
                     });
                 },
@@ -169,14 +169,14 @@
                     $.post('{% url "project_doc_sort" %}',sort_data,function(r){
                         if(r.status){
                             layer.open({
-                                title:"完成Markdown文集导入",
-                                btn:['好的','查看文集'],
+                                title:"完成Markdown空间导入",
+                                btn:['好的','查看空间'],
                                 btn2:function(){
                                     window.open('/project-'+sort_data['pid']+'/')
                                 }
                             })
                         }else{
-                            layer.msg("修改导入文集出错")
+                            layer.msg("修改导入空间出错")
                         }
                     });
                 },
@@ -202,7 +202,7 @@
     });
 
 </script>
-<!-- 导入的文集文档排序模板div -->
+<!-- 导入的空间文档排序模板div -->
 <style>
     .row {
         display: -ms-flexbox;
@@ -273,14 +273,14 @@
 </style>
 <div id="import-project-sort" style="display: none;margin: 10px;" class="layui-form">
     <div class="layui-row" style="padding-left: 14px;padding-bottom: 10px;">
-        <input class="layui-input" placeholder="请输入文集名称" name="project-name">
+        <input class="layui-input" placeholder="请输入空间名称" name="project-name">
     </div>
     <div class="layui-row" style="padding-left: 14px;padding-bottom: 10px;">
-        <input class="layui-input" placeholder="请输入文集简介" name="project-desc">
+        <input class="layui-input" placeholder="请输入空间简介" name="project-desc">
     </div>
     <div class="layui-row" style="">
         <div class="layui-form-item">
-            <label class="layui-form-label" style="width: auto;">文集状态</label>
+            <label class="layui-form-label" style="width: auto;">空间状态</label>
             <div class="layui-input-block">
                 <input type="radio" name="role" value="1" title="私密" checked>
                 <input type="radio" name="role" value="0" title="公开">

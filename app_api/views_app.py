@@ -98,16 +98,16 @@ class LoginView(APIView):
         return Response(res)
 
 
-# 文集视图
+# 空间视图
 class ProjectView(APIView):
     authentication_classes = (AppAuth,SessionAuthentication)
-    # 获取文集
+    # 获取空间
     def get(self,request):
         pro_id = request.query_params.get('id',None)
         range = request.query_params.get('range',None)
-        # 获取自己的文集创建的、协作的文集列表
+        # 获取自己的空间创建的、协作的空间列表
         if range == 'self':
-            colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)]  # 用户的协作文集列表
+            colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)]  # 用户的协作空间列表
             project_list = Project.objects.filter(
                 Q(create_user=request.user) | \
                 Q(id__in=colla_list)
@@ -123,12 +123,12 @@ class ProjectView(APIView):
             }
             return Response(resp)
 
-        # 存在文集ID，返回指定的文集
+        # 存在空间ID，返回指定的空间
         if pro_id:
             resp = dict()
-            # 获取文集信息
+            # 获取空间信息
             project = Project.objects.get(id=int(pro_id))
-            # 获取文集的协作用户信息
+            # 获取空间的协作用户信息
             # print(request.auth)
             # print(request.user)
             if request.auth:  # 对登陆用户查询其协作文档信息
@@ -136,17 +136,17 @@ class ProjectView(APIView):
             else:
                 colla_user = 0
 
-            # 获取文集前台下载权限
+            # 获取空间前台下载权限
             try:
                 allow_download = ProjectReport.objects.get(project=project)
             except:
                 allow_download = False
 
-            # 私密文集并且访问者非创建者非协作者
+            # 私密空间并且访问者非创建者非协作者
             if (project.role == 1) and (request.user != project.create_user) and (colla_user == 0):
                 # return Response({'code': 2, 'data': []})
                 resp['code'] = 2
-            # 指定用户可见文集
+            # 指定用户可见空间
             elif project.role == 2:
                 user_list = project.role_value
                 if request.auth:  # 认证用户判断是否在许可用户列表中
@@ -163,18 +163,18 @@ class ProjectView(APIView):
                     viewcode = project.role_value
                     viewcode_name = 'viewcode-{}'.format(project.id)
                     r_viewcode = request.data.get(viewcode_name,0)  # 获取访问码
-                    if viewcode != r_viewcode:  # 访问码不等于文集访问码，跳转到访问码认证界面
+                    if viewcode != r_viewcode:  # 访问码不等于空间访问码，跳转到访问码认证界面
                         # return Response({'code': 3})
                         resp['code'] = 3
             else:
                 serializer = ProjectSerializer(project)
                 resp = {'code': 0, 'data': serializer.data}
             return Response(resp)
-        # 否则，根据查询条件返回文集列表
+        # 否则，根据查询条件返回空间列表
         else:
             kw = request.query_params.get('kw', '')  # 搜索词
             sort = request.query_params.get('sort', 0)  # 排序,0表示按时间升序排序，1表示按时间降序排序，默认为0
-            role = request.query_params.get('role', -1)  # 筛选文集权限，默认为显示所有可显示的文集
+            role = request.query_params.get('role', -1)  # 筛选空间权限，默认为显示所有可显示的空间
 
             # 是否排序
             if sort in ['', 0, '0']:
@@ -203,7 +203,7 @@ class ProjectView(APIView):
 
             # 没有搜索 and 认证用户 and 没有筛选
             if (is_kw is False) and (is_auth) and (is_role is False):
-                colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)]  # 用户的协作文集列表
+                colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)]  # 用户的协作空间列表
                 project_list = Project.objects.filter(
                     Q(role__in=role_list) | \
                     Q(role=2, role_value__contains=str(request.user.username)) | \
@@ -224,7 +224,7 @@ class ProjectView(APIView):
                 elif role in ['3', 3]:
                     project_list = Project.objects.filter(role=3).order_by("{}create_time".format(sort_str))
                 elif role in ['99', 99]:
-                    colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)]  # 用户的协作文集列表
+                    colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)]  # 用户的协作空间列表
                     project_list = Project.objects.filter(id__in=colla_list).order_by("{}create_time".format(sort_str))
                 else:
                     return Response({'code':2,'data':[]})
@@ -244,8 +244,8 @@ class ProjectView(APIView):
 
             # 有搜索 and 认证用户 and 没有筛选
             elif (is_kw) and (is_auth) and (is_role is False):
-                colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)]  # 用户的协作文集
-                # 查询所有可显示的文集
+                colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)]  # 用户的协作空间
+                # 查询所有可显示的空间
                 project_list = Project.objects.filter(
                     Q(role__in=[0, 3]) | \
                     Q(role=2, role_value__contains=str(request.user.username)) | \
@@ -278,7 +278,7 @@ class ProjectView(APIView):
                         role=3
                     ).order_by("{}create_time".format(sort_str))
                 elif role in ['99', 99]:
-                    colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)]  # 用户的协作文集列表
+                    colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)]  # 用户的协作空间列表
                     project_list = Project.objects.filter(
                         Q(name__icontains=kw) | Q(intro__icontains=kw),
                         id__in=colla_list
@@ -318,7 +318,7 @@ class ProjectView(APIView):
             }
             return Response(resp)
 
-    # 新增文集
+    # 新增空间
     def post(self,request):
         resp = dict()
         if request.auth:
@@ -343,7 +343,7 @@ class ProjectView(APIView):
                     resp['data'] = _('参数不正确')
                     return Response(resp)
             except Exception as e:
-                logger.exception(_("创建文集出错"))
+                logger.exception(_("创建空间出错"))
                 resp['code'] = 4
                 resp['data'] = _('系统异常请稍后再试')
                 return Response(resp)
@@ -352,14 +352,14 @@ class ProjectView(APIView):
             resp['data'] = _('请登录后操作')
             return Response(resp)
 
-    # 修改文集
+    # 修改空间
     def put(self,request):
         resp = dict()
         if request.auth:
             try:
                 pro_id = request.query_params.get('id', None)
                 project = Project.objects.get(id=pro_id)
-                # 验证用户有权限修改文集
+                # 验证用户有权限修改空间
                 if (request.user == project.create_user) or request.user.is_superuser:
                     name = request.data.get('name', None)
                     content = request.data.get('desc', None)
@@ -382,7 +382,7 @@ class ProjectView(APIView):
                 resp['data'] = _('资源未找到')
                 # return Response(resp)
             except Exception as e:
-                logger.exception(_("修改文集出错"))
+                logger.exception(_("修改空间出错"))
                 resp['code'] = 4
                 # return Response(resp)
         else:
@@ -390,7 +390,7 @@ class ProjectView(APIView):
 
         return Response(resp)
 
-    # 删除文集
+    # 删除空间
     def delete(self,request):
         resp = dict()
         if request.auth:
@@ -399,10 +399,10 @@ class ProjectView(APIView):
                 if pro_id != '':
                     pro = Project.objects.get(id=pro_id)
                     if (request.user == pro.create_user) or request.user.is_superuser:
-                        # 删除文集下的文档
+                        # 删除空间下的文档
                         pro_doc_list = Doc.objects.filter(top_doc=int(pro_id))
                         pro_doc_list.delete()
-                        # 删除文集
+                        # 删除空间
                         pro.delete()
                         resp['code'] = 0
                         resp['data'] = 'ok'
@@ -419,7 +419,7 @@ class ProjectView(APIView):
                 resp['data'] = _('资源未找到')
                 # return Response(resp)
             except Exception as e:
-                logger.exception(_("API文集删除异常"))
+                logger.exception(_("API空间删除异常"))
                 resp['code'] = 4
                 # return Response(resp)
         else:
@@ -434,15 +434,15 @@ class DocView(APIView):
 
     # 获取文档
     def get(self,request):
-        pro_id = request.query_params.get('pid','') # 文集ID
+        pro_id = request.query_params.get('pid','') # 空间ID
         doc_id = request.query_params.get('did','') # 文档ID
         doc_format = request.query_params.get('type','json') # 返回格式
 
-        # 存在文集ID和文档ID，进行数据库检索
+        # 存在空间ID和文档ID，进行数据库检索
         if pro_id != '' and doc_id != '':
-            # 获取文集信息
+            # 获取空间信息
             project = Project.objects.get(id=int(pro_id))
-            # 获取文集的协作用户信息
+            # 获取空间的协作用户信息
             if request.auth:
                 colla_user = ProjectCollaborator.objects.filter(project=project, user=request.user)
                 if colla_user.exists():
@@ -453,10 +453,10 @@ class DocView(APIView):
             else:
                 colla_user = 0
 
-            # 私密文集且访问者非创建者、协作者 - 不能访问
+            # 私密空间且访问者非创建者、协作者 - 不能访问
             if (project.role == 1) and (request.user != project.create_user) and (colla_user == 0):
                 return Response({'code':2})
-            # 指定用户可见文集
+            # 指定用户可见空间
             elif project.role == 2:
                 user_list = project.role_value
                 if request.user.is_authenticated:  # 认证用户判断是否在许可用户列表中
@@ -473,7 +473,7 @@ class DocView(APIView):
                     viewcode = project.role_value
                     viewcode_name = 'viewcode-{}'.format(project.id)
                     r_viewcode = request.data.get(viewcode_name,0)  # 获取访问码
-                    if viewcode != r_viewcode:  # cookie中的访问码不等于文集访问码，跳转到访问码认证界面
+                    if viewcode != r_viewcode:  # cookie中的访问码不等于空间访问码，跳转到访问码认证界面
                         return Response({'code':3})
 
             # 获取文档内容
@@ -491,7 +491,7 @@ class DocView(APIView):
                     logger.info(doc_format)
             except ObjectDoesNotExist:
                 return Response({'code':4})
-        # 不存在文集ID和文档ID，返回用户自己的文档列表
+        # 不存在空间ID和文档ID，返回用户自己的文档列表
         else:
             if request.auth:
                 doc_list = Doc.objects.filter(create_user=request.user,status=1).order_by('-modify_time')
@@ -518,7 +518,7 @@ class DocView(APIView):
             sort = request.data.get('sort','')
             status = request.data.get('status',1)
             if project != '' and doc_name != '' and project != '-1':
-                # 验证请求者是否有文集的权限
+                # 验证请求者是否有空间的权限
                 check_project = Project.objects.filter(id=project,create_user=request.user)
                 colla_project = ProjectCollaborator.objects.filter(project=project,user=request.user)
                 if check_project.count() > 0 or colla_project.count() > 0:
@@ -535,9 +535,9 @@ class DocView(APIView):
                     )
                     return Response({'code':0,'data':{'pro':project,'doc':doc.id}})
                 else:
-                    return Response({'code':2,'data':_('无权操作此文集')})
+                    return Response({'code':2,'data':_('无权操作此空间')})
             else:
-                return Response({'code':5,'data':_('请确认文档标题、文集正确')})
+                return Response({'code':5,'data':_('请确认文档标题、空间正确')})
         except Exception as e:
             logger.exception(_("api新建文档异常"))
             return Response({'status':4,'data':_('请求出错')})
@@ -546,7 +546,7 @@ class DocView(APIView):
     def put(self, request):
         try:
             doc_id = request.data.get('doc_id','') # 文档ID
-            project = request.data.get('project', '') # 文集ID
+            project = request.data.get('project', '') # 空间ID
             parent_doc = request.data.get('parent_doc', '') # 上级文档ID
             doc_name = request.data.get('doc_name', '') # 文档名称
             doc_content = request.data.get('content', '') # 文档内容
@@ -557,7 +557,7 @@ class DocView(APIView):
             if doc_id != '' and project != '' and doc_name != '' and project != '-1':
                 doc = Doc.objects.get(id=doc_id)
                 pro_colla = ProjectCollaborator.objects.filter(project=project, user=request.user)
-                # 验证用户有权限修改文档 - 文档的创建者或文集的高级协作者
+                # 验证用户有权限修改文档 - 文档的创建者或空间的高级协作者
                 if (request.user == doc.create_user) or (pro_colla[0].role == 1):
                     # 将现有文档内容写入到文档历史中
                     DocHistory.objects.create(
@@ -593,8 +593,8 @@ class DocView(APIView):
                 # 查询文档
                 try:
                     doc = Doc.objects.get(id=doc_id)
-                    project = Project.objects.get(id=doc.top_doc)  # 查询文档所属的文集
-                    # 获取文档所属文集的协作信息
+                    project = Project.objects.get(id=doc.top_doc)  # 查询文档所属的空间
+                    # 获取文档所属空间的协作信息
                     pro_colla = ProjectCollaborator.objects.filter(project=project, user=request.user)  #
                     if pro_colla.exists():
                         colla_user_role = pro_colla[0].role

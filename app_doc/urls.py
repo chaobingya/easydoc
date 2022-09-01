@@ -3,28 +3,28 @@ from app_doc import views,views_user,views_search,util_upload_img,views_import
 
 urlpatterns = [
     path('',views.project_list,name='pro_list'),# 文档首页
-    #################文集相关
-    path('project-<int:pro_id>/', views.project_index, name='pro_index'),  # 文集浏览页
-    path('create_project/', views.create_project, name='create_project'),  # 新建文集
-    path('get_pro_doc/', views.get_pro_doc, name="get_pro_doc"),  # 获取某个文集的下级文档
-    path('get_pro_doc_tree/', views.get_pro_doc_tree, name="get_pro_doc_tree"),  # 获取某个文集的下级文档树数据
-    path('modify_pro/',views.modify_project,name='modify_project'), # 修改文集
-    path('manage_project/',views.manage_project,name="manage_project"), # 管理文集
-    path('del_project/',views.del_project,name='del_project'), # 删除文集
-    path('report_project_md/',views.report_md,name='report_md'), # 导出文集MD文件
-    path('genera_project_file/',views.genera_project_file,name='genera_project_file'), # 个人中心生成文集文件（epub\docx\pdf等）
-    path('report_project_file/',views.report_file,name='report_file'), # 导出文集文件(epub、docx等)
-    path('modify_pro_role/<int:pro_id>/',views.modify_project_role,name="modify_pro_role"),# 修改文集权限
-    path('modify_pro_download/<int:pro_id>/', views.modify_project_download, name="modify_pro_download"),  # 修改文集前台下载权限
-    path('check_viewcode/',views.check_viewcode,name='check_viewcode'),# 文集访问码验证
-    path('manage_project_colla/<int:pro_id>/',views.manage_project_collaborator,name="manage_pro_colla"), # 管理文集协作
-    path('manage_pro_colla_self/',views.manage_pro_colla_self,name="manage_pro_colla_self"), # 我协作的文集
-    path('manage_project_import/',views_import.import_project,name="import_project"), # 导入文集
-    path('import_doc_to_project/', views_import.import_local_doc_to_project, name="import_doc_to_project"),  # 导入本地文档到文集
-    path('manage_project_doc_sort/',views_import.project_doc_sort,name='project_doc_sort'), # 导入文集文档排序
-    path('manage_project_transfer/<int:pro_id>/',views.manage_project_transfer,name='manage_pro_transfer'), # 文集转让
-    path('manage_pro_doc_sort/<int:pro_id>/',views.manage_project_doc_sort,name='manage_pro_doc_sort'), # 文集排序
-    path('api/my_colla_list/', views.MyCollaList.as_view(), name="my_colla_list"),  # 我的协作文集列表
+    #################空间相关
+    path('project-<int:pro_id>/', views.project_index, name='pro_index'),  # 空间浏览页
+    path('create_project/', views.create_project, name='create_project'),  # 新建空间
+    path('get_pro_doc/', views.get_pro_doc, name="get_pro_doc"),  # 获取某个空间的下级文档
+    path('get_pro_doc_tree/', views.get_pro_doc_tree, name="get_pro_doc_tree"),  # 获取某个空间的下级文档树数据
+    path('modify_pro/',views.modify_project,name='modify_project'), # 修改空间
+    path('manage_project/',views.manage_project,name="manage_project"), # 管理空间
+    path('del_project/',views.del_project,name='del_project'), # 删除空间
+    path('report_project_md/',views.report_md,name='report_md'), # 导出空间MD文件
+    path('genera_project_file/',views.genera_project_file,name='genera_project_file'), # 个人中心生成空间文件（epub\docx\pdf等）
+    path('report_project_file/',views.report_file,name='report_file'), # 导出空间文件(epub、docx等)
+    path('modify_pro_role/<int:pro_id>/',views.modify_project_role,name="modify_pro_role"),# 修改空间权限
+    path('modify_pro_download/<int:pro_id>/', views.modify_project_download, name="modify_pro_download"),  # 修改空间前台下载权限
+    path('check_viewcode/',views.check_viewcode,name='check_viewcode'),# 空间访问码验证
+    path('manage_project_colla/<int:pro_id>/',views.manage_project_collaborator,name="manage_pro_colla"), # 管理空间协作
+    path('manage_pro_colla_self/',views.manage_pro_colla_self,name="manage_pro_colla_self"), # 我协作的空间
+    path('manage_project_import/',views_import.import_project,name="import_project"), # 导入空间
+    path('import_doc_to_project/', views_import.import_local_doc_to_project, name="import_doc_to_project"),  # 导入本地文档到空间
+    path('manage_project_doc_sort/',views_import.project_doc_sort,name='project_doc_sort'), # 导入空间文档排序
+    path('manage_project_transfer/<int:pro_id>/',views.manage_project_transfer,name='manage_pro_transfer'), # 空间转让
+    path('manage_pro_doc_sort/<int:pro_id>/',views.manage_project_doc_sort,name='manage_pro_doc_sort'), # 空间排序
+    path('api/my_colla_list/', views.MyCollaList.as_view(), name="my_colla_list"),  # 我的协作空间列表
     path('api/import_local_doc/', views_import.ImportLocalDoc.as_view(), name="import_local_doc_api"),  # 导入本地文档API
     #################文档相关
     path('project-<int:pro_id>/doc-<int:doc_id>/', views.doc, name='doc'),  # 文档浏览页

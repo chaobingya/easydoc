@@ -1,37 +1,37 @@
 {% extends 'app_doc/user/user_base.html' %}
 {% load static %}
 {% load i18n %}
-{% block title %}{% trans "导入文集" %}{% endblock %}
+{% block title %}{% trans "导入空间" %}{% endblock %}
 {% block content %}
 <div class="layui-card">
     <div class="layui-card-body">
     <div class="layui-row" style="padding-left:15px;">
         <span class="layui-breadcrumb" lay-separator=">">
-          <a href="{% url 'import_project' %}">{% trans "导入文集" %}</a>
-          <a><cite>{% trans "导入本地文档到文集" %}</cite></a>
+          <a href="{% url 'import_project' %}">{% trans "导入空间" %}</a>
+          <a><cite>{% trans "导入本地文档到空间" %}</cite></a>
         </span>
     </div>
     </div>
 </div>
 
-<!-- 导入本地文档到文集 -->
+<!-- 导入本地文档到空间 -->
 <div class="layui-row layui-col-space10">
-    <!-- 文集设置 -->
+    <!-- 空间设置 -->
     <div class="layui-col-md6">
         <div class="layui-card">
             <div class="layui-card-body">
                 <div class="layui-card-header" style="margin-bottom: 10px;">
-                    <span style="font-size:18px;">{% trans "文档文集设置" %}</span>
+                    <span style="font-size:18px;">{% trans "文档空间设置" %}</span>
                 </div>
                 <div>
                     <div class="layui-form" lay-filter="project-settings">
                         <div class="layui-form-item">
-                            <label class="layui-form-label">选择文集</label>
+                            <label class="layui-form-label">选择空间</label>
                             <div class="layui-input-inline">
                               <select name="project" lay-verify="required">
-                                <option value="">请选择一个文集（必选）</option>
-                                <!-- 自己的文集 -->
-                                <optgroup label="自有文集" id="self-project">
+                                <option value="">请选择一个空间（必选）</option>
+                                <!-- 自己的空间 -->
+                                <optgroup label="自有空间" id="self-project">
                                 {% for p in project_list %}
                                     {% if p.role == 1 %}
                                     <option value="{{ p.id }}">[私密]《{{ p.name }}》</option>
@@ -44,9 +44,9 @@
                                     {% endif %}
                                 {% endfor %}
                                 </optgroup>
-                                <!-- 协作的文集 -->
+                                <!-- 协作的空间 -->
                                 {% if colla_project_list.count > 0 %}
-                                <optgroup label="协作文集">
+                                <optgroup label="协作空间">
                                 {% for p in colla_project_list %}
                                     <option value="{{ p.project.id }}">[协作]《{{ p.project.name }}》</option>
                                 {% endfor %}
@@ -178,7 +178,7 @@
     // 删除文档
     
 </script>
-<!-- 导入的文集文档排序模板div -->
+<!-- 导入的空间文档排序模板div -->
 <style>
     .row {
         display: -ms-flexbox;
@@ -249,14 +249,14 @@
 </style>
 <div id="import-project-sort" style="display: none;margin: 10px;" class="layui-form">
     <div class="layui-row" style="padding-left: 14px;padding-bottom: 10px;">
-        <input class="layui-input" placeholder="请输入文集名称" name="project-name">
+        <input class="layui-input" placeholder="请输入空间名称" name="project-name">
     </div>
     <div class="layui-row" style="padding-left: 14px;padding-bottom: 10px;">
-        <input class="layui-input" placeholder="请输入文集简介" name="project-desc">
+        <input class="layui-input" placeholder="请输入空间简介" name="project-desc">
     </div>
     <div class="layui-row" style="">
         <div class="layui-form-item">
-            <label class="layui-form-label" style="width: auto;">文集状态</label>
+            <label class="layui-form-label" style="width: auto;">空间状态</label>
             <div class="layui-input-block">
                 <input type="radio" name="role" value="1" title="私密" checked>
                 <input type="radio" name="role" value="0" title="公开">

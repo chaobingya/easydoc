@@ -3,7 +3,7 @@
 # @创建者：州的先生
 # #日期：2019/12/7
 # 博客地址：zmister.com
-# MrDoc文集文档导出相关功能代码
+# MrDoc空间文档导出相关功能代码
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
@@ -43,11 +43,11 @@ def validate_title(title):
 @logger.catch()
 class ReportMD():
     def __init__(self,project_id):
-        # 查询文集信息
+        # 查询空间信息
         self.pro_id = project_id
         self.project_data = Project.objects.get(pk=project_id)
 
-        # 文集名称
+        # 空间名称
         self.project_name = "{0}_{1}_{2}".format(
             self.project_data.create_user,
             validate_title(self.project_data.name),
@@ -58,7 +58,7 @@ class ReportMD():
         if os.path.exists(settings.MEDIA_ROOT + "/reportmd_temp") is False:
             os.mkdir(settings.MEDIA_ROOT + "/reportmd_temp")
 
-        # 判断文集名称文件夹是否存在
+        # 判断空间名称文件夹是否存在
         self.project_path = settings.MEDIA_ROOT + "/reportmd_temp/{}".format(self.project_name)
         is_fold = os.path.exists(self.project_path)
         if is_fold is False:
@@ -71,13 +71,13 @@ class ReportMD():
             os.mkdir(self.media_path)
 
     def work(self):
-        # 初始化文集YAML数据
+        # 初始化空间YAML数据
         project_toc_list = {}
         project_toc_list['project_name'] = validate_title(self.project_data.name)
         project_toc_list['project_desc'] = self.project_data.intro
         project_toc_list['project_role'] = self.project_data.role
         project_toc_list['toc'] = []
-        # 读取指定文集的文档数据
+        # 读取指定空间的文档数据
         data = Doc.objects.filter(top_doc=self.pro_id, parent_doc=0).order_by("sort")
         # 遍历一级文档
         for d in data:
@@ -183,7 +183,7 @@ class ReportMD():
             return md_content
 
 
-# 批量导出文集Markdown压缩包
+# 批量导出空间Markdown压缩包
 class ReportMdBatch():
     def __init__(self,username,project_id_list):
         self.project_list = project_id_list
@@ -201,18 +201,18 @@ class ReportMdBatch():
             os.mkdir(self.report_file_path)
 
     def work(self):
-        # 遍历文集列表，打包每一个文集
+        # 遍历空间列表，打包每一个空间
         project_file_list = []
         for project_id in self.project_list:
             report_func = ReportMD(project_id=project_id)
             report_project_zip = report_func.work()
             project_file_list.append(report_project_zip)
 
-        # 遍历打包好的文集列表，将其移入统一文件夹
+        # 遍历打包好的空间列表，将其移入统一文件夹
         for file in project_file_list:
             shutil.move(file,self.report_file_path)
 
-        # 压缩打包文集合集文件夹
+        # 压缩打包空间合集文件夹
         md_file = shutil.make_archive(
             base_name=self.report_file_path,
             format='zip',
@@ -663,7 +663,7 @@ class ReportEPUB():
 @logger.catch()
 class ReportPDF():
     def __init__(self,project_id,user_id):
-        # 查询文集信息
+        # 查询空间信息
         self.pro_id = project_id
         self.user_id = user_id
         self.editormd_html_str = '''
@@ -761,7 +761,7 @@ class ReportPDF():
             user = User.objects.get(id=self.user_id)
             project = Project.objects.get(pk=self.pro_id,create_user=user)
         except ObjectDoesNotExist:
-            logger.error("查询文集或用户失败")
+            logger.error("查询空间或用户失败")
             return False
         except:
             logger.exception("未知异常")

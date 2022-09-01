@@ -18,7 +18,7 @@
               <label class="layui-form-label">{% trans "收藏类型" %}</label>
               <div class="layui-input-block">
                 <input type="radio" name="status" title="全部({{all_cnt}})" value="-1" lay-skin="primary" checked lay-filter="collect_type">
-                <input type="radio" name="status" title="文集({{collect_project_cnt}})" value="2"  lay-skin="primary" lay-filter="collect_type">
+                <input type="radio" name="status" title="空间({{collect_project_cnt}})" value="2"  lay-skin="primary" lay-filter="collect_type">
                 <input type="radio" name="status" title="文档({{collect_doc_cnt}})" value="1" lay-skin="primary" lay-filter="collect_type">
               </div>
             </div>
@@ -212,9 +212,9 @@
         });
         // 侦听表格工具栏
         table.on("toolbar(collect-table)",function(obj){
-            if (obj.event === 'add') { // 新增文集
+            if (obj.event === 'add') { // 新增空间
                 createProject();
-            }else if(obj.event === 'batchRemove'){ // 批量删除文集
+            }else if(obj.event === 'batchRemove'){ // 批量删除空间
                 batchRemoveCollect(obj)
             }
         });

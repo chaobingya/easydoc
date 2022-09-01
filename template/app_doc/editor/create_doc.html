@@ -60,7 +60,7 @@
             <a href="javascript:;"><i class="fa fa-dashboard layui-hide-md"></i><span class="layui-hide-xs">管理</span></a>
             <dl class="layui-nav-child mrdoc-import-doc-child"> <!-- 二级菜单 -->
                 <dd><a href="{% url 'pro_list' %}" target="_blank">首页</a></dd>
-                <dd><a href="{% url 'user_center' %}?tab=manage_project" target="_blank">文集管理</a></dd>
+                <dd><a href="{% url 'user_center' %}?tab=manage_project" target="_blank">空间管理</a></dd>
                 <dd><a href="{% url 'user_center' %}?tab=manage_doc" target="_blank">文档管理</a></dd>
             </dl>  
         </li>
@@ -76,14 +76,14 @@
 {% block left_opera %}
     <div class="layui-form" style="padding: 0 10px 10px 10px;" lay-filter="left_form">
         <div class="layui-row">
-            <!-- 选择文集 -->
+            <!-- 选择空间 -->
             <div class="layui-col-md12" style="margin-bottom: 10px;">
                 <div class="layui-input-inblock">
                 <select name="pro_id" lay-verify="required"  lay-filter="project" id="project" lay-search>
-                    <option value="">请选择一个文集（必选）</option>
-                    <option value="-1">新建文集</option>
-                    <!-- 自己的文集 -->
-                    <optgroup label="自有文集" id="self-project">
+                    <option value="">请选择一个空间（必选）</option>
+                    <option value="-1">新建空间</option>
+                    <!-- 自己的空间 -->
+                    <optgroup label="自有空间" id="self-project">
                     {% for p in project_list %}
                         {% if p.role == 1 %}
                         <option value="{{ p.id }}">[私密]《{{ p.name }}》</option>
@@ -96,9 +96,9 @@
                         {% endif %}
                     {% endfor %}
                     </optgroup>
-                    <!-- 协作的文集 -->
+                    <!-- 协作的空间 -->
                     {% if colla_project_list.count > 0 %}
-                    <optgroup label="协作文集">
+                    <optgroup label="协作空间">
                     {% for p in colla_project_list %}
                             <option value="{{ p.project.id }}">[协作]《{{ p.project.name }}》</option>
                     {% endfor %}
@@ -179,13 +179,13 @@
         })
         var tree = layui.tree;
         var upload = layui.upload;
-        //选择文集
+        //选择空间
         form.on('select(project)', function(data){
-            console.log('选择文集：',data.value); //得到被选中的值
-            if(data.value == -1){ //新建文集
+            console.log('选择空间：',data.value); //得到被选中的值
+            if(data.value == -1){ //新建空间
                 layer.open({
                     type:1,
-                    title:'新建文集',
+                    title:'新建空间',
                     area:'300px;',
                     id:'createPro',//配置ID
                     content: $('#create-project-div'),
@@ -200,7 +200,7 @@
                         $.post("{% url 'create_project' %}",data,function(r){
                             if(r.status){
                                 var role_str = r.data.role == 0 ? '公开':'私密'
-                                //创建成功，更新文集select
+                                //创建成功，更新空间select
                                 $("#self-project").append("<option value="+r.data.id+">["+role_str+"]《"+r.data.name+"》</option>");
                                 $("#project").val(r.data.id);
                                 form.render();
@@ -212,7 +212,7 @@
                         })
                     },
                 });
-            }else{//获取文集的下级文档
+            }else{//获取空间的下级文档
                 $.post("{% url 'get_pro_doc_tree' %}",{'pro_id':data.value},function(r){
                     if(r.status){
                         var doc_tree = tree.render({
@@ -223,7 +223,7 @@
                             data:r.data,
                             text: {
                                 defaultNodeName: '未命名' //节点默认名称
-                                ,none: '文集暂无文档' //数据为空时的提示文本
+                                ,none: '空间暂无文档' //数据为空时的提示文本
                                 },
                             click: function(obj){
                                 //console.log(obj.data); //得到当前点击的节点数据
@@ -253,7 +253,7 @@
                 });
             }
         });
-        //带pid参数自动选择文集
+        //带pid参数自动选择空间
         var sel_pro_list = $('dl.layui-anim dd');
         for(var i = 0;i < sel_pro_list.length; i++){
             if(sel_pro_list[i].getAttribute('lay-value') == '{{pid}}'){
@@ -301,7 +301,7 @@
                 $('button.layui-btn').removeClass('layui-btn-disabled');
             }
             else if(data.project == ""){
-                layer.msg('请选择文集！');
+                layer.msg('请选择空间！');
                 $('button.layui-btn').attr("disabled",false);
                 $('button.layui-btn').removeClass('layui-btn-disabled');
             }

@@ -62,7 +62,7 @@
             <form class="layui-form" action="{% url 'login' %}"  method='POST'>
                 {% csrf_token %}
                 <div class="layui-form-item">
-                    <img src="{% static 'mrdoc_logo_ridus.png' %}" style="width: 60px;height: 60px;margin-bottom: 10px;" />
+                    <img src="{% static 'logo_ridus.png' %}" style="width: 60px;height: 60px;margin-bottom: 10px;" />
                     <h3><strong>{% trans "登录" %} - <a href="/">{% if site_name != None %}{{site_name}} {% else %}{% trans "知识共享平台" %}{% endif %}</a></strong></h3>
                 </div>
                 <span style='color:red;margin-bottom: 10px;'>{{ errormsg }}</span>
@@ -105,7 +105,7 @@
                 {% endif %}
                 <a href="{% url 'pro_list' %}" class="register-link">{% trans "返回首页" %}</a>
                 <hr>
-                <span style="font-size: 12px;color: #666;">知识共享平台 - 私有云知识库部署方案</span>
+                <span style="font-size: 12px;color: #666;">知识共享平台 - Rambo</span>
             </form>
         </div>
     </div>

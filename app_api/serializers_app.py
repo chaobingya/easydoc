@@ -17,7 +17,7 @@ class UserSerializer(ModelSerializer):
             )
 
 
-# 文集序列化器
+# 空间序列化器
 class ProjectSerializer(ModelSerializer):
     create_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M')
 
@@ -25,11 +25,11 @@ class ProjectSerializer(ModelSerializer):
         model = Project
         fields = ('__all__')
 
-# 协作文集序列化器
+# 协作空间序列化器
 class ProjectCollaSerializer(ModelSerializer):
-    project_id = serializers.SerializerMethodField(label="文集ID")
-    project_name = serializers.SerializerMethodField(label="文集名称")
-    username = serializers.SerializerMethodField(label='文集创建人')
+    project_id = serializers.SerializerMethodField(label="空间ID")
+    project_name = serializers.SerializerMethodField(label="空间名称")
+    username = serializers.SerializerMethodField(label='空间创建人')
     top_doc = serializers.SerializerMethodField(label="上级")
 
     class Meta:
@@ -53,14 +53,14 @@ class ProjectCollaSerializer(ModelSerializer):
 # 文档序列化器
 class DocSerializer(ModelSerializer):
 
-    project_name = SerializerMethodField(label="所属文集")
+    project_name = SerializerMethodField(label="所属空间")
     modify_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 
     class Meta:
         model = Doc
         fields = ('__all__')
 
-    # 返回文档的所属文集
+    # 返回文档的所属空间
     def get_project_name(self,obj):
         pro_name = Project.objects.get(id=obj.top_doc).name
         return pro_name

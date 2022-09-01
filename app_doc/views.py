@@ -102,7 +102,7 @@ def remove_markdown_tag(docs):
         except Exception as e:
             doc.pre_content = doc.pre_content[:201]
 
-# 获取文集的文档目录
+# 获取空间的文档目录
 def get_pro_toc(pro_id):
     # try:
     #     project = Project.objects.get(id=pro_id)
@@ -178,7 +178,7 @@ def get_pro_toc(pro_id):
         else:
             doc_list.append(top_item)
             n += 1
-    # 将文集的大纲目录写入数据库
+    # 将空间的大纲目录写入数据库
     # ProjectToc.objects.create(
     #     project = project,
     #     value = json.dumps(doc_list)
@@ -190,12 +190,12 @@ def get_pro_toc(pro_id):
     return (doc_list,n)
 
 
-# 文集列表（首页）
+# 空间列表（首页）
 @logger.catch()
 def project_list(request):
     kw = request.GET.get('kw','') # 搜索词
     sort = request.GET.get('sort','') # 排序,0表示按时间升序排序，1表示按时间降序排序，''表示按后台配置排序，默认为''
-    role = request.GET.get('role',-1) # 筛选文集权限，默认为显示所有可显示的文集
+    role = request.GET.get('role',-1) # 筛选空间权限，默认为显示所有可显示的空间
 
     # 是否排序
     if sort in [0,'0']:
@@ -233,7 +233,7 @@ def project_list(request):
 
     # 没有搜索 and 认证用户 and 没有筛选
     if (is_kw is False) and (is_auth) and (is_role is False):
-        colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)] # 用户的协作文集列表
+        colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)] # 用户的协作空间列表
         project_list = Project.objects.filter(
             Q(role__in=role_list) | \
             Q(role=2,role_value__contains=str(request.user.username)) | \
@@ -254,7 +254,7 @@ def project_list(request):
         elif role in ['3',3]:
             project_list = Project.objects.filter(role=3).order_by('-is_top',"{}create_time".format(sort_str))
         elif role in ['99',99]:
-            colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)] # 用户的协作文集列表
+            colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)] # 用户的协作空间列表
             project_list = Project.objects.filter(id__in=colla_list).order_by('-is_top',"{}create_time".format(sort_str))
         else:
             return render(request,'404.html')
@@ -274,8 +274,8 @@ def project_list(request):
 
     # 有搜索 and 认证用户 and 没有筛选
     elif (is_kw) and (is_auth) and (is_role is False):
-        colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)] # 用户的协作文集
-        # 查询所有可显示的文集
+        colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)] # 用户的协作空间
+        # 查询所有可显示的空间
         project_list = Project.objects.filter(
             Q(role__in=[0, 3]) | \
             Q(role=2, role_value__contains=str(request.user.username)) | \
@@ -308,7 +308,7 @@ def project_list(request):
                 role=3
             ).order_by('-is_top',"{}create_time".format(sort_str))
         elif role in ['99',99]:
-            colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)] # 用户的协作文集列表
+            colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)] # 用户的协作空间列表
             project_list = Project.objects.filter(
                 Q(name__icontains=kw) | Q(intro__icontains=kw),
                 id__in=colla_list
@@ -350,7 +350,7 @@ def project_list(request):
     return render(request, 'app_doc/pro_list.html', locals())
 
 
-# 创建文集
+# 创建空间
 @login_required()
 @require_http_methods(['POST'])
 def create_project(request):
@@ -362,9 +362,9 @@ def create_project(request):
         role = request.POST.get('role',0)
         role_list = ['0','1','2','3',0,1,2,3]
         if name != '':
-            # 不允许用户下同名文集存在
+            # 不允许用户下同名空间存在
             if Project.objects.filter(name=name,create_user=request.user).exists():
-                return JsonResponse({'status': False, 'data': _('同名文集已存在！')})
+                return JsonResponse({'status': False, 'data': _('同名空间已存在！')})
             project = Project.objects.create(
                 name=validateTitle(name),
                 icon = icon,
@@ -375,55 +375,55 @@ def create_project(request):
             project.save()
             return JsonResponse({'status':True,'data':{'id':project.id,'name':project.name,'role':project.role}})
         else:
-            return JsonResponse({'status':False,'data':_('文集名称不能为空！')})
+            return JsonResponse({'status':False,'data':_('空间名称不能为空！')})
     except Exception as e:
 
-        logger.exception(_("创建文集出错"))
+        logger.exception(_("创建空间出错"))
         return JsonResponse({'status':False,'data':_('出现异常,请检查输入值！')})
 
-# 文集页
+# 空间页
 @require_http_methods(['GET'])
 @check_headers
 def project_index(request,pro_id):
-    # 获取文集
+    # 获取空间
     try:
-        # 获取文集信息
+        # 获取空间信息
         project = Project.objects.get(id=int(pro_id))
-        # 获取文集最新的5篇文档
+        # 获取空间最新的5篇文档
         new_docs = Doc.objects.filter(top_doc=pro_id,status=1).order_by('-modify_time')[:5]
         # markdown文本生成摘要（不带markdown标记）
         remove_markdown_tag(new_docs)
 
-        # 获取文集的文档目录
+        # 获取空间的文档目录
         toc_list,toc_cnt = get_pro_toc(pro_id)
         # toc_list,toc_cnt = ([],1000)
 
-        # 获取文集的协作成员
+        # 获取空间的协作成员
         colla_user_list = ProjectCollaborator.objects.filter(project=project)
 
-        # 获取文集收藏状态
+        # 获取空间收藏状态
         if request.user.is_authenticated:
             is_collect_pro = MyCollect.objects.filter(
                 collect_type=2,collect_id=pro_id,create_user=request.user).exists()
         else:
             is_collect_pro = False
 
-        # 获取文集的协作用户信息
+        # 获取空间的协作用户信息
         if request.user.is_authenticated: # 对登陆用户查询其协作文档信息
             colla_user = ProjectCollaborator.objects.filter(project=project,user=request.user).count()
         else:
             colla_user = 0
 
-        # 获取文集前台下载权限
+        # 获取空间前台下载权限
         try:
             allow_download = ProjectReport.objects.get(project=project)
         except ObjectDoesNotExist:
             allow_download = False
 
-        # 私密文集并且访问者非创建者非协作者
+        # 私密空间并且访问者非创建者非协作者
         if (project.role == 1) and (request.user != project.create_user) and (colla_user == 0):
             return render(request,'404.html')
-        # 指定用户可见文集
+        # 指定用户可见空间
         elif project.role == 2:
             user_list = project.role_value
             if request.user.is_authenticated: # 认证用户判断是否在许可用户列表中
@@ -440,12 +440,12 @@ def project_index(request,pro_id):
                 viewcode = project.role_value
                 viewcode_name = 'viewcode-{}'.format(project.id)
                 r_viewcode = request.COOKIES[viewcode_name] if viewcode_name in request.COOKIES.keys() else 0 # 从cookie中获取访问码
-                if viewcode != r_viewcode: # cookie中的访问码不等于文集访问码，跳转到访问码认证界面
+                if viewcode != r_viewcode: # cookie中的访问码不等于空间访问码，跳转到访问码认证界面
                     return redirect('/check_viewcode/?to={}'.format(request.path))
 
         # 获取搜索词
         kw = request.GET.get('kw','')
-        # 获取文集下所有一级文档
+        # 获取空间下所有一级文档
         # project_docs = Doc.objects.filter(
         #     top_doc=int(pro_id),
         #     parent_doc=0,
@@ -457,19 +457,19 @@ def project_index(request,pro_id):
             return render(request,'app_doc/project_doc_search.html',locals())
         return render(request, 'app_doc/project.html', locals())
     except Exception as e:
-        logger.exception(_("文集页访问异常"))
+        logger.exception(_("空间页访问异常"))
         return render(request,'404.html')
 
 
-# 修改文集
+# 修改空间
 @login_required()
 @require_http_methods(['GET','POST'])
 def modify_project(request):
     if request.method == 'GET':
         pro_id = request.GET.get('pro_id', None)
         pro = Project.objects.get(id=pro_id)
-        project_files = ProjectReportFile.objects.filter(project=pro) # 文集的导出文件列表
-        # 验证用户有权限修改文集
+        project_files = ProjectReportFile.objects.filter(project=pro) # 空间的导出文件列表
+        # 验证用户有权限修改空间
         if (request.user == pro.create_user) or request.user.is_superuser:
             return render(request,'app_doc/manage/manage_project_options.html',locals())
         else:
@@ -478,7 +478,7 @@ def modify_project(request):
         try:
             pro_id = request.POST.get('pro_id',None)
             project = Project.objects.get(id=pro_id)
-            # 验证用户有权限修改文集
+            # 验证用户有权限修改空间
             if (request.user == project.create_user) or request.user.is_superuser:
                 name = request.POST.get('name',None)
                 icon = request.POST.get('picon', None)
@@ -499,11 +499,11 @@ def modify_project(request):
             else:
                 return JsonResponse({'status':False,'data':_('非法请求')})
         except Exception as e:
-            logger.exception(_("修改文集出错"))
+            logger.exception(_("修改空间出错"))
             return JsonResponse({'status':False,'data':_('请求出错')})
 
 
-# 修改文集权限
+# 修改空间权限
 @login_required()
 @require_http_methods(['GET',"POST"])
 @logger.catch()
@@ -549,7 +549,7 @@ def modify_project_role(request,pro_id):
                 return Http404
 
 
-# 验证文集访问码
+# 验证空间访问码
 @require_http_methods(['GET',"POST"])
 def check_viewcode(request):
     try:
@@ -569,11 +569,11 @@ def check_viewcode(request):
                 errormsg = _("访问码错误")
                 return render(request, 'app_doc/check_viewcode.html', locals())
     except Exception as e:
-        logger.exception(_("验证文集访问码出错"))
+        logger.exception(_("验证空间访问码出错"))
         return render(request,'404.html')
 
 
-# 删除文集
+# 删除空间
 @login_required()
 @require_http_methods(["POST"])
 def del_project(request):
@@ -584,14 +584,14 @@ def del_project(request):
             if range == 'single':
                 pro = Project.objects.get(id=pro_id)
                 if (request.user == pro.create_user) or (request.user.is_superuser):
-                    # 删除文集下的文档、文档历史、文档分享、文档标签
+                    # 删除空间下的文档、文档历史、文档分享、文档标签
                     pro_doc_list = Doc.objects.filter(top_doc=int(pro_id))
                     for doc in pro_doc_list:
                         DocHistory.objects.filter(doc=doc).delete()
                         DocShare.objects.filter(doc=doc).delete()
                         DocTag.objects.filter(doc=doc).delete()
                     pro_doc_list.delete()
-                    # 删除文集
+                    # 删除空间
                     pro.delete()
                     return JsonResponse({'status':True})
                 else:
@@ -600,7 +600,7 @@ def del_project(request):
                 pros = pro_id.split(",")
                 try:
                     projects = Project.objects.filter(id__in=pros, create_user=request.user)
-                    # 删除文集下的文档、文档历史、文档分享、文档标签
+                    # 删除空间下的文档、文档历史、文档分享、文档标签
                     pro_doc_list = Doc.objects.filter(top_doc__in=[i.id for i in projects])
                     for doc in pro_doc_list:
                         DocHistory.objects.filter(doc=doc).delete()
@@ -617,11 +617,11 @@ def del_project(request):
         else:
             return JsonResponse({'status':False,'data':_('参数错误')})
     except Exception as e:
-        logger.exception(_("删除文集出错"))
+        logger.exception(_("删除空间出错"))
         return JsonResponse({'status':False,'data':_('请求出错')})
 
 
-# 管理文集
+# 管理空间
 @login_required()
 @require_http_methods(['GET','POST'])
 def manage_project(request):
@@ -631,7 +631,7 @@ def manage_project(request):
         kw = request.POST.get('kw','')
         page = request.POST.get('page', 1)
         limit = request.POST.get('limit', 10)
-        # 获取文集列表
+        # 获取空间列表
         if kw == '':
             project_list = Project.objects.filter(create_user=request.user).order_by('-create_time')
         else:
@@ -669,20 +669,20 @@ def manage_project(request):
         return JsonResponse(resp_data)
 
 
-# 管理文集 - 文集文档排序
+# 管理空间 - 空间文档排序
 @login_required()
 @require_http_methods(['GET','POST'])
 def manage_project_doc_sort(request,pro_id):
     if request.method == 'GET':
         try:
-            # 获取文集
+            # 获取空间
             pro = Project.objects.get(id=pro_id)
         except ObjectDoesNotExist:
             return render(request, '404.html')
 
-        # 查询文集的协作者
+        # 查询空间的协作者
         pro_colla = ProjectCollaborator.objects.filter(project=pro,user=request.user,role=1)
-        # 文集的创建者和文集高级权限协作者允许操作
+        # 空间的创建者和空间高级权限协作者允许操作
         if (pro.create_user == request.user) or pro_colla.count() > 0:
             # 查询存在上级文档的文档
             parent_id_list = Doc.objects.filter(top_doc=pro_id, status=1).exclude(parent_doc=0).values_list(
@@ -741,7 +741,7 @@ def manage_project_doc_sort(request,pro_id):
             return render(request, '403.html')
 
     else:
-        project_id = request.POST.get('pid', None)  # 文集ID
+        project_id = request.POST.get('pid', None)  # 空间ID
         sort_data = request.POST.get('sort_data', '[]')  # 文档排序列表
         try:
             sort_data = json.loads(sort_data)
@@ -751,11 +751,11 @@ def manage_project_doc_sort(request,pro_id):
         try:
             pro = Project.objects.get(id=project_id)
         except ObjectDoesNotExist:
-            return JsonResponse({'status': False, 'data': _('没有匹配的文集')})
+            return JsonResponse({'status': False, 'data': _('没有匹配的空间')})
 
-        # 查询文集的协作者
+        # 查询空间的协作者
         pro_colla = ProjectCollaborator.objects.filter(project=pro, user=request.user, role=1)
-        # 文集的创建者和文集高级权限协作者允许操作
+        # 空间的创建者和空间高级权限协作者允许操作
         if (pro.create_user == request.user) or pro_colla.count() > 0:
             # 文档排序
             n = 10
@@ -781,7 +781,7 @@ def manage_project_doc_sort(request,pro_id):
         else:
             return JsonResponse({'status':False,'data':_('无权操作')})
 
-# 修改文集前台下载权限
+# 修改空间前台下载权限
 @login_required()
 @require_http_methods(['GET',"POST"])
 @logger.catch()
@@ -821,7 +821,7 @@ def modify_project_download(request,pro_id):
             return JsonResponse({'status':True,'data':'ok'})
 
 
-# 文集协作管理
+# 空间协作管理
 @login_required()
 @require_http_methods(['GET',"POST"])
 @logger.catch()
@@ -836,9 +836,9 @@ def manage_project_collaborator(request,pro_id):
     if request.method == 'GET':
         user_list = User.objects.filter(~Q(username=request.user.username)) # 获取用户列表
         pro = project[0]
-        collaborator = ProjectCollaborator.objects.filter(project=pro) # 获取文集的协作者
-        colla_user_list = [i.user for i in collaborator] # 文集协作用户的ID
-        colla_docs = Doc.objects.filter(top_doc=pro.id,create_user__in=colla_user_list) # 获取文集协作用户创建的文档
+        collaborator = ProjectCollaborator.objects.filter(project=pro) # 获取空间的协作者
+        colla_user_list = [i.user for i in collaborator] # 空间协作用户的ID
+        colla_docs = Doc.objects.filter(top_doc=pro.id,create_user__in=colla_user_list) # 获取空间协作用户创建的文档
         return render(request, 'app_doc/manage/manage_project_collaborator.html', locals())
 
     elif request.method == 'POST':
@@ -848,14 +848,14 @@ def manage_project_collaborator(request,pro_id):
             types = int(types)
         except:
             return JsonResponse({'status':False,'data':_('参数错误')})
-        # 添加文集协作者
+        # 添加空间协作者
         if int(types) == 0:
             colla_user = request.POST.get('username','')
             role = request.POST.get('role',0)
             user = User.objects.filter(username=colla_user)
             if user.exists():
-                if user[0] == project[0].create_user: # 用户为文集的创建者
-                    return JsonResponse({'status':False,'data':_('文集创建者无需添加')})
+                if user[0] == project[0].create_user: # 用户为空间的创建者
+                    return JsonResponse({'status':False,'data':_('空间创建者无需添加')})
                 elif ProjectCollaborator.objects.filter(user=user[0],project=project[0]).exists():
                     return JsonResponse({'status':False,'data':_('用户已存在')})
                 else:
@@ -867,7 +867,7 @@ def manage_project_collaborator(request,pro_id):
                     return JsonResponse({'status':True,'data':_('添加成功')})
             else:
                 return JsonResponse({'status':False,'data':_('用户不存在')})
-        # 删除文集协作者
+        # 删除空间协作者
         elif int(types) == 1:
             username = request.POST.get('username','')
             try:
@@ -895,7 +895,7 @@ def manage_project_collaborator(request,pro_id):
             return JsonResponse({'status':False,'data':_('无效的类型')})
 
 
-# 我协作的文集
+# 我协作的空间
 @login_required()
 @logger.catch()
 def manage_pro_colla_self(request):
@@ -903,7 +903,7 @@ def manage_pro_colla_self(request):
     return render(request,'app_doc/manage/manage_project_self_colla.html',locals())
 
 
-# 我协作的文集文档列表接口
+# 我协作的空间文档列表接口
 class MyCollaList(APIView):
     authentication_classes = (AppAuth, SessionAuthentication)
 
@@ -961,7 +961,7 @@ class MyCollaList(APIView):
         return Response(resp)
 
 
-# 转让文集
+# 转让空间
 @login_required()
 @require_http_methods(['GET',"POST"])
 def manage_project_transfer(request,pro_id):
@@ -980,10 +980,10 @@ def manage_project_transfer(request,pro_id):
             try:
                 transfer_user = User.objects.get(username=user_name)
                 init_user = pro.create_user
-                # 修改文集的创建者
+                # 修改空间的创建者
                 pro.create_user = transfer_user
                 pro.save()
-                # 修改文集文档的创建者
+                # 修改空间文档的创建者
                 Doc.objects.filter(create_user=init_user,top_doc=pro_id).update(
                     create_user=transfer_user
                 )
@@ -998,13 +998,13 @@ def manage_project_transfer(request,pro_id):
 def doc(request,pro_id,doc_id):
     try:
         if pro_id != '' and doc_id != '':
-            # 获取文集信息
+            # 获取空间信息
             doc = Doc.objects.get(id=int(doc_id),status__in=[0,1]) # 文档信息
             pro_id = doc.top_doc
             project = Project.objects.get(id=int(pro_id))
-            # 获取文集的文档目录
+            # 获取空间的文档目录
             toc_list,toc_cnt = get_pro_toc(pro_id)
-            # 获取文集的协作用户信息
+            # 获取空间的协作用户信息
             if request.user.is_authenticated:
                 colla_user = ProjectCollaborator.objects.filter(project=project,user=request.user)
                 if colla_user.exists():
@@ -1015,7 +1015,7 @@ def doc(request,pro_id,doc_id):
             else:
                 colla_user = 0
 
-            # 获取文集收藏状态
+            # 获取空间收藏状态
             if request.user.is_authenticated:
                 is_collect_pro = MyCollect.objects.filter(collect_type=2, collect_id=pro_id,
                                                           create_user=request.user).exists()
@@ -1025,10 +1025,10 @@ def doc(request,pro_id,doc_id):
             else:
                 is_collect_pro,is_collect_doc = False,False
 
-            # 私密文集且访问者非创建者、协作者 - 不能访问
+            # 私密空间且访问者非创建者、协作者 - 不能访问
             if (project.role == 1) and (request.user != project.create_user) and (colla_user == 0):
                 return render(request, '404.html')
-            # 指定用户可见文集
+            # 指定用户可见空间
             elif project.role == 2:
                 user_list = project.role_value
                 if request.user.is_authenticated:  # 认证用户判断是否在许可用户列表中
@@ -1046,7 +1046,7 @@ def doc(request,pro_id,doc_id):
                     viewcode_name = 'viewcode-{}'.format(project.id)
                     r_viewcode = request.COOKIES[
                         viewcode_name] if viewcode_name in request.COOKIES.keys() else 0  # 从cookie中获取访问码
-                    if viewcode != r_viewcode:  # cookie中的访问码不等于文集访问码，跳转到访问码认证界面
+                    if viewcode != r_viewcode:  # cookie中的访问码不等于空间访问码，跳转到访问码认证界面
                         return redirect('/check_viewcode/?to={}'.format(request.path))
 
             # 获取文档内容
@@ -1066,17 +1066,17 @@ def doc(request,pro_id,doc_id):
                 is_share = True
             except ObjectDoesNotExist:
                 is_share = False
-            # 获取文集下一级文档
+            # 获取空间下一级文档
             # project_docs = Doc.objects.filter(top_doc=doc.top_doc, parent_doc=0, status=1).order_by('sort')
             return render(request,'app_doc/doc.html',locals())
         else:
             return HttpResponse(_('参数错误'))
     except Exception as e:
-        logger.exception(_("文集浏览出错"))
+        logger.exception(_("空间浏览出错"))
         return render(request,'404.html')
 
 
-# 文档浏览页，可通过文档ID 或文集ID+文档ID访问
+# 文档浏览页，可通过文档ID 或空间ID+文档ID访问
 @require_http_methods(['GET'])
 def doc_id(request,doc_id):
     try:
@@ -1093,11 +1093,11 @@ def doc_id(request,doc_id):
         except ObjectDoesNotExist:
             return render(request, '404.html')
 
-        # 获取文集信息
+        # 获取空间信息
         project = Project.objects.get(id=int(pro_id))
-        # 获取文集的文档目录
+        # 获取空间的文档目录
         toc_list,toc_cnt = get_pro_toc(pro_id)
-        # 获取文集的协作用户信息
+        # 获取空间的协作用户信息
         if request.user.is_authenticated:
             colla_user = ProjectCollaborator.objects.filter(project=project,user=request.user)
             if colla_user.exists():
@@ -1108,7 +1108,7 @@ def doc_id(request,doc_id):
         else:
             colla_user = 0
 
-        # 获取文集收藏状态
+        # 获取空间收藏状态
         if request.user.is_authenticated:
             is_collect_pro = MyCollect.objects.filter(collect_type=2, collect_id=pro_id,
                                                       create_user=request.user).exists()
@@ -1118,10 +1118,10 @@ def doc_id(request,doc_id):
         else:
             is_collect_pro,is_collect_doc = False,False
 
-        # 私密文集且访问者非创建者、协作者 - 不能访问
+        # 私密空间且访问者非创建者、协作者 - 不能访问
         if (project.role == 1) and (request.user != project.create_user) and (colla_user == 0):
             return render(request, '404.html')
-        # 指定用户可见文集
+        # 指定用户可见空间
         elif project.role == 2:
             user_list = project.role_value
             if request.user.is_authenticated:  # 认证用户判断是否在许可用户列表中
@@ -1139,7 +1139,7 @@ def doc_id(request,doc_id):
                 viewcode_name = 'viewcode-{}'.format(project.id)
                 r_viewcode = request.COOKIES[
                     viewcode_name] if viewcode_name in request.COOKIES.keys() else 0  # 从cookie中获取访问码
-                if viewcode != r_viewcode:  # cookie中的访问码不等于文集访问码，跳转到访问码认证界面
+                if viewcode != r_viewcode:  # cookie中的访问码不等于空间访问码，跳转到访问码认证界面
                     return redirect('/check_viewcode/?to={}'.format(request.path))
 
         # 获取文档内容
@@ -1161,7 +1161,7 @@ def doc_id(request,doc_id):
             is_share = False
         return render(request,'app_doc/doc.html',locals())
     except Exception as e:
-        logger.exception(_("文集浏览出错"))
+        logger.exception(_("空间浏览出错"))
         return render(request,'404.html')
 
 
@@ -1184,8 +1184,8 @@ def create_doc(request):
         try:
             editor_type = _("新建表格") if editor_mode == 4 else _("新建文档")
             pid = request.GET.get('pid',-999)
-            project_list = Project.objects.filter(create_user=request.user) # 自己创建的文集列表
-            colla_project_list = ProjectCollaborator.objects.filter(user=request.user) # 协作的文集列表
+            project_list = Project.objects.filter(create_user=request.user) # 自己创建的空间列表
+            colla_project_list = ProjectCollaborator.objects.filter(user=request.user) # 协作的空间列表
             doctemp_list = DocTemp.objects.filter(create_user=request.user).values('id','name','create_time')
             return render(request, 'app_doc/editor/create_doc.html', locals())
         except Exception as e:
@@ -1193,7 +1193,7 @@ def create_doc(request):
             return render(request,'404.html')
     elif request.method == 'POST':
         try:
-            project = request.POST.get('project','') # 文集ID
+            project = request.POST.get('project','') # 空间ID
             parent_doc = request.POST.get('parent_doc','') # 上级文档ID
             doc_name = request.POST.get('doc_name','') # 文档标题
             doc_tags = request.POST.get('doc_tag','') # 文档标签
@@ -1213,13 +1213,13 @@ def create_doc(request):
             else:
                 show_children = False
             if project != '' and doc_name != '' and project != '-1':
-                # 验证请求者是否有文集的权限
+                # 验证请求者是否有空间的权限
                 check_project = Project.objects.filter(id=project,create_user=request.user)
                 colla_project = ProjectCollaborator.objects.filter(project=project,user=request.user)
                 if check_project.count() > 0 or colla_project.count() > 0:
-                    # 判断文集下是否存在同名文档
+                    # 判断空间下是否存在同名文档
                     if Doc.objects.filter(name=doc_name,top_doc=int(project)).exists():
-                        return JsonResponse({'status':False,'data':_('文集内不允许同名文档')})
+                        return JsonResponse({'status':False,'data':_('空间内不允许同名文档')})
                     # 开启事务
                     with transaction.atomic():
                         save_id = transaction.savepoint()
@@ -1252,9 +1252,9 @@ def create_doc(request):
                         transaction.savepoint_commit(save_id)
                         return JsonResponse({'status': False, 'data': _('创建失败')})
                 else:
-                    return JsonResponse({'status':False,'data':_('无权操作此文集')})
+                    return JsonResponse({'status':False,'data':_('无权操作此空间')})
             else:
-                return JsonResponse({'status':False,'data':_('请确认文档标题、文集正确')})
+                return JsonResponse({'status':False,'data':_('请确认文档标题、空间正确')})
         except Exception as e:
             logger.exception("创建文档出错")
             return JsonResponse({'status':False,'data':_('请求出错')})
@@ -1275,16 +1275,16 @@ def modify_doc(request,doc_id):
             if eid in [1,2,3,'1','2','3']:
                 editor_mode = int(eid)
             doc_tags = ','.join([i.tag.name for i in DocTag.objects.filter(doc=doc)]) # 查询文档标签信息
-            project = Project.objects.get(id=doc.top_doc) # 查询文档所属的文集信息
-            pro_colla = ProjectCollaborator.objects.filter(project=project,user=request.user) # 查询用户的协作文集信息
+            project = Project.objects.get(id=doc.top_doc) # 查询文档所属的空间信息
+            pro_colla = ProjectCollaborator.objects.filter(project=project,user=request.user) # 查询用户的协作空间信息
             if pro_colla.count() == 0:
                 is_pro_colla = False
             elif pro_colla[0].role == 1:
                 is_pro_colla = True
             else:
                 is_pro_colla = False
-            project_list = Project.objects.filter(create_user=request.user)  # 自己创建的文集列表
-            colla_project_list = ProjectCollaborator.objects.filter(user=request.user)  # 协作的文集列表
+            project_list = Project.objects.filter(create_user=request.user)  # 自己创建的空间列表
+            colla_project_list = ProjectCollaborator.objects.filter(user=request.user)  # 协作的空间列表
             # 判断用户是否有权限进行修改
             if (request.user == doc.create_user) or \
                     (is_pro_colla is True) or \
@@ -1302,7 +1302,7 @@ def modify_doc(request,doc_id):
     elif request.method == 'POST':
         try:
             doc_id = request.POST.get('doc_id','') # 文档ID
-            project_id = request.POST.get('project', '') # 文集ID
+            project_id = request.POST.get('project', '') # 空间ID
             parent_doc = request.POST.get('parent_doc', '') # 上级文档ID
             doc_name = request.POST.get('doc_name', '') # 文档名称
             doc_tags = request.POST.get('doc_tag','') # 文档标签
@@ -1332,7 +1332,7 @@ def modify_doc(request,doc_id):
                     is_pro_colla = True
                 else:
                     is_pro_colla = False
-                # 验证用户有权限修改文档 - 文档的创建者或文集的高级协作者
+                # 验证用户有权限修改文档 - 文档的创建者或空间的高级协作者
                 if (request.user == doc.create_user) or (is_pro_colla is True) or (request.user == project.create_user):
                     # 开启事务
                     with transaction.atomic():
@@ -1407,11 +1407,11 @@ def del_doc(request):
                 try:
                     doc = Doc.objects.get(id=doc_id)
                     try:
-                        project = Project.objects.get(id=doc.top_doc) # 查询文档所属的文集
+                        project = Project.objects.get(id=doc.top_doc) # 查询文档所属的空间
                     except ObjectDoesNotExist:
-                        logger.error(_("文档{}的所属文集不存在。".format(doc_id)))
+                        logger.error(_("文档{}的所属空间不存在。".format(doc_id)))
                         project = 0
-                    # 获取文档所属文集的协作信息
+                    # 获取文档所属空间的协作信息
                     pro_colla = ProjectCollaborator.objects.filter(project=project,user=request.user)
                     if pro_colla.exists():
                         colla_user_role = pro_colla[0].role
@@ -1419,7 +1419,7 @@ def del_doc(request):
                         colla_user_role = 0
                 except ObjectDoesNotExist:
                     return JsonResponse({'status': False, 'data': '文档不存在'})
-                # 如果请求用户为站点管理员、文档创建者、高级权限的协作者、文集的创建者，可以删除
+                # 如果请求用户为后台管理员、文档创建者、高级权限的协作者、空间的创建者，可以删除
                 if (request.user == doc.create_user) \
                         or (colla_user_role == 1) \
                         or (request.user == project.create_user)\
@@ -1465,9 +1465,9 @@ def del_doc(request):
 @require_http_methods(['GET','POST'])
 def manage_doc(request):
     if request.method == 'GET':
-        # 文集列表
-        project_list = Project.objects.filter(create_user=request.user)  # 自己创建的文集列表
-        colla_project_list = ProjectCollaborator.objects.filter(user=request.user)  # 协作的文集列表
+        # 空间列表
+        project_list = Project.objects.filter(create_user=request.user)  # 自己创建的空间列表
+        colla_project_list = ProjectCollaborator.objects.filter(user=request.user)  # 协作的空间列表
         # 文档数量
         # 已发布文档数量
         published_doc_cnt = Doc.objects.filter(create_user=request.user, status=1).count()
@@ -1490,8 +1490,8 @@ def manage_doc(request):
             q_status = [0, 1]
 
         if project == '':
-            project_list = Project.objects.filter(create_user=request.user).values_list('id',flat=True)  # 自己创建的文集列表
-            colla_project_list = ProjectCollaborator.objects.filter(user=request.user).values_list('project__id',flat=True)  # 协作的文集列表
+            project_list = Project.objects.filter(create_user=request.user).values_list('id',flat=True)  # 自己创建的空间列表
+            colla_project_list = ProjectCollaborator.objects.filter(user=request.user).values_list('project__id',flat=True)  # 协作的空间列表
             q_project = list(project_list) + list(colla_project_list)
         else:
             q_project = [project]
@@ -1512,9 +1512,9 @@ def manage_doc(request):
                 create_user=request.user,status__in=q_status,top_doc__in=q_project
             ).order_by('-modify_time')
 
-        # 文集列表
-        project_list = Project.objects.filter(create_user=request.user)  # 自己创建的文集列表
-        colla_project_list = ProjectCollaborator.objects.filter(user=request.user)  # 协作的文集列表
+        # 空间列表
+        project_list = Project.objects.filter(create_user=request.user)  # 自己创建的空间列表
+        colla_project_list = ProjectCollaborator.objects.filter(user=request.user)  # 协作的空间列表
 
         # 文档数量
         # 已发布文档数量
@@ -1563,25 +1563,25 @@ def manage_doc(request):
 @require_http_methods(['POST'])
 def move_doc(request):
     doc_id = request.POST.get('doc_id','') # 文档ID
-    pro_id = request.POST.get('pro_id','') # 移动的文集ID
+    pro_id = request.POST.get('pro_id','') # 移动的空间ID
     move_type = request.POST.get('move_type','') # 移动的类型 0复制 1移动 2连同下级文档移动
     parent_id = request.POST.get('parent_id',0)
-    # 判断文集是否存在且有权限
+    # 判断空间是否存在且有权限
     try:
-        project = Project.objects.get(id=int(pro_id)) # 自己的文集
-        colla = ProjectCollaborator.objects.filter(project=project, user=request.user) # 协作文集
-        if (project.create_user != request.user) and (colla.count() == 0) : # 文集创建者
+        project = Project.objects.get(id=int(pro_id)) # 自己的空间
+        colla = ProjectCollaborator.objects.filter(project=project, user=request.user) # 协作空间
+        if (project.create_user != request.user) and (colla.count() == 0) : # 空间创建者
             print(project.create_user,request.user,colla.count())
-            return JsonResponse({'status':False,'data':_('文集无权限')})
+            return JsonResponse({'status':False,'data':_('空间无权限')})
     except ObjectDoesNotExist:
-        return JsonResponse({'status':False,'data':_('文集不存在')})
+        return JsonResponse({'status':False,'data':_('空间不存在')})
     # 判断源文档是否存在且有操作权限
     try:
         doc = Doc.objects.get(id=int(doc_id)) # 查询源文档
-        source_project = Project.objects.get(id=doc.top_doc) # 查询源文档所属的文集
-        # 查询源文档所属文集的协作者
+        source_project = Project.objects.get(id=doc.top_doc) # 查询源文档所属的空间
+        # 查询源文档所属空间的协作者
         source_colla = ProjectCollaborator.objects.filter(project=source_project, user=request.user,role=1)
-        # 如果请求者既不是文档的创建者，又不是文档所属文集的创建者，也不是文档所属文集的高级协作成员
+        # 如果请求者既不是文档的创建者，又不是文档所属空间的创建者，也不是文档所属空间的高级协作成员
         if  (doc.create_user != request.user) and \
                 (source_project.create_user != request.user) and \
                 (source_colla.count() == 0):
@@ -1613,7 +1613,7 @@ def move_doc(request):
     # 移动文档，下级文档更改到根目录
     elif move_type == '1':
         try:
-            # 修改文档的所属文集和上级文档实现移动文档
+            # 修改文档的所属空间和上级文档实现移动文档
             Doc.objects.filter(id=int(doc_id)).update(parent_doc=int(parent_id),top_doc=int(pro_id))
             # 修改其子文档为顶级文档
             Doc.objects.filter(parent_doc=doc_id).update(parent_doc=0)
@@ -1624,12 +1624,12 @@ def move_doc(request):
     # 包含下级文档一起移动
     elif move_type == '2':
         try:
-            # 修改文档的所属文集和上级文档实现移动文档
+            # 修改文档的所属空间和上级文档实现移动文档
             Doc.objects.filter(id=int(doc_id)).update(parent_doc=int(parent_id), top_doc=int(pro_id))
-            # 修改其子文档的文集归属
+            # 修改其子文档的空间归属
             child_doc = Doc.objects.filter(parent_doc=doc_id)
             child_doc.update(top_doc=int(pro_id))
-            # 遍历子文档，如果其存在下级文档，那么继续修改所属文集
+            # 遍历子文档，如果其存在下级文档，那么继续修改所属空间
             for child in child_doc:
                 Doc.objects.filter(parent_doc=child.id).update(top_doc=int(pro_id))
             return JsonResponse({'status': True, 'data':{'pro_id':pro_id,'doc_id':doc_id}})
@@ -1647,8 +1647,8 @@ def diff_doc(request,doc_id,his_id):
     if request.method == 'GET':
         try:
             doc = Doc.objects.get(id=doc_id)  # 查询文档信息
-            project = Project.objects.get(id=doc.top_doc)  # 查询文档所属的文集信息
-            pro_colla = ProjectCollaborator.objects.filter(project=project, user=request.user)  # 查询用户的协作文集信息
+            project = Project.objects.get(id=doc.top_doc)  # 查询文档所属的空间信息
+            pro_colla = ProjectCollaborator.objects.filter(project=project, user=request.user)  # 查询用户的协作空间信息
             if (request.user == doc.create_user) or (pro_colla[0].role == 1) or (request.user.is_superuser):
                 history = DocHistory.objects.get(id=his_id)
                 history_list = DocHistory.objects.filter(doc=doc).order_by('-create_time')
@@ -1665,8 +1665,8 @@ def diff_doc(request,doc_id,his_id):
     elif request.method == 'POST':
         try:
             doc = Doc.objects.get(id=doc_id)  # 查询文档信息
-            project = Project.objects.get(id=doc.top_doc)  # 查询文档所属的文集信息
-            pro_colla = ProjectCollaborator.objects.filter(project=project, user=request.user)  # 查询用户的协作文集信息
+            project = Project.objects.get(id=doc.top_doc)  # 查询文档所属的空间信息
+            pro_colla = ProjectCollaborator.objects.filter(project=project, user=request.user)  # 查询用户的协作空间信息
             if (request.user == doc.create_user) or (pro_colla[0].role == 1) or (request.user.is_superuser):
                 history = DocHistory.objects.get(id=his_id)
                 if history.doc == doc:
@@ -1736,8 +1736,8 @@ def doc_recycle(request):
                 # 查询文档
                 try:
                     doc = Doc.objects.get(id=doc_id)
-                    project = Project.objects.get(id=doc.top_doc)  # 查询文档所属的文集
-                    # 获取文档所属文集的协作信息
+                    project = Project.objects.get(id=doc.top_doc)  # 查询文档所属的空间
+                    # 获取文档所属空间的协作信息
                     pro_colla = ProjectCollaborator.objects.filter(project=project, user=request.user)  #
                     if pro_colla.exists():
                         colla_user_role = pro_colla[0].role
@@ -1745,7 +1745,7 @@ def doc_recycle(request):
                         colla_user_role = 0
                 except ObjectDoesNotExist:
                     return JsonResponse({'status': False, 'data': _('文档不存在')})
-                # 如果请求用户为文档创建者、高级权限的协作者、文集的创建者，可以操作
+                # 如果请求用户为文档创建者、高级权限的协作者、空间的创建者，可以操作
                 if (request.user == doc.create_user) or (colla_user_role == 1) or (request.user == project.create_user):
                     # 还原文档
                     if types == 'restore':
@@ -1795,8 +1795,8 @@ def fast_publish_doc(request):
     # 查询文档
     try:
         doc = Doc.objects.get(id=doc_id)
-        project = Project.objects.get(id=doc.top_doc)  # 查询文档所属的文集
-        # 获取文档所属文集的协作信息
+        project = Project.objects.get(id=doc.top_doc)  # 查询文档所属的空间
+        # 获取文档所属空间的协作信息
         pro_colla = ProjectCollaborator.objects.filter(project=project, user=request.user)  #
         if pro_colla.exists():
             colla_user_role = pro_colla[0].role
@@ -1804,8 +1804,8 @@ def fast_publish_doc(request):
             colla_user_role = 0
     except ObjectDoesNotExist:
         return JsonResponse({'status': False, 'data': _('文档不存在')})
-    # 判断请求者是否有权限（文档创建者、文集创建者、文集高级协作者）
-    # 如果请求用户为文档创建者、高级权限的协作者、文集的创建者，可以删除
+    # 判断请求者是否有权限（文档创建者、空间创建者、空间高级协作者）
+    # 如果请求用户为文档创建者、高级权限的协作者、空间的创建者，可以删除
     if (request.user == doc.create_user) or (colla_user_role == 1) or (request.user == project.create_user):
         try:
             doc.status = 1
@@ -2135,13 +2135,13 @@ def get_doctemp(request):
         return JsonResponse({'status':False,'data':_('请求出错')})
 
 
-# 获取指定文集的所有文档
+# 获取指定空间的所有文档
 @require_http_methods(["POST"])
 @logger.catch()
 def get_pro_doc(request):
     pro_id = request.POST.get('pro_id','')
     if pro_id != '':
-        # 获取文集所有文档的id、name和parent_doc3个字段
+        # 获取空间所有文档的id、name和parent_doc3个字段
         doc_list = Doc.objects.filter(top_doc=int(pro_id),status=1).values_list('id','name','parent_doc').order_by('parent_doc')
         item_list = []
         # 遍历文档
@@ -2171,7 +2171,7 @@ def get_pro_doc(request):
         return JsonResponse({'status':False,'data':_('参数错误')})
 
 
-# 获取指定文集的文档树数据
+# 获取指定空间的文档树数据
 @require_http_methods(['POST'])
 @logger.catch()
 def get_pro_doc_tree(request):
@@ -2238,7 +2238,7 @@ def get_pro_doc_tree(request):
 def handle_404(request):
     return render(request,'404.html')
 
-# 导出文集MD文件
+# 导出空间MD文件
 @login_required()
 @require_http_methods(["POST"])
 def report_md(request):
@@ -2257,10 +2257,10 @@ def report_md(request):
             md_file = "/media/reportmd_temp/"+ md_file_filename # 拼接相对链接
             return JsonResponse({'status':True,'data':md_file})
         except ObjectDoesNotExist as e:
-            return JsonResponse({'status': False, 'data': _('文集不存在')})
+            return JsonResponse({'status': False, 'data': _('空间不存在')})
         except Exception as e:
-            logger.exception(_("导出文集MD文件出错"))
-            return JsonResponse({'status': False, 'data': _('导出文集异常')})
+            logger.exception(_("导出空间MD文件出错"))
+            return JsonResponse({'status': False, 'data': _('导出空间异常')})
     elif types == 'multi':
         project_list = pro_id.split(',')
         for project in project_list:
@@ -2275,8 +2275,8 @@ def report_md(request):
         try:
             md_file_path = project_md.work()  # 生成并获取MD文件压缩包绝对路径
         except:
-            logger.exception("文集导出异常")
-            return JsonResponse({'status': False, 'data': _('文集导出异常')})
+            logger.exception("空间导出异常")
+            return JsonResponse({'status': False, 'data': _('空间导出异常')})
         md_file_filename = os.path.split(md_file_path)[-1]  # 提取文件名
         md_file = "/media/reportmd_temp/" + md_file_filename  # 拼接相对链接
         return JsonResponse({'status': True, 'data': md_file})
@@ -2285,7 +2285,7 @@ def report_md(request):
         return JsonResponse({'status':False,'data':_('无效参数')})
 
 
-# 生成文集文件 - 个人中心 - 文集管理
+# 生成空间文件 - 个人中心 - 空间管理
 @login_required()
 @require_http_methods(["POST"])
 def genera_project_file(request):
@@ -2294,7 +2294,7 @@ def genera_project_file(request):
     pro_id = request.POST.get('pro_id')
     try:
         project = Project.objects.get(id=int(pro_id))
-        # 获取文集的协作用户信息
+        # 获取空间的协作用户信息
         if request.user.is_authenticated:
             colla_user = ProjectCollaborator.objects.filter(project=project, user=request.user)
             if colla_user.exists():
@@ -2305,18 +2305,18 @@ def genera_project_file(request):
         else:
             colla_user = 0
 
-        # 公开的文集 - 可以直接导出
+        # 公开的空间 - 可以直接导出
         if project.role == 0:
             allow_export = True
 
-        # 私密文集 - 非创建者和协作者不可导出
+        # 私密空间 - 非创建者和协作者不可导出
         elif (project.role == 1):
             if (request.user != project.create_user) and (colla_user == 0):
                 allow_export = False
             else:
                 allow_export = True
 
-        # 指定用户可见文集 - 指定用户、文集创建者和协作者可导出
+        # 指定用户可见空间 - 指定用户、空间创建者和协作者可导出
         elif project.role == 2:
             user_list = project.role_value
             if request.user.is_authenticated:  # 认证用户判断是否在许可用户列表中
@@ -2329,7 +2329,7 @@ def genera_project_file(request):
             else:  # 游客直接返回404
                 allow_export = False
 
-        # 访问码可见文集 - 文集创建者、协作者和通过验证即可导出
+        # 访问码可见空间 - 空间创建者、协作者和通过验证即可导出
         elif project.role == 3:
             # 浏览用户不为创建者和协作者 - 需要访问码
             if (request.user != project.create_user) and (colla_user == 0):
@@ -2337,7 +2337,7 @@ def genera_project_file(request):
                 viewcode_name = 'viewcode-{}'.format(project.id)
                 r_viewcode = request.COOKIES[
                     viewcode_name] if viewcode_name in request.COOKIES.keys() else 0  # 从cookie中获取访问码
-                if viewcode != r_viewcode:  # cookie中的访问码不等于文集访问码，不可导出
+                if viewcode != r_viewcode:  # cookie中的访问码不等于空间访问码，不可导出
                     allow_export = False
                 else:
                     allow_export = True
@@ -2357,7 +2357,7 @@ def genera_project_file(request):
                     # print(report_project)
                     report_file_path = report_project.split('media', maxsplit=1)[-1] # 导出文件的路径
                     epub_file = '/media' + report_file_path + '.epub' # 文件相对路径
-                    # 查询文集是否存在导出文件
+                    # 查询空间是否存在导出文件
                     report_cnt = ProjectReportFile.objects.filter(project=project,file_type='epub')
                     # 存在文件删除
                     if report_cnt.count() != 0:
@@ -2390,7 +2390,7 @@ def genera_project_file(request):
                         return JsonResponse({'status':False,'data':_('生成出错')})
                     report_file_path = report_project.split('media', maxsplit=1)[-1]  # 导出文件的路径
                     pdf_file = '/media' + report_file_path  # 文件相对路径
-                    # 查询文集是否存在导出文件
+                    # 查询空间是否存在导出文件
                     report_cnt = ProjectReportFile.objects.filter(project=project, file_type='pdf')
                     # 存在文件删除
                     if report_cnt.count() != 0:
@@ -2420,14 +2420,14 @@ def genera_project_file(request):
             return JsonResponse({'status':False,'data':_('无权限导出')})
 
     except ObjectDoesNotExist:
-        return JsonResponse({'status':False,'data':_('文集不存在')})
+        return JsonResponse({'status':False,'data':_('空间不存在')})
 
     except Exception as e:
-        logger.exception(_("生成文集文件出错"))
+        logger.exception(_("生成空间文件出错"))
         return JsonResponse({'status':False,'data':_('系统异常')})
 
 
-# 获取文集前台导出文件
+# 获取空间前台导出文件
 @allow_report_file
 @require_http_methods(["POST"])
 def report_file(request):
@@ -2437,7 +2437,7 @@ def report_file(request):
     try:
         project = Project.objects.get(id=int(pro_id))
 
-        # 获取文集的协作用户信息
+        # 获取空间的协作用户信息
         if request.user.is_authenticated:
             colla_user = ProjectCollaborator.objects.filter(project=project, user=request.user)
             if colla_user.exists():
@@ -2448,18 +2448,18 @@ def report_file(request):
         else:
             colla_user = 0
 
-        # 公开的文集 - 可以直接导出
+        # 公开的空间 - 可以直接导出
         if project.role == 0:
             allow_export = True
 
-        # 私密文集 - 非创建者和协作者不可导出
+        # 私密空间 - 非创建者和协作者不可导出
         elif (project.role == 1):
             if (request.user != project.create_user) and (colla_user == 0):
                 allow_export = False
             else:
                 allow_export = True
 
-        # 指定用户可见文集 - 指定用户、文集创建者和协作者可导出
+        # 指定用户可见空间 - 指定用户、空间创建者和协作者可导出
         elif project.role == 2:
             user_list = project.role_value
             if request.user.is_authenticated:  # 认证用户判断是否在许可用户列表中
@@ -2471,7 +2471,7 @@ def report_file(request):
                     allow_export = True
             else:  # 游客直接返回404
                 allow_export = False
-        # 访问码可见文集 - 文集创建者、协作者和通过验证即可导出
+        # 访问码可见空间 - 空间创建者、协作者和通过验证即可导出
         elif project.role == 3:
             # 浏览用户不为创建者和协作者 - 需要访问码
             if (request.user != project.create_user) and (colla_user == 0):
@@ -2479,7 +2479,7 @@ def report_file(request):
                 viewcode_name = 'viewcode-{}'.format(project.id)
                 r_viewcode = request.COOKIES[
                     viewcode_name] if viewcode_name in request.COOKIES.keys() else 0  # 从cookie中获取访问码
-                if viewcode != r_viewcode:  # cookie中的访问码不等于文集访问码，不可导出
+                if viewcode != r_viewcode:  # cookie中的访问码不等于空间访问码，不可导出
                     allow_export = False
                 else:
                     allow_export = True
@@ -2487,7 +2487,7 @@ def report_file(request):
                 allow_export = True
         else:
             allow_export = False
-            # return JsonResponse({'status':False,'data':'不存在的文集权限'})
+            # return JsonResponse({'status':False,'data':'不存在的空间权限'})
         if allow_export:
             # 导出EPUB文件
             if report_type in ['epub']:
@@ -2495,7 +2495,7 @@ def report_file(request):
                     try:
                         report_project = ProjectReportFile.objects.get(project=project,file_type='epub')
                     except ObjectDoesNotExist:
-                        return JsonResponse({'status':False,'data':_('无可用文件,请联系文集创建者')})
+                        return JsonResponse({'status':False,'data':_('无可用文件,请联系空间创建者')})
                     # print(report_project)
                     return JsonResponse({'status': True, 'data': report_project.file_path})
                 except Exception as e:
@@ -2506,7 +2506,7 @@ def report_file(request):
                     try:
                         report_project = ProjectReportFile.objects.get(project=project,file_type='pdf')
                     except ObjectDoesNotExist:
-                        return JsonResponse({'status':False,'data':_('无可用文件,请联系文集创建者')})
+                        return JsonResponse({'status':False,'data':_('无可用文件,请联系空间创建者')})
                     # print(report_project)
                     return JsonResponse({'status': True, 'data': report_project.file_path})
                 except Exception as e:
@@ -2516,9 +2516,9 @@ def report_file(request):
         else:
             return JsonResponse({'status':False,'data':_('无权限导出')})
     except ObjectDoesNotExist:
-        return JsonResponse({'status':False,'data':_('文集不存在')})
+        return JsonResponse({'status':False,'data':_('空间不存在')})
     except Exception as e:
-        logger.exception(_("获取文集前台导出文件出错"))
+        logger.exception(_("获取空间前台导出文件出错"))
         return JsonResponse({'status':False,'data':_('系统异常')})
 
 
@@ -2832,7 +2832,7 @@ def search(request):
     search_type = request.GET.get('type', 'doc')  # 搜索类型，默认文档doc
     date_type = request.GET.get('d_type', 'recent')
     date_range = request.GET.get('d_range', 'all')  # 时间范围，默认不限，all
-    project_range = request.GET.get('p_range', 0)  # 文集范围，默认不限，all
+    project_range = request.GET.get('p_range', 0)  # 空间范围，默认不限，all
 
     # 处理时间范围
     if date_type == 'recent':
@@ -2873,15 +2873,15 @@ def search(request):
         # 搜索文档
         if search_type == 'doc':
             if is_auth:
-                colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)]  # 用户的协作文集
+                colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)]  # 用户的协作空间
                 open_list = [i.id for i in Project.objects.filter(
                     Q(role=0) | Q(create_user=request.user)
-                )]  # 公开文集
+                )]  # 公开空间
 
-                view_list = list(set(open_list).union(set(colla_list)))  # 合并上述两个文集ID列表
+                view_list = list(set(open_list).union(set(colla_list)))  # 合并上述两个空间ID列表
 
                 data_list = Doc.objects.filter(
-                    Q(top_doc__in=view_list),  # 包含用户可浏览到的文集
+                    Q(top_doc__in=view_list),  # 包含用户可浏览到的空间
                     Q(create_time__gte=start_date, create_time__lte=end_date),  # 筛选创建时间
                     Q(name__icontains=kw) | Q(content__icontains=kw) | Q(pre_content__icontains=kw)  # 筛选文档标题和内容中包含搜索词
                 ).order_by('-create_time')
@@ -2893,19 +2893,19 @@ def search(request):
                     Q(name__icontains=kw) | Q(content__icontains=kw) | Q(pre_content__icontains=kw)  # 筛选文档标题和内容中包含搜索词
                 ).order_by('-create_time')
 
-        # 搜索文集
+        # 搜索空间
         elif search_type == 'pro':
             # 认证用户
             if is_auth:
-                colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)]  # 用户的协作文集
-                # 查询所有可显示的文集
+                colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)]  # 用户的协作空间
+                # 查询所有可显示的空间
                 data_list = Project.objects.filter(
                     Q(role=0) | \
                     Q(role=2, role_value__contains=str(request.user.username)) | \
                     Q(create_user=request.user) | \
                     Q(id__in=colla_list),
                     Q(create_time__gte=start_date, create_time__lte=end_date),  # 筛选创建时间
-                    Q(name__icontains=kw) | Q(intro__icontains=kw)  # 筛选文集名称和简介包含搜索词
+                    Q(name__icontains=kw) | Q(intro__icontains=kw)  # 筛选空间名称和简介包含搜索词
                 ).order_by('-create_time')
             # 游客
             else:
@@ -2919,24 +2919,24 @@ def search(request):
         elif search_type == 'tag':
             # 认证用户
             if is_auth:
-                colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)]  # 用户的协作文集
+                colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)]  # 用户的协作空间
                 open_list = [i.id for i in Project.objects.filter(
                     Q(role=0) | Q(create_user=request.user)
-                )]  # 公开文集和自己创建的文集
+                )]  # 公开空间和自己创建的空间
 
-                view_list = list(set(open_list).union(set(colla_list)))  # 合并上述两个文集ID列表
+                view_list = list(set(open_list).union(set(colla_list)))  # 合并上述两个空间ID列表
 
                 tag_list = Tag.objects.filter(name__icontains=kw) # 查询符合条件的标签
                 tag_doc_list = [i.doc.id for i in DocTag.objects.filter(tag__in=tag_list)] # 获取符合条件的标签文档
 
                 data_list = Doc.objects.filter(
-                    Q(top_doc__in=view_list),  # 包含用户可浏览到的文集
+                    Q(top_doc__in=view_list),  # 包含用户可浏览到的空间
                     Q(id__in=tag_doc_list), # 包含符合条件标签的文档ID列表
                     Q(create_time__gte=start_date, create_time__lte=end_date),  # 筛选创建时间
                 ).order_by('-create_time')
             # 游客
             else:
-                open_list = [i.id for i in Project.objects.filter(Q(role=0))]  # 公开文集
+                open_list = [i.id for i in Project.objects.filter(Q(role=0))]  # 公开空间
 
                 view_list = list(set(open_list))
 
@@ -2944,7 +2944,7 @@ def search(request):
                 tag_doc_list = [i.doc.id for i in DocTag.objects.filter(tag__in=tag_list)]  # 获取符合条件的标签文档
 
                 data_list = Doc.objects.filter(
-                    Q(top_doc__in=view_list),  # 包含用户可浏览到的文集
+                    Q(top_doc__in=view_list),  # 包含用户可浏览到的空间
                     Q(id__in=tag_doc_list),  # 包含符合条件标签的文档ID列表
                     Q(create_time__gte=start_date, create_time__lte=end_date),  # 筛选创建时间
                 ).order_by('-create_time')
@@ -2999,7 +2999,7 @@ def manage_overview(request):
     if request.method == 'GET':
         pro_list = Project.objects.filter(create_user=request.user).order_by('-create_time')
         colla_pro_cnt = ProjectCollaborator.objects.filter(user=request.user).count()
-        pro_cnt = pro_list.count() + colla_pro_cnt # 文集总数
+        pro_cnt = pro_list.count() + colla_pro_cnt # 空间总数
         doc_cnt = Doc.objects.filter(create_user=request.user).count() # 文档总数
         total_tag_cnt = Tag.objects.filter(create_user=request.user).count()
         img_cnt = Image.objects.filter(user=request.user).count()
@@ -3089,19 +3089,19 @@ def tag_docs(request,tag_id):
                 docs = DocTag.objects.filter(tag=tag,doc__status=1)
             else:
                 # 获取有权限的文档
-                colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)]  # 用户的协作文集
+                colla_list = [i.project.id for i in ProjectCollaborator.objects.filter(user=request.user)]  # 用户的协作空间
                 open_list = [i.id for i in Project.objects.filter(
                     Q(role=0) | Q(create_user=tag.create_user)
-                )]  # 公开文集
+                )]  # 公开空间
 
-                view_list = list(set(open_list).union(set(colla_list)))  # 合并上述两个文集ID列表
-                # 查询可浏览文集的文档
+                view_list = list(set(open_list).union(set(colla_list)))  # 合并上述两个空间ID列表
+                # 查询可浏览空间的文档
                 doc_list = [i for i in Doc.objects.filter(top_doc__in=view_list,status=1)]
                 # 筛选可浏览的文档的标签文档
                 docs = DocTag.objects.filter(tag=tag,doc__in=doc_list)
 
         else:
-            # 查询标签创建者的公开文集
+            # 查询标签创建者的公开空间
             open_list = [i.id for i in Project.objects.filter(
                 role=0,create_user=tag.create_user
             )]
@@ -3193,9 +3193,9 @@ def tag_doc(request,tag_id,doc_id):
     try:
         if tag_id != '' and doc_id != '':
             doc = Doc.objects.get(id=int(doc_id), status=1)
-            # 获取文档的文集信息，以判断是否有权限访问
+            # 获取文档的空间信息，以判断是否有权限访问
             project = Project.objects.get(id=int(doc.top_doc))
-            # 获取文集的协作用户信息
+            # 获取空间的协作用户信息
             if request.user.is_authenticated:
                 colla_user = ProjectCollaborator.objects.filter(project=project,user=request.user)
                 if colla_user.exists():
@@ -3206,10 +3206,10 @@ def tag_doc(request,tag_id,doc_id):
             else:
                 colla_user = 0
 
-            # 私密文集且访问者非创建者、协作者 - 不能访问
+            # 私密空间且访问者非创建者、协作者 - 不能访问
             if (project.role == 1) and (request.user != project.create_user) and (colla_user == 0):
                 return render(request, '404.html')
-            # 指定用户可见文集
+            # 指定用户可见空间
             elif project.role == 2:
                 user_list = project.role_value
                 if request.user.is_authenticated:  # 认证用户判断是否在许可用户列表中
@@ -3227,7 +3227,7 @@ def tag_doc(request,tag_id,doc_id):
                     viewcode_name = 'viewcode-{}'.format(project.id)
                     r_viewcode = request.COOKIES[
                         viewcode_name] if viewcode_name in request.COOKIES.keys() else 0  # 从cookie中获取访问码
-                    if viewcode != r_viewcode:  # cookie中的访问码不等于文集访问码，跳转到访问码认证界面
+                    if viewcode != r_viewcode:  # cookie中的访问码不等于空间访问码，跳转到访问码认证界面
                         return redirect('/check_viewcode/?to={}'.format(request.path))
 
             # 获取文档内容
@@ -3244,7 +3244,7 @@ def tag_doc(request,tag_id,doc_id):
         else:
             return HttpResponse(_('参数错误'))
     except Exception as e:
-        logger.exception(_("文集浏览出错"))
+        logger.exception(_("空间浏览出错"))
         return render(request,'404.html')
 
 
@@ -3282,7 +3282,7 @@ def manage_self(request):
             return JsonResponse({'status':False,'data':_('参数不正确')})
 
 
-# 文集文档收藏
+# 空间文档收藏
 @login_required()
 def my_collect(request):
     if request.method == 'GET':
@@ -3316,7 +3316,7 @@ def my_collect(request):
 @csrf_exempt
 def manage_collect(request):
     if request.method == 'GET':
-        # 收藏文集数量
+        # 收藏空间数量
         collect_project_cnt = MyCollect.objects.filter(create_user=request.user, collect_type=2).count()
         # 收藏文档数量
         collect_doc_cnt = MyCollect.objects.filter(create_user=request.user, collect_type=1).count()
@@ -3402,7 +3402,7 @@ def manage_collect(request):
                         collect = MyCollect.objects.get(id=collect_id)
                     except ObjectDoesNotExist:
                         return JsonResponse({'status': False, 'data': _('收藏不存在')})
-                    # 如果请求用户为站点管理员、收藏的创建者，可以删除
+                    # 如果请求用户为后台管理员、收藏的创建者，可以删除
                     if (request.user == collect.create_user) or (request.user.is_superuser):
                         MyCollect.objects.filter(id=collect_id).delete()
                         return JsonResponse({'status': True, 'data': _('删除完成')})

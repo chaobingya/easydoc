@@ -14,7 +14,7 @@
     <meta name="description" content="{% block description %}{% endblock %}" />
     <title>{% trans "文档历史版本对比：" %}{{ doc.name }} - {% if site_name != None and site_name != '' %}{{site_name}} {% else %}{% trans "知识共享平台" %}{% endif %}</title>
     <link href="{% static 'layui/css/layui.css' %}?version={{mrdoc_version}}" rel="stylesheet">
-    <link rel="icon" href="{% static 'favicon_16.png' %}"/>
+    <link rel="icon" href="{% static 'favicon.png' %}"/>
     <link href="{% static 'mrdoc/mrdoc.css' %}?version={{mrdoc_version}}" rel="stylesheet">
 
     <link rel=stylesheet href="{% static '/docdiff/codemirror.css' %}?version={{mrdoc_version}}">

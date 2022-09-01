@@ -33,7 +33,7 @@
                 <dd><input type="checkbox" name="open-children" title="展开下级目录" lay-skin="primary" {%if doc.open_children %}checked{% endif %}></dd>
                 <dd><input type="checkbox" name="show-children" title="显示下级文档" lay-skin="primary" {%if doc.show_children %}checked{% endif %}></dd>
                 <hr>
-                <dd><a href="javascript:;" onclick="moveDoc()" title="复制或移动此文档到其他文集">复制/移动文档</a></dd>
+                <dd><a href="javascript:;" onclick="moveDoc()" title="复制或移动此文档到其他空间">复制/移动文档</a></dd>
                 <dd><a href="javascript:;" onclick="delDoc()" title="删除此文档">删除文档</a></dd>
             </dl>  
         </li>
@@ -455,7 +455,7 @@
                         layer.closeAll('loading')
                         if(r.status){
                             //修改成功
-                            layer.msg("文档已删除，即将跳转至文集")
+                            layer.msg("文档已删除，即将跳转至空间")
                             // window.location.reload();
                             window.location.href = "{% url 'pro_index' doc.top_doc %}"
                             //layer.close(index)
@@ -472,17 +472,17 @@
         moveDoc = function(doc_id){
             layer.open({
                 type:1,
-                title:'复制或移动此文档到指定文集',
+                title:'复制或移动此文档到指定空间',
                 id:'moveDoc',
                 area:'450px;',
                 content:$('#move-project'),
                 success:function(layero,index){
                     form.render(null, 'move-projects'); // 重新渲染弹出框的表单
-                    // 移动文集 - 侦听选择文集 - 获取文集的文档
+                    // 移动空间 - 侦听选择空间 - 获取空间的文档
                     form.on('select(moveProject)', function(data){
                         // console.log(data.value); //得到被选中的值
                         $('#move-parent-id').val(0);
-                        //获取文集的下级文档
+                        //获取空间的下级文档
                         $.post("{% url 'get_pro_doc_tree' %}",{'pro_id':data.value},function(r){
                             if(r.status){
                                 var doc_tree = tree.render({
@@ -492,7 +492,7 @@
                                     data:r.data,
                                     text: {
                                         defaultNodeName: '未命名' //节点默认名称
-                                        ,none: '文集暂无文档' //数据为空时的提示文本
+                                        ,none: '空间暂无文档' //数据为空时的提示文本
                                         },
                                     click: function(obj){
                                         if(obj.data.level != 3){
@@ -533,7 +533,7 @@
                 doc_id:'{{doc.id}}'
             };
             if(data.pro_id === ''){
-                layer.msg("必须选择一个文集")
+                layer.msg("必须选择一个空间")
                 return
             }
             console.log(data)

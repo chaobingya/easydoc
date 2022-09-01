@@ -14,7 +14,7 @@ def get_next_doc(value):
     data = Doc.objects.filter(parent_doc=value,status=1).values('id','name').order_by('sort')
     return data
 
-# 获取文档的所属文集
+# 获取文档的所属空间
 @register.filter(name='get_doc_top')
 def get_doc_top(value):
     try:
@@ -22,7 +22,7 @@ def get_doc_top(value):
     except Exception:
         return ''
 
-# 获取用户是否为文集创建者
+# 获取用户是否为空间创建者
 @register.filter(name='is_colla_pro')
 def is_colla_pro(pro,user):
     p = Project.objects.filter(id=pro,create_user=user)

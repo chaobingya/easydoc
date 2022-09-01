@@ -88,7 +88,7 @@
                 var pear_admin_config = {
                     "logo": {
                         "title": "{% trans '个人中心' %}",
-                        "image": "{% static 'mrdoc_logo_ridus.png' %}"
+                        "image": "{% static 'logo_ridus.png' %}"
                     },
                     "menu": {
                         "data": "{% url 'user_center_menu' %}",
@@ -182,7 +182,7 @@
 					console.log("选项卡跳转",tabKw)
 					switch(tabKw){
 						case 'manage_project':
-							layui.tab.addTabOnlyByElem("content",{id:"manage_project",title:"文集管理",url:"{% url 'manage_project' %}",close:"true"})
+							layui.tab.addTabOnlyByElem("content",{id:"manage_project",title:"空间管理",url:"{% url 'manage_project' %}",close:"true"})
 							break;
 						case 'manage_doc':
 							layui.tab.addTabOnlyByElem("content",{id:"doc_manage",title:"文档管理",url:"{% url 'manage_doc' %}",close:"true"})

@@ -1,7 +1,7 @@
 {% extends 'app_doc/user/user_base.html' %}
 {% load static %}
 {% load i18n %}
-{% block title %}{% trans "文集文档排序" %}{% endblock %}
+{% block title %}{% trans "空间文档排序" %}{% endblock %}
 {% block custom_element %}
 <link href="{% static 'tagsInput/tagsinput.css' %}" rel="stylesheet" type="text/css"/>
 {% endblock %}
@@ -10,8 +10,8 @@
     <div class="layui-card-body">
     <div class="layui-row" style="padding-left:15px;">
         <span class="layui-breadcrumb" lay-separator=">">
-          <a href="{% url 'manage_project' %}">{% trans "文集管理" %}</a>
-          <a><cite>{% trans "文集文档排序" %}</cite></a>
+          <a href="{% url 'manage_project' %}">{% trans "空间管理" %}</a>
+          <a><cite>{% trans "空间文档排序" %}</cite></a>
         </span>
     </div>
     </div>
@@ -21,7 +21,7 @@
     <div class="layui-card-body">
         <div class="layui-card-header" style="margin-bottom: 10px;">
             <div class="layui-row">
-                <span style="font-size:18px;">{% trans "文集：" %}{{pro.name}}</span>
+                <span style="font-size:18px;">{% trans "空间：" %}{{pro.name}}</span>
                 <button class="pear-btn pear-btn-primary pear-btn-sm" style="float: right;" id="save-sort-btn">{% trans "保存排序" %}</button>
             </div>
         </div>
@@ -63,7 +63,7 @@
 </div>
 {% endblock %}
 {% block custom_script %}
-<!-- 文集文档排序样式 -->
+<!-- 空间文档排序样式 -->
 <style>
     .row {
         display: -ms-flexbox;
@@ -210,13 +210,13 @@
         $.post('{% url "manage_pro_doc_sort" pro.id %}',sort_data,function(r){
             if(r.status){
                 layer.closeAll('loading')
-                layer.msg("完成文集排序",function(){
+                layer.msg("完成空间排序",function(){
                     layer.close()
                 })
                 
             }else{
                 layer.closeAll('loading')
-                layer.msg("修改导入文集出错")
+                layer.msg("修改导入空间出错")
             }
         });
     })

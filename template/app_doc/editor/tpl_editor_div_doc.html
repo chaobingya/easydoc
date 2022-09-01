@@ -33,23 +33,23 @@
 </div>
 <!-- 结束插入文档模板div块 -->
 
-<!-- 新建文集div块 -->
+<!-- 新建空间div块 -->
 <div style="padding: 20px;display:none;" id="create-project-div">
-    <input class="layui-input" type="text" id="pname" style="margin-bottom:10px;" placeholder="输入文集名" required  lay-verify="required">
-    <textarea name="desc" id="desc" placeholder="输入文集简介"  maxlength="100" class="layui-textarea"></textarea>
+    <input class="layui-input" type="text" id="pname" style="margin-bottom:10px;" placeholder="输入空间名" required  lay-verify="required">
+    <textarea name="desc" id="desc" placeholder="输入空间简介"  maxlength="100" class="layui-textarea"></textarea>
     <div class="layui-form-item" style="margin-top:10px;">
-        <label class="layui-form-label" style="text-align:left;padding:9px 0px;">文集权限</label>
+        <label class="layui-form-label" style="text-align:left;padding:9px 0px;">空间权限</label>
         <div class="layui-input-block">
             <select name="project-role" lay-verify="" class="layui-select" id="project-role">
-                <!--<option value="">选择文集权限</option>-->
+                <!--<option value="">选择空间权限</option>-->
                 <option value="0">公开</option>
                 <option value="1">私密</option>
             </select>
         </div>
     </div>
-    <div style="color:red;font-size:12px;">*在可个人中心对文集权限进行进一步控制</div>
+    <div style="color:red;font-size:12px;">*在可个人中心对空间权限进行进一步控制</div>
 </div>
-<!-- 结束新建文集div块 -->
+<!-- 结束新建空间div块 -->
 
 <!-- 文档历史div块 -->
 <div class="history-list" id="history-list" style="display: none;width: 500px;">
@@ -94,9 +94,9 @@
         <input id="move-parent-id" hidden value="0" />
         <div class="layui-input-inblock">
           <select name="move_pro_id"  lay-filter="moveProject" id="moveProject">
-            <option value="">请选择一个文集（必选）</option>
-              <!-- 自己的文集 -->
-              <optgroup label="自有文集" id="self-project">
+            <option value="">请选择一个空间（必选）</option>
+              <!-- 自己的空间 -->
+              <optgroup label="自有空间" id="self-project">
               {% for p in project_list %}
                   {% if p.role == 1 %}
                   <option value="{{ p.id }}">[私密]《{{ p.name }}》</option>
@@ -109,9 +109,9 @@
                   {% endif %}
               {% endfor %}
               </optgroup>
-              <!-- 协作的文集 -->
+              <!-- 协作的空间 -->
               {% if colla_project_list.count > 0 %}
-              <optgroup label="协作文集">
+              <optgroup label="协作空间">
               {% for p in colla_project_list %}
                     <option value="{{ p.project.id }}">[协作]《{{ p.project.name }}》</option>
               {% endfor %}
@@ -127,7 +127,7 @@
         <button class="layui-btn layui-btn-normal layui-btn-fluid" onclick="submitMoveDoc()">确认操作</button>
     </div>
     <div class="layui-col-md12" style="margin: 10px;">
-        <span style="font-size: 12px;color:mediumvioletred;">警告：MrDoc仅支持3级目录显示，若移动的下级文档层级在目标文集中超过3层将不会显示在文集目录中</span>
+        <span style="font-size: 12px;color:mediumvioletred;">警告：MrDoc仅支持3级目录显示，若移动的下级文档层级在目标空间中超过3层将不会显示在空间目录中</span>
     </div>
 </div>
 

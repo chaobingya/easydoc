@@ -1,7 +1,7 @@
 {% extends 'app_doc/user/user_base.html' %}
 {% load static %}
 {% load i18n %}
-{% block title %}{% trans "文集管理" %}{% endblock %}
+{% block title %}{% trans "空间管理" %}{% endblock %}
 {% block content %}
 <div class="layui-card">
     <div class="layui-card-body">
@@ -29,7 +29,7 @@
     
 </script>
 
-<!-- 文集名称 -->
+<!-- 空间名称 -->
 <script type="text/html" id="project-name">
     {% verbatim %}
     <a href="/project-{{d.id}}/" target="_blank">
@@ -46,16 +46,16 @@
     {% endverbatim %}
 </script>
 
-<!-- 单个文集操作 -->
+<!-- 单个空间操作 -->
 <script type="text/html" id="project-bar">
     {% verbatim %}
     <a href="/manage_pro_doc_sort/{{d.id}}/" title="排序文档" class="pear-btn pear-btn-sm" lay-event="sort"><i class="layui-icon layui-icon-cols"></i></a>
-    <a href="/modify_pro/?pro_id={{d.id}}" title="修改文集配置" class="pear-btn pear-btn-sm"><i class="layui-icon layui-icon-set"></i></a>
-    <button class="pear-btn pear-btn-danger pear-btn-sm" title="删除文集" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
+    <a href="/modify_pro/?pro_id={{d.id}}" title="修改空间配置" class="pear-btn pear-btn-sm"><i class="layui-icon layui-icon-set"></i></a>
+    <button class="pear-btn pear-btn-danger pear-btn-sm" title="删除空间" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
     {% endverbatim %}
 </script>
 
-<!-- 文集权限 -->
+<!-- 空间权限 -->
 <script type="text/html" id="project-role">
     {% verbatim %}
     {{#if (d.role == 0) { }}
@@ -73,7 +73,7 @@
 <!-- 协作人数 -->
 <script type="text/html" id="colla-cnt">
     {% verbatim %}
-    <span>{{d.colla_total}}</span> <a href="/manage_project_colla/{{d.id}}/"  title="管理文集协作"><i class="layui-icon layui-icon-set"></i></a>
+    <span>{{d.colla_total}}</span> <a href="/manage_project_colla/{{d.id}}/"  title="管理空间协作"><i class="layui-icon layui-icon-set"></i></a>
     {% endverbatim %}
 </script>
 
@@ -97,11 +97,11 @@
         let cols = [
             [
                 {type: 'checkbox',width:20},
-                {title: '{% trans "文集名称" %}',field: 'name',align: 'left',templet:"#project-name",minWidth:200},
+                {title: '{% trans "空间名称" %}',field: 'name',align: 'left',templet:"#project-name",minWidth:200},
                 // {title: '简介',field: 'intro',align: 'left',templet:"#share-type"},
                 // {title: '权限',field: 'role',align: 'left',templet:"#project-role"},
                 {title: '{% trans "文档数" %}',field: 'doc_total',align: 'left',width:90},
-                {title: '{% trans "文集成员" %}',field: 'colla_total',align: 'left',templet:"#colla-cnt",width:90},
+                {title: '{% trans "空间成员" %}',field: 'colla_total',align: 'left',templet:"#colla-cnt",width:90},
                 {title: '{% trans "创建时间" %}',field: 'create_time',align: 'left',templet:"#project-create-time"},
                 {title: '{% trans "操作" %}',toolbar: '#project-bar',align: 'left',}
             ]
@@ -120,7 +120,7 @@
             toolbar: '#project-toolbar',
             defaultToolbar: ['filter']
         });
-        // 侦听文集删除按钮
+        // 侦听空间删除按钮
         table.on("tool(project-table)",function(obj){
             if (obj.event === 'remove') {
                 // console.log(obj)
@@ -129,29 +129,29 @@
         });
         // 侦听表格工具栏
         table.on("toolbar(project-table)",function(obj){
-            if (obj.event === 'add') { // 新增文集
+            if (obj.event === 'add') { // 新增空间
                 createProject();
-            }else if(obj.event === 'batchRemove'){ // 批量删除文集
+            }else if(obj.event === 'batchRemove'){ // 批量删除空间
                 batchRemove(obj)
-            }else if(obj.event === 'search'){ // 搜索文集
-                // console.log('搜索文集')
+            }else if(obj.event === 'search'){ // 搜索空间
+                // console.log('搜索空间')
                 table.reload('project-table',{
                     where:{
                         'type':1,'kw':$('input[name="project-search-kw"]').val()
                     },
                 })
-            }else if(obj.event === 'batchReport'){ // 批量导出文集
+            }else if(obj.event === 'batchReport'){ // 批量导出空间
                 batchReport(obj)
             }
         });
-        //创建文集
+        //创建空间
         createProject = function(){
             layer.open({
                 type:1,
-                title:'{% trans "新建文集" %}',
+                title:'{% trans "新建空间" %}',
                 area:'300px;',
                 id:'createPro',//配置ID
-                content:'<div style="padding: 20px;"><input class="layui-input" type="text" id="pname" style="margin-bottom:10px;" placeholder="输入文集名" required  lay-verify="required"><textarea name="desc" id="desc" placeholder="输入文集简介" class="layui-textarea"></textarea></div>',
+                content:'<div style="padding: 20px;"><input class="layui-input" type="text" id="pname" style="margin-bottom:10px;" placeholder="输入空间名" required  lay-verify="required"><textarea name="desc" id="desc" placeholder="输入空间简介" class="layui-textarea"></textarea></div>',
                 btn:['{% trans "确定" %}','{% trans "取消" %}'], //添加按钮
                 btnAlign:'c', //按钮居中
                 yes:function (index,layero) {
@@ -175,14 +175,14 @@
                 },
             });
         };
-        //修改文集
+        //修改空间
         modifyProject = function(pro_id,pro_name,pro_intro){
             layer.open({
                 type:1,
-                title:'{% trans "修改文集" %}',
+                title:'{% trans "修改空间" %}',
                 area:'300px;',
                 id:'modifyPro',//配置ID
-                content:'<div style="padding: 20px;"><input class="layui-input" type="text" id="pname" style="margin-bottom:10px;" placeholder="输入文集名" required  lay-verify="required" value="'+pro_name+'"><textarea name="desc" id="desc" placeholder="输入文集简介" class="layui-textarea">'+pro_intro+'</textarea></div>',
+                content:'<div style="padding: 20px;"><input class="layui-input" type="text" id="pname" style="margin-bottom:10px;" placeholder="输入空间名" required  lay-verify="required" value="'+pro_name+'"><textarea name="desc" id="desc" placeholder="输入空间简介" class="layui-textarea">'+pro_intro+'</textarea></div>',
                 btn:['{% trans "确定" %}','{% trans "取消" %}'], //添加按钮
                 btnAlign:'c', //按钮居中
                 yes:function (index,layero) {
@@ -207,14 +207,14 @@
                 },
             });
         };
-        //删除文集
+        //删除空间
         delProject = function(pro_id,pro_name){
             layer.open({
                 type:1,
-                title:'{% trans "删除文集" %}',
+                title:'{% trans "删除空间" %}',
                 area:'300px;',
                 id:'delPro',//配置ID
-                content:'<div style="margin-left:10px;">你正在删除：<span style="font-weight:700;color:red;">【'+pro_name+'】</span><br><br>警告！此操作将<span style="font-weight:700;color:red;">删除此文集及文集下所有文档！</span>并且<span style="font-weight:700;color:red;">不可恢复！</span><br><br>请输入“DELETE”以再次确认删除。<br><input class="layui-input" style="width:95%;" id="confirm_delete_project" placeholder="DELETE"></div>',
+                content:'<div style="margin-left:10px;">你正在删除：<span style="font-weight:700;color:red;">【'+pro_name+'】</span><br><br>警告！此操作将<span style="font-weight:700;color:red;">删除此空间及空间下所有文档！</span>并且<span style="font-weight:700;color:red;">不可恢复！</span><br><br>请输入“DELETE”以再次确认删除。<br><input class="layui-input" style="width:95%;" id="confirm_delete_project" placeholder="DELETE"></div>',
                 btn:['{% trans "删除" %}','{% trans "取消" %}'], //添加按钮
                 btnAlign:'c', //按钮居中
                 yes:function (index,layero) {
@@ -245,11 +245,11 @@
                 },
             });
         }
-        // 批量删除文集
+        // 批量删除空间
         batchRemove = function(obj) {
             let data = table.checkStatus(obj.config.id).data;
             if (data.length === 0) {
-                layer.msg("{% trans '未选中任何文集' %}", {
+                layer.msg("{% trans '未选中任何空间' %}", {
                     icon: 3,
                     time: 1000
                 });
@@ -263,10 +263,10 @@
             // console.log(pro_id)
             layer.open({
                 type:1,
-                title:'{% trans "删除文集" %}',
+                title:'{% trans "删除空间" %}',
                 area:'300px;',
                 id:'delPro',//配置ID
-                content:'<div style="margin-left:10px;">你正在批量删除文集！<br><br>警告！此操作将<span style="font-weight:700;color:red;">删除所选文集及文集下所有文档！</span>并且<span style="font-weight:700;color:red;">不可恢复！</span><br><br>请输入“DELETE”以再次确认删除。<br><input class="layui-input" style="width:95%;" id="confirm_batch_delete_project" placeholder="DELETE"></div>',
+                content:'<div style="margin-left:10px;">你正在批量删除空间！<br><br>警告！此操作将<span style="font-weight:700;color:red;">删除所选空间及空间下所有文档！</span>并且<span style="font-weight:700;color:red;">不可恢复！</span><br><br>请输入“DELETE”以再次确认删除。<br><input class="layui-input" style="width:95%;" id="confirm_batch_delete_project" placeholder="DELETE"></div>',
                 btn:['{% trans "批量删除" %}','{% trans "取消" %}'], //添加按钮
                 btnAlign:'c', //按钮居中
                 yes:function (index,layero) {
@@ -301,11 +301,11 @@
                 }
             });
         };
-        //批量导出文集
+        //批量导出空间
         batchReport = function(obj){
             let data = table.checkStatus(obj.config.id).data;
             if (data.length === 0) {
-                layer.msg("{% trans '未选中任何文集' %}", {
+                layer.msg("{% trans '未选中任何空间' %}", {
                     icon: 3,
                     time: 1000
                 });
@@ -319,10 +319,10 @@
             console.log(pro_id);
             layer.open({
                 type:1,
-                title:"{% trans '打包文集' %}",
+                title:"{% trans '打包空间' %}",
                 area:"300px",
                 id:"reportMd",
-                content:'<div style="margin-left:10px;">确定打包导出所选的文集？</div>',
+                content:'<div style="margin-left:10px;">确定打包导出所选的空间？</div>',
                 btn:['确定','取消'], //添加按钮
                 btnAlign:'c', //按钮居中
                 yes:function (index,layero) {

@@ -44,7 +44,7 @@ def check_headers(function):
     return _inner
 
 
-# 开放前台文集导出
+# 开放前台空间导出
 def allow_report_file(function):
     def _inner(request,*args,**kwargs):
         try:

@@ -68,17 +68,17 @@ class DocSearchView(SearchView):
         else:
             is_auth = False
 
-        # 获取可搜索的文集列表
+        # 获取可搜索的空间列表
         if is_auth:
             colla_list = [i.project.id for i in
-                          ProjectCollaborator.objects.filter(user=self.request.user)]  # 用户的协作文集
+                          ProjectCollaborator.objects.filter(user=self.request.user)]  # 用户的协作空间
             open_list = [i.id for i in Project.objects.filter(
                 Q(role=0) | Q(create_user=self.request.user)
-            )]  # 公开文集
+            )]  # 公开空间
 
-            view_list = list(set(open_list).union(set(colla_list)))  # 合并上述两个文集ID列表
+            view_list = list(set(open_list).union(set(colla_list)))  # 合并上述两个空间ID列表
         else:
-            view_list = [i.id for i in Project.objects.filter(role=0)] # 公开文集
+            view_list = [i.id for i in Project.objects.filter(role=0)] # 公开空间
 
         if len(view_list) > 0:
             sqs = SearchQuerySet().filter(

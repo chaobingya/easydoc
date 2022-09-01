@@ -302,8 +302,8 @@ def admin_overview(request):
     if request.method == 'GET':
         # 用户数
         user_cnt = User.objects.all().count()
-        # 文集数
-        pro_cnt = Project.objects.all().count() # 文集总数
+        # 空间数
+        pro_cnt = Project.objects.all().count() # 空间总数
         # 文档数
         doc_cnt = Doc.objects.all().count() # 文档总数
         total_tag_cnt = Tag.objects.filter(create_user=request.user).count()
@@ -311,7 +311,7 @@ def admin_overview(request):
         attachment_cnt = Attachment.objects.filter(user=request.user).count()
         # 文档动态
         doc_active_list = Doc.objects.all().order_by('-modify_time')[:5]
-        # 个人文集列表
+        # 个人空间列表
         pro_list = Project.objects.filter(create_user=request.user).order_by('-create_time')
         return render(request,'app_admin/admin_overview.html',locals())
     else:
@@ -478,10 +478,10 @@ class AdminUserDetail(APIView):
     def delete(self, request, id):
         try:
             user = self.get_object(id)  # 获取用户
-            colloas = ProjectCollaborator.objects.filter(user=user)  # 获取参与协作的文集
-            # 遍历用户参与协作的文集
+            colloas = ProjectCollaborator.objects.filter(user=user)  # 获取参与协作的空间
+            # 遍历用户参与协作的空间
             for colloa in colloas:
-                # 查询出用户协作创建的文档，修改作者为文集所有者
+                # 查询出用户协作创建的文档，修改作者为空间所有者
                 Doc.objects.filter(
                     top_doc=colloa.project.id, create_user=user
                 ).update(create_user=colloa.project.create_user)
@@ -500,7 +500,7 @@ class AdminUserDetail(APIView):
             return Response(resp)
 
 
-# 后台管理 - 文集管理
+# 后台管理 - 空间管理
 @superuser_only
 @logger.catch()
 def admin_project(request):
@@ -510,7 +510,7 @@ def admin_project(request):
         kw = request.POST.get('kw', '')
         page = request.POST.get('page', 1)
         limit = request.POST.get('limit', 10)
-        # 获取文集列表
+        # 获取空间列表
         if kw == '':
             project_list = Project.objects.all().order_by('-create_time')
         else:
@@ -548,7 +548,7 @@ def admin_project(request):
         }
         return JsonResponse(resp_data)
 
-# 后台管理 - 修改文集权限
+# 后台管理 - 修改空间权限
 @superuser_only
 @logger.catch()
 def admin_project_role(request,pro_id):
@@ -582,7 +582,7 @@ def admin_project_role(request,pro_id):
         else:
             return Http404
 
-# 后台管理 - 修改文集协作成员页面
+# 后台管理 - 修改空间协作成员页面
 @superuser_only
 def admin_project_colla_config(request,pro_id):
     project = Project.objects.filter(id=pro_id)
@@ -591,9 +591,9 @@ def admin_project_colla_config(request,pro_id):
     if request.method == 'GET':
         user_list = User.objects.filter(~Q(username=request.user.username)) # 获取用户列表
         pro = project[0]
-        collaborator = ProjectCollaborator.objects.filter(project=pro) # 获取文集的协作者
-        colla_user_list = [i.user for i in collaborator] # 文集协作用户的ID
-        colla_docs = Doc.objects.filter(top_doc=pro.id,create_user__in=colla_user_list) # 获取文集协作用户创建的文档
+        collaborator = ProjectCollaborator.objects.filter(project=pro) # 获取空间的协作者
+        colla_user_list = [i.user for i in collaborator] # 空间协作用户的ID
+        colla_docs = Doc.objects.filter(top_doc=pro.id,create_user__in=colla_user_list) # 获取空间协作用户创建的文档
         return render(request, 'app_admin/admin_project_colla_config.html', locals())
 
     elif request.method == 'POST':
@@ -603,15 +603,15 @@ def admin_project_colla_config(request,pro_id):
             types = int(types)
         except:
             return JsonResponse({'status':False,'data':_('参数错误')})
-        # 添加文集协作者
+        # 添加空间协作者
         if int(types) == 0:
             colla_user = request.POST.get('username','').split(',') # 获取用户列表，形如1,2,3
             role = request.POST.get('role',0)
             for user in colla_user:
                 user = User.objects.filter(id=user)
                 if user.exists():
-                    if user[0] == project[0].create_user: # 用户为文集的创建者
-                        return JsonResponse({'status':False,'data':_('文集创建者无需添加')})
+                    if user[0] == project[0].create_user: # 用户为空间的创建者
+                        return JsonResponse({'status':False,'data':_('空间创建者无需添加')})
                     elif ProjectCollaborator.objects.filter(user=user[0],project=project[0]).exists():
                         return JsonResponse({'status':False,'data':_('用户已存在')})
                     else:
@@ -623,7 +623,7 @@ def admin_project_colla_config(request,pro_id):
                 else:
                     return JsonResponse({'status':False,'data':_('用户不存在')})
             return JsonResponse({'status': True, 'data': _('添加成功')})
-        # 删除文集协作者
+        # 删除空间协作者
         elif int(types) == 1:
             username = request.POST.get('username','')
             try:
@@ -650,7 +650,7 @@ def admin_project_colla_config(request,pro_id):
         else:
             return JsonResponse({'status':False,'data':_('无效的类型')})
 
-# 后台管理 - 删除文集
+# 后台管理 - 删除空间
 @superuser_only
 @require_POST
 def admin_project_delete(request):
@@ -660,21 +660,21 @@ def admin_project_delete(request):
         if pro_id != '':
             if range == 'single':
                 pro = Project.objects.get(id=pro_id)
-                # 删除文集下的文档、文档历史、文档分享、文档标签
+                # 删除空间下的文档、文档历史、文档分享、文档标签
                 pro_doc_list = Doc.objects.filter(top_doc=int(pro_id))
                 for doc in pro_doc_list:
                     DocHistory.objects.filter(doc=doc).delete()
                     DocShare.objects.filter(doc=doc).delete()
                     DocTag.objects.filter(doc=doc).delete()
                 pro_doc_list.delete()
-                # 删除文集
+                # 删除空间
                 pro.delete()
                 return JsonResponse({'status':True})
             elif range == 'multi':
                 pros = pro_id.split(",")
                 try:
                     projects = Project.objects.filter(id__in=pros)
-                    # 删除文集下的文档、文档历史、文档分享、文档标签
+                    # 删除空间下的文档、文档历史、文档分享、文档标签
                     pro_doc_list = Doc.objects.filter(top_doc__in=[i.id for i in projects])
                     for doc in pro_doc_list:
                         DocHistory.objects.filter(doc=doc).delete()
@@ -691,11 +691,11 @@ def admin_project_delete(request):
         else:
             return JsonResponse({'status':False,'data':_('参数错误')})
     except Exception as e:
-        logger.exception(_("删除文集出错"))
+        logger.exception(_("删除空间出错"))
         return JsonResponse({'status':False,'data':_('请求出错')})
 
 
-# 后台管理 - 控制文集置顶状态
+# 后台管理 - 控制空间置顶状态
 @superuser_only
 @require_POST
 def admin_project_istop(request):
@@ -709,7 +709,7 @@ def admin_project_istop(request):
         Project.objects.filter(id=project_id).update(is_top=is_top)
         return JsonResponse({'status':True})
     except:
-        logger.exception(_("置顶文集出错"))
+        logger.exception(_("置顶空间出错"))
         return JsonResponse({'status':False,'data':_('执行出错')})
 
 
@@ -718,8 +718,8 @@ def admin_project_istop(request):
 @logger.catch()
 def admin_doc(request):
     if request.method == 'GET':
-        # 文集列表
-        project_list = Project.objects.all()  # 自己创建的文集列表
+        # 空间列表
+        project_list = Project.objects.all()  # 自己创建的空间列表
         # 文档数量
         # 已发布文档数量
         published_doc_cnt = Doc.objects.filter(status=1).count()
@@ -740,7 +740,7 @@ def admin_doc(request):
             q_status = [0, 1]
 
         if project == '':
-            project_list = Project.objects.all().values_list('id', flat=True)  # 自己创建的文集列表
+            project_list = Project.objects.all().values_list('id', flat=True)  # 自己创建的空间列表
             q_project = list(project_list)
         else:
             q_project = [project]
@@ -760,9 +760,9 @@ def admin_doc(request):
                 status__in=q_status, top_doc__in=q_project
             ).order_by('-modify_time')
 
-        # 文集列表
-        project_list = Project.objects.filter(create_user=request.user)  # 自己创建的文集列表
-        colla_project_list = ProjectCollaborator.objects.filter(user=request.user)  # 协作的文集列表
+        # 空间列表
+        project_list = Project.objects.filter(create_user=request.user)  # 自己创建的空间列表
+        colla_project_list = ProjectCollaborator.objects.filter(user=request.user)  # 协作的空间列表
 
         # 文档数量
         # 已发布文档数量
@@ -1148,7 +1148,7 @@ def admin_setting(request):
             site_keywords = request.POST.get('site_keywords', None)  # 站点关键词
             site_desc = request.POST.get('site_desc', None)  # 站点描述
             beian_code = request.POST.get('beian_code', None)  # 备案号
-            index_project_sort = request.POST.get('index_project_sort','1') # 首页文集默认排序
+            index_project_sort = request.POST.get('index_project_sort','1') # 首页空间默认排序
             close_register = request.POST.get('close_register',None) # 禁止注册
             require_login = request.POST.get('require_login',None) # 全站登录
             long_code = request.POST.get('long_code', None)  # 长代码显示
@@ -1160,9 +1160,9 @@ def admin_setting(request):
             enbale_email = request.POST.get("enable_email",None) # 启用邮箱
             img_scale = request.POST.get('img_scale',None) # 图片缩略
             enable_register_code = request.POST.get('enable_register_code',None) # 注册邀请码
-            enable_project_report = request.POST.get('enable_project_report',None) # 文集导出
+            enable_project_report = request.POST.get('enable_project_report',None) # 空间导出
             enable_login_check_code = request.POST.get('enable_login_check_code',None) # 登录验证码
-            # 更新首页文集默认排序
+            # 更新首页空间默认排序
             SysSetting.objects.update_or_create(
                 name='index_project_sort',
                 defaults={'value': index_project_sort, 'types': 'basic'}
@@ -1246,7 +1246,7 @@ def admin_setting(request):
                 name = 'enable_register_code',
                 defaults= {'value': enable_register_code, 'types':'basic'}
             )
-            # 更新文集导出状态
+            # 更新空间导出状态
             SysSetting.objects.update_or_create(
                 name = 'enable_project_report',
                 defaults={'value':enable_project_report,'types':'basic'}
@@ -1392,7 +1392,7 @@ def admin_center_menu(request):
         },
         {
             "id": 2,
-            "title": _("文集管理"),
+            "title": _("空间管理"),
             "type": 1,
             "icon": "layui-icon layui-icon-list",
             "href": reverse('project_manage'),

@@ -15,12 +15,12 @@
               <button class="pear-btn pear-btn-primary pear-btn-sm" id="search">{% trans "搜索" %}</button>
             </div>
             <div class="layui-form-item">
-              <label class="layui-form-label">{% trans "文集" %}</label>
+              <label class="layui-form-label">{% trans "空间" %}</label>
               <div class="layui-input-inline">
                 <select name="pro_id" lay-verify="required"  lay-filter="project" id="project">
-                    <option value="">{% trans "按文集筛选" %}</option>
-                    <!-- 自己的文集 -->
-                    <optgroup label="自有文集" id="self-project">
+                    <option value="">{% trans "按空间筛选" %}</option>
+                    <!-- 自己的空间 -->
+                    <optgroup label="自有空间" id="self-project">
                     {% for p in project_list %}
                         {% if p.role == 1 %}
                         <option value="{{ p.id }}">[私密]《{{ p.name }}》</option>
@@ -33,9 +33,9 @@
                         {% endif %}
                     {% endfor %}
                     </optgroup>
-                    <!-- 协作的文集 -->
+                    <!-- 协作的空间 -->
                     {% if colla_project_list.count > 0 %}
-                    <optgroup label="协作文集">
+                    <optgroup label="协作空间">
                     {% for p in colla_project_list %}
                             <option value="{{ p.project.id }}">[协作]《{{ p.project.name }}》</option>
                     {% endfor %}
@@ -162,7 +162,7 @@
                 {title: '文档名称',field: 'name',align: 'left',templet:"#doc-name",minWidth:280},
                 {title: '状态',field: 'status',align: 'left',templet:"#doc-status",width:90},
                 {title: '上级',field: 'parent',align: 'left',},
-                {title: '文集',field: 'project_name',align: 'left',templet:"#project-role"},
+                {title: '空间',field: 'project_name',align: 'left',templet:"#project-role"},
                 {title: '编辑模式',field: 'editor_mode',align: 'left',templet:"#editor-mode",width:90},
                 {title: '展开下级',field: 'open_children',align: 'left',width:90, templet:"#open_children"},
                 {title: '最后编辑',field: 'modify_time',align: 'left',templet:"#doc-modify-time"},
@@ -275,9 +275,9 @@
                 })
             });
         }
-        // 监听文集筛选
+        // 监听空间筛选
         form.on('select(project)', function(data){
-            console.log('选择文集：',data.value); //得到被选中的值
+            console.log('选择空间：',data.value); //得到被选中的值
             table.reload('doc-table',{
                     where:{
                     'type':1,'project':data.value,
@@ -315,9 +315,9 @@
         });
         // 侦听表格工具栏
         table.on("toolbar(doc-table)",function(obj){
-            if (obj.event === 'add') { // 新增文集
+            if (obj.event === 'add') { // 新增空间
                 createProject();
-            }else if(obj.event === 'batchRemove'){ // 批量删除文集
+            }else if(obj.event === 'batchRemove'){ // 批量删除空间
                 batchRemoveDoc(obj)
             }
         });

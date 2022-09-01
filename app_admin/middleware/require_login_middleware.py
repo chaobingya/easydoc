@@ -22,10 +22,10 @@ class RequiredLoginMiddleware():
             r'/static/(.*)$', # 静态文件
             r'/media/(.*)$',  # 媒体文件
             r'/share_doc(.*)$',  # 文档分享
-            r'/api/get_projects/(.*)$', # token api 获取文集列表
+            r'/api/get_projects/(.*)$', # token api 获取空间列表
             r'/api/get_docs/(.*)$',  # token api 获取文档列表
             r'/api/get_doc/(.*)$',  # token api 获取文档
-            r'/api/create_project/(.*)$',  # token api 新建文集
+            r'/api/create_project/(.*)$',  # token api 新建空间
             r'/api/create_doc/(.*)$',  # token api 新建文档
             r'/api/modify_doc/(.*)$',  # token api 修改文档
             r'/api/upload_img/(.*)$',  # token api 粘贴上传图片

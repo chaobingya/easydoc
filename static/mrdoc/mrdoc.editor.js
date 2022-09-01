@@ -257,7 +257,7 @@ $("div.editormd-preview").on('click','a',function(e){
 })
 
 /*
-    小屏幕下的文集大纲显示处理
+    小屏幕下的空间大纲显示处理
 */
 //监听浏览器宽度的改变
 window.onresize = function(){
@@ -278,7 +278,7 @@ function changeSidebar(){
 // 监听文档div点击
 document.querySelector('.doc-body').addEventListener('click', function (e) {
     var screen_width = window.matchMedia('(max-width: 768px)');
-    // 小屏下收起左侧文集大纲
+    // 小屏下收起左侧空间大纲
     if(screen_width.matches){
         // console.log("点击了div")
         changeSidebar();
@@ -288,7 +288,7 @@ document.querySelector('.doc-body').addEventListener('click', function (e) {
 /* 
     切换隐藏侧边栏
 */
-// 初始化左侧文集大纲状态
+// 初始化左侧空间大纲状态
 function init_sidebar(){
     var screen_width = window.matchMedia('(max-width: 768px)');
     if(screen_width.matches){}else{

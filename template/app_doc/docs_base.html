@@ -69,7 +69,7 @@
         <!-- 文档搜索 -->
         <form action="{% url 'pro_index' pro_id=project.id %}" method="get">
             <div id="doc-search-input">
-                <input type="text" name="kw" placeholder="{% trans '在文集内搜索文档' %}" value="" class="layui-input doc-search-input">
+                <input type="text" name="kw" placeholder="{% trans '在空间内搜索文档' %}" value="" class="layui-input doc-search-input">
             </div>
         </form>
         <!-- 左上角广告块 -->
@@ -81,7 +81,7 @@
             {% endif %}
         {% endif %}
         <!-- 广告代码结束 -->
-        <!-- 文集名称 -->
+        <!-- 空间名称 -->
         <div class="project-title">
             {% if project.icon %}
             <svg class="icon" aria-hidden="true"><use xlink:href="#{{project.icon}}"></use></svg>
@@ -93,30 +93,30 @@
             </a>
             {% if request.user.is_authenticated %}
                 {% if is_collect_pro %}
-                    <i class="layui-icon layui-icon-star-fill collected" style="cursor: pointer;" title="已收藏文集，点击取消" id="collect_pro"></i>
+                    <i class="layui-icon layui-icon-star-fill collected" style="cursor: pointer;" title="已收藏空间，点击取消" id="collect_pro"></i>
                 {% else %}
-                    <i class="layui-icon layui-icon-star" style="cursor: pointer;" title="收藏文集" id="collect_pro"></i>
+                    <i class="layui-icon layui-icon-star" style="cursor: pointer;" title="收藏空间" id="collect_pro"></i>
                 {% endif %}
             {% else %}
                 <i class="layui-icon layui-icon-star" style="cursor: pointer;" title="请登录后收藏"></i>
             {% endif %}
             <p>
                 {% if colla_user > 0 %}
-                <span style="font-size:12px;color:gray;font-weight:100;">{% trans "* 此为协作文集" %}</span>
+                <span style="font-size:12px;color:gray;font-weight:100;">{% trans "* 此为协作空间" %}</span>
                 {% endif %}
             </p>
         </div>
         <hr>
-        <!-- 遍历文集大纲 -->
-        <!-- 如果文集的文档数量超过999，使用异步加载文集目录 -->
+        <!-- 遍历空间大纲 -->
+        <!-- 如果空间的文档数量超过999，使用异步加载空间目录 -->
         {% if toc_cnt > 999  %}
-            <div style="text-align: center;" id='loading-project-toc'><i class="fa fa-spinner fa-pulse"></i>{% trans "文集大纲加载中……" %}</div>
+            <div style="text-align: center;" id='loading-project-toc'><i class="fa fa-spinner fa-pulse"></i>{% trans "空间大纲加载中……" %}</div>
             {% load doc_filter %}
             <nav>
                 <ul class="summary" id="project-toc"></ul>
             </nav>
         {% else %}
-        <!-- 文档数量小于999，使用同步加载文集目录 -->
+        <!-- 文档数量小于999，使用同步加载空间目录 -->
         <nav>
             <ul class="summary">
             <!-- 一级目录 -->
@@ -311,7 +311,7 @@
     });
     var layer = layui.layer;
     {% if toc_cnt > 999 %}
-        // 如果文集的文档数量大于999，使用异步加载左侧文集大纲
+        // 如果空间的文档数量大于999，使用异步加载左侧空间大纲
         getProjectToc = function(){
             $.post("{% url 'get_pro_doc_tree' %}",{'pro_id':'{{project.id}}'},function(r){
                 $("#loading-project-toc").hide();
@@ -377,7 +377,7 @@
                     $('#project-toc').append(toc_str)
                     tagCurrentDoc();
                 }else{
-                    layer.msg("获取文集目录失败！")
+                    layer.msg("获取空间目录失败！")
                 }
             });
         };

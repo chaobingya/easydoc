@@ -1,6 +1,6 @@
 /*
     ########################################################
-    ### 文集、文档等前台浏览页面通用JavaScript函数和变量定义 ###
+    ### 空间、文档等前台浏览页面通用JavaScript函数和变量定义 ###
     ########################################################
 */
 
@@ -58,7 +58,7 @@ tagCurrentDoc = function(){
 tagCurrentDoc();
 
 /*
-    小屏幕下的文集大纲显示处理
+    小屏幕下的空间大纲显示处理
 */
 //监听浏览器宽度的改变
 var browserWidth = document.documentElement.clientWidth;
@@ -88,7 +88,7 @@ function changeSidebar(){
 // 监听文档div点击
 document.querySelector('.doc-body').addEventListener('click', function (e) {
     var screen_width = window.matchMedia('(max-width: 768px)');
-    // 小屏下收起左侧文集大纲
+    // 小屏下收起左侧空间大纲
     if(screen_width.matches){
         // console.log("点击了div")
         changeSidebar();
@@ -98,7 +98,7 @@ document.querySelector('.doc-body').addEventListener('click', function (e) {
 /* 
     切换隐藏侧边栏
 */
-// 初始化左侧文集大纲状态
+// 初始化左侧空间大纲状态
 function init_sidebar(){
     var screen_width = window.matchMedia('(max-width: 768px)');
     if(screen_width.matches){}else{
@@ -329,7 +329,7 @@ doc_qrcode = function(){
 doc_qrcode();
 
 /* 
-    文集水印
+    空间水印
 */
 textBecomeImg = function(text,fontsize,fontcolor){
     var canvas = document.createElement('canvas');
@@ -352,7 +352,7 @@ function initWhterMark(value){
     document.getElementById("wm").style.background = 'url('+ img_base64 + ')';
 }
 
-// 文集、文档收藏函数
+// 空间、文档收藏函数
 function collect(id,type){
     $.ajax({
         url:'/my_collect/',
@@ -367,7 +367,7 @@ function collect(id,type){
     });
 
 }
-// 收藏文集
+// 收藏空间
 $("#collect_pro").click(function(e){
     $(this).toggleClass("layui-icon-star-fill layui-icon-star");
     $(this).toggleClass("collected");
@@ -382,7 +382,7 @@ $("#collect_doc").click(function(){
 
 /*
     ########################################################
-    ### 文集阅读页面JavaScript函数和变量定义 ###
+    ### 空间阅读页面JavaScript函数和变量定义 ###
     ########################################################
 */
 

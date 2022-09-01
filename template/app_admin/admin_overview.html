@@ -27,7 +27,7 @@
             </div>
             <div class="layui-col-xs6 layui-col-md3">
                 <div class="layui-card top-panel">
-                    <div class="layui-card-header">文集总数</div>
+                    <div class="layui-card-header">空间总数</div>
                     <div class="layui-card-body">
                         <div class="layui-row layui-col-space5">
                             <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;" id="pro_cnt">
@@ -155,7 +155,7 @@
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label">文集</label>
+                            <label class="layui-form-label">空间</label>
                             <div class="layui-input-block">
                             <select name="project" id="project" lay-verify="required">
                                 <option value=""></option>
@@ -232,7 +232,7 @@
                     $('button.pear-btn').removeClass('pear-btn-disabled');
                 }
                 else if(data.project == ""){
-                    layer.msg('请选择文集！');
+                    layer.msg('请选择空间！');
                     $('button.pear-btn').attr("disabled",false);
                     $('button.pear-btn').removeClass('pear-btn-disabled');
                 }

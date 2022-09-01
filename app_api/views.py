@@ -111,7 +111,7 @@ def manage_token(request):
             return JsonResponse({'status':False,'data':_('生成出错，请重试！')})
 
 
-# 获取文集
+# 获取空间
 @require_GET
 def get_projects(request):
     token = request.GET.get('token','')
@@ -122,25 +122,25 @@ def get_projects(request):
         sort = ''
     try:
         token = UserToken.objects.get(token=token)
-        projects = Project.objects.filter(create_user=token.user).order_by('{}create_time'.format(sort)) # 查询文集
+        projects = Project.objects.filter(create_user=token.user).order_by('{}create_time'.format(sort)) # 查询空间
         project_list =  []
         for project in projects:
             item = {
-                'id':project.id, # 文集ID
-                'name':project.name, # 文集名称
-                'icon': project.icon,  # 文集图标
-                'type':project.role # 文集状态
+                'id':project.id, # 空间ID
+                'name':project.name, # 空间名称
+                'icon': project.icon,  # 空间图标
+                'type':project.role # 空间状态
             }
             project_list.append(item)
         return JsonResponse({'status':True,'data':project_list})
     except ObjectDoesNotExist:
         return JsonResponse({'status':False,'data':_('token无效')})
     except:
-        logger.exception(_("token获取文集异常"))
+        logger.exception(_("token获取空间异常"))
         return JsonResponse({'status':False,'data':_('系统异常')})
 
 
-# 获取文集下的文档列表
+# 获取空间下的文档列表
 def get_docs(request):
     token = request.GET.get('token', '')
     sort = request.GET.get('sort',0)
@@ -151,14 +151,14 @@ def get_docs(request):
     try:
         token = UserToken.objects.get(token=token)
         pid = request.GET.get('pid','')
-        docs = Doc.objects.filter(create_user=token.user,top_doc=pid,status=1).order_by('{}create_time'.format(sort))  # 查询文集下的文档
+        docs = Doc.objects.filter(create_user=token.user,top_doc=pid,status=1).order_by('{}create_time'.format(sort))  # 查询空间下的文档
         doc_list = []
         for doc in docs:
             item = {
                 'id': doc.id,  # 文档ID
                 'name': doc.name,  # 文档名称
                 'parent_doc':doc.parent_doc, # 上级文档
-                'top_doc':doc.top_doc, # 所属文集
+                'top_doc':doc.top_doc, # 所属空间
                 'status':doc.status, # 文档状态
                 'create_time': doc.create_time,  # 文档创建时间
                 'modify_time': doc.modify_time,  # 文档的修改时间
@@ -170,7 +170,7 @@ def get_docs(request):
     except ObjectDoesNotExist:
         return JsonResponse({'status': False, 'data': _('token无效')})
     except:
-        logger.exception(_("token获取文集异常"))
+        logger.exception(_("token获取空间异常"))
         return JsonResponse({'status': False, 'data': _('系统异常')})
 
 
@@ -180,7 +180,7 @@ def get_doc(request):
     try:
         token = UserToken.objects.get(token=token)
         did = request.GET.get('did', '')
-        doc = Doc.objects.get(create_user=token.user, id=did)  # 查询文集下的文档
+        doc = Doc.objects.get(create_user=token.user, id=did)  # 查询空间下的文档
 
         item = {
             'id': doc.id,  # 文档ID
@@ -188,7 +188,7 @@ def get_doc(request):
             "content": doc.content,  # 文档内容
             'md_content':doc.pre_content, # 文档内容
             'parent_doc':doc.parent_doc, # 上级文档
-            'top_doc':doc.top_doc, # 所属文集
+            'top_doc':doc.top_doc, # 所属空间
             'status':doc.status, # 文档状态
             "editor_mode": doc.editor_mode,  # 文档编辑模式
             'create_time': doc.create_time,  # 文档创建时间
@@ -199,11 +199,11 @@ def get_doc(request):
     except ObjectDoesNotExist:
         return JsonResponse({'status': False, 'data': _('token无效')})
     except:
-        logger.exception("token获取文集异常")
+        logger.exception("token获取空间异常")
         return JsonResponse({'status': False, 'data': _('系统异常')})
 
 
-# 新建文集
+# 新建空间
 @require_http_methods(['GET','POST'])
 @csrf_exempt
 def create_project(request):
@@ -212,21 +212,21 @@ def create_project(request):
     project_desc = request.POST.get('desc','')
     project_role = request.POST.get('role',1)
     if project_name == '':
-        return JsonResponse({'status': False, 'data': _('文集名称不能为空！')})
+        return JsonResponse({'status': False, 'data': _('空间名称不能为空！')})
     try:
         # 验证Token
         token = UserToken.objects.get(token=token)
         p = Project.objects.create(
-            name = project_name, # 文集名称
-            intro = project_desc, # 文集简介
-            role = project_role, # 文集权限
+            name = project_name, # 空间名称
+            intro = project_desc, # 空间简介
+            role = project_role, # 空间权限
             create_user = token.user # 创建的用户
         )
         return JsonResponse({'status': True, 'data': p.id})
     except ObjectDoesNotExist:
         return JsonResponse({'status': False, 'data': _('token无效')})
     except:
-        logger.exception(_("token创建文集异常"))
+        logger.exception(_("token创建空间异常"))
         return JsonResponse({'status':False,'data':_('系统异常')})
 
 
@@ -242,7 +242,7 @@ def create_doc(request):
     try:
         # 验证Token
         token = UserToken.objects.get(token=token)
-        # 文集是否属于用户
+        # 空间是否属于用户
         is_project = Project.objects.filter(create_user=token.user,id=project_id)
         # 新建文档
         if is_project.exists():
@@ -250,7 +250,7 @@ def create_doc(request):
                 doc = Doc.objects.create(
                     name=doc_title,  # 文档内容
                     pre_content=doc_content,  # 文档的编辑内容，意即编辑框输入的内容
-                    top_doc=project_id,  # 所属文集
+                    top_doc=project_id,  # 所属空间
                     editor_mode=editor_mode,  # 编辑器模式
                     create_user=token.user  # 创建的用户
                 )
@@ -258,7 +258,7 @@ def create_doc(request):
                 doc = Doc.objects.create(
                     name=doc_title,  # 文档内容
                     content=doc_content,  # 文档的编辑内容，意即编辑框输入的内容
-                    top_doc=project_id,  # 所属文集
+                    top_doc=project_id,  # 所属空间
                     editor_mode=editor_mode,  # 编辑器模式
                     create_user=token.user  # 创建的用户
                 )
@@ -283,7 +283,7 @@ def modify_doc(request):
     try:
         # 验证Token
         token = UserToken.objects.get(token=token)
-        # 文集是否属于用户
+        # 空间是否属于用户
         is_project = Project.objects.filter(create_user=token.user,id=project_id)
         # 修改现有文档
         if is_project.exists():

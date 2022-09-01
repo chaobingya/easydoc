@@ -2,14 +2,14 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-# 文集模型
+# 空间模型
 class Project(models.Model):
-    name = models.CharField(verbose_name="文集名称",max_length=50)
-    icon= models.CharField(verbose_name="文集图标",max_length=50,blank=True,null=True,default=None)
+    name = models.CharField(verbose_name="空间名称",max_length=50)
+    icon= models.CharField(verbose_name="空间图标",max_length=50,blank=True,null=True,default=None)
     intro = models.TextField(verbose_name="介绍")
-    # 文集权限说明：0表示公开，1表示私密,2表示指定用户可见,3表示访问码可见 默认公开
-    role = models.IntegerField(choices=((0,0),(1,1),(2,2),(3,3)), default=0,verbose_name="文集权限")
-    role_value = models.TextField(verbose_name="文集权限值",blank=True,null=True)
+    # 空间权限说明：0表示公开，1表示私密,2表示指定用户可见,3表示访问码可见 默认公开
+    role = models.IntegerField(choices=((0,0),(1,1),(2,2),(3,3)), default=0,verbose_name="空间权限")
+    role_value = models.TextField(verbose_name="空间权限值",blank=True,null=True)
     is_watermark = models.BooleanField(verbose_name="水印状态",default=False)
     watermark_type = models.IntegerField(verbose_name="水印类型",default=1) # 1表示文字水印 2表示图片水印
     watermark_value = models.CharField(verbose_name="水印内容",null=True,blank=True,default='',max_length=250)
@@ -22,7 +22,7 @@ class Project(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = '文集'
+        verbose_name = '空间'
         verbose_name_plural = verbose_name
 
     def get_absolute_url(self):
@@ -33,9 +33,9 @@ class Project(models.Model):
                        )
 
 
-# 文集协作模型
+# 空间协作模型
 class ProjectCollaborator(models.Model):
-    project = models.ForeignKey(Project,on_delete=models.CASCADE) # 文集
+    project = models.ForeignKey(Project,on_delete=models.CASCADE) # 空间
     user = models.ForeignKey(User,on_delete=models.CASCADE) # 用户
     # 用户的协作模式：0表示可新建文档，可修改、删除自己新建的文档，1表示可新建文档，可删除自己创建的文档、可修改所有文档
     role = models.IntegerField(choices=((0,0),(1,1)),default=0,verbose_name='协作模式')
@@ -46,20 +46,20 @@ class ProjectCollaborator(models.Model):
         return self.project
 
     class Meta:
-        verbose_name = '文集协作'
+        verbose_name = '空间协作'
         verbose_name_plural = verbose_name
 
 
-# 文集目录模型
+# 空间目录模型
 class ProjectToc(models.Model):
     project = models.ForeignKey(Project,on_delete=models.CASCADE)
-    value = models.TextField(verbose_name="文集文档层级目录")
+    value = models.TextField(verbose_name="空间文档层级目录")
 
     def __str__(self):
         return self.project
 
     class Meta:
-        verbose_name = '文集目录'
+        verbose_name = '空间目录'
         verbose_name_plural = verbose_name
 
 
@@ -179,7 +179,7 @@ class DocTag(models.Model):
         verbose_name_plural = verbose_name
 
 
-# 文集导出模型
+# 空间导出模型
 class ProjectReport(models.Model):
     project = models.OneToOneField(Project,unique=True,on_delete=models.CASCADE)
     # 允许导出，默认为0-允许，1-不允许
@@ -190,13 +190,13 @@ class ProjectReport(models.Model):
         return self.project.name
 
     class Meta:
-        verbose_name = '文集导出'
+        verbose_name = '空间导出'
         verbose_name_plural = verbose_name
 
 
-# 文集导出文件模型
+# 空间导出文件模型
 class ProjectReportFile(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)  # 外键关联文集
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)  # 外键关联空间
     file_type = models.CharField(choices=(('epub', 'epub'), ('pdf', 'pdf'), ('docx', 'docx')), verbose_name='文件类型',max_length=10)
     file_name = models.CharField(max_length=100, verbose_name='文件名称')
     file_path = models.CharField(max_length=250, verbose_name='文件路径')
@@ -256,7 +256,7 @@ class Attachment(models.Model):
 
 # 我的收藏
 class MyCollect(models.Model):
-    # 收藏类型 1表示文档 2表示文集
+    # 收藏类型 1表示文档 2表示空间
     collect_type = models.IntegerField(verbose_name="收藏类型")
     collect_id = models.IntegerField(verbose_name="收藏对象ID")
     create_user = models.ForeignKey(User,on_delete=models.CASCADE)

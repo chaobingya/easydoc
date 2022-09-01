@@ -19,7 +19,7 @@ class HomeSitemap(Sitemap):
     def location(self, item):
         return reverse(item)
 
-# 文集地图
+# 空间地图
 class ProjectSitemap(Sitemap):
     changefreq = "daily"
     priority = 0.8

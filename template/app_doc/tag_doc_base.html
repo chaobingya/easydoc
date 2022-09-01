@@ -65,7 +65,7 @@
                 <input type="text" name="kw" placeholder="输入并回车搜索" value="" class="layui-input doc-search-input">
             </div>
         </form>
-        <!-- 文集名称 -->
+        <!-- 空间名称 -->
         <div class="project-title">
             <i class="fa fa-tag"></i> {% trans "标签：" %}<a href="{% url 'tag_docs' tag.id %}">{{ tag.name }}
                 {% if project.role == 1 %}
@@ -75,7 +75,7 @@
         </div>
         <hr>
         
-        <!-- 遍历文集大纲 -->
+        <!-- 遍历空间大纲 -->
         {% load doc_filter %}
         <nav>
             <ul class="summary">
@@ -258,12 +258,12 @@
 <script src="{% static 'iconFont/iconfont.js' %}?version={{mrdoc_version}}"></script>
 <script src="{% static 'editor.md/lib/purify.min.js' %}?version={{mrdoc_version}}"></script>
 <script src="{% static 'editor.md/lib/echarts.min.js' %}?version={{mrdoc_version}}"></script>
-<!-- 生成文集目录大纲 -->
+<!-- 生成空间目录大纲 -->
 <script>
     $.ajaxSetup({
         data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
     });
-    // 生成文集目录
+    // 生成空间目录
     getProjectToc = function(){
         $.post("{% url 'get_pro_doc_tree' %}",{'pro_id':'{{project.id}}'},function(r){
             $("#loading-project-toc").hide();
@@ -307,7 +307,7 @@
                 $('#project-toc').append(toc_str)
                 tagCurrentDoc();
             }else{
-                layer.msg("获取文集目录失败！")
+                layer.msg("获取空间目录失败！")
             }
         });
     };

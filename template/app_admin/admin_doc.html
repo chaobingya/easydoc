@@ -15,10 +15,10 @@
               <button class="pear-btn pear-btn-primary pear-btn-sm" id="search">搜索</button>
             </div>
             <div class="layui-form-item">
-              <label class="layui-form-label">文集</label>
+              <label class="layui-form-label">空间</label>
               <div class="layui-input-inline">
                 <select name="pro_id" lay-verify="required"  lay-filter="project" id="project">
-                    <option value="">按文集筛选</option>
+                    <option value="">按空间筛选</option>
                     {% for p in project_list %}
                         {% if p.role == 1 %}
                         <option value="{{ p.id }}">[私密]《{{ p.name }}》</option>
@@ -152,7 +152,7 @@
                 {title: '文档名称',field: 'name',align: 'left',templet:"#doc-name",minWidth:280},
                 {title: '状态',field: 'status',align: 'left',templet:"#doc-status",width:90},
                 {title: '上级',field: 'parent',align: 'left',},
-                {title: '文集',field: 'project_name',align: 'left',templet:"#project-role"},
+                {title: '空间',field: 'project_name',align: 'left',templet:"#project-role"},
                 {title: '编辑模式',field: 'editor_mode',align: 'left',templet:"#editor-mode",width:90},
                 {title: '展开下级',field: 'open_children',align: 'left',width:90, templet:"#open_children"},
                 {title: '文档作者',field: 'create_user',align: 'left',},
@@ -267,9 +267,9 @@
                 })
             });
         }
-        // 监听文集筛选
+        // 监听空间筛选
         form.on('select(project)', function(data){
-            console.log('选择文集：',data.value); //得到被选中的值
+            console.log('选择空间：',data.value); //得到被选中的值
             table.reload('doc-table',{
                     where:{
                     'type':1,'project':data.value,
@@ -303,9 +303,9 @@
         });
         // 侦听表格工具栏
         table.on("toolbar(doc-table)",function(obj){
-            if (obj.event === 'add') { // 新增文集
+            if (obj.event === 'add') { // 新增空间
                 createProject();
-            }else if(obj.event === 'batchRemove'){ // 批量删除文集
+            }else if(obj.event === 'batchRemove'){ // 批量删除空间
                 batchRemoveDoc(obj)
             }
         });

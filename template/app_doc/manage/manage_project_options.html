@@ -1,7 +1,7 @@
 {% extends 'app_doc/user/user_base.html' %}
 {% load static %}
 {% load i18n %}
-{% block title %}{% trans "文集设置" %}{% endblock %}
+{% block title %}{% trans "空间设置" %}{% endblock %}
 {% block custom_element %}
 <link href="{% static 'tagsInput/tagsinput.css' %}" rel="stylesheet" type="text/css"/>
 <link rel="stylesheet" href="{% static 'editor.md/css/editormd.css' %}?version={{mrdoc_version}}" />
@@ -12,9 +12,9 @@
     <div class="layui-card-body">
     <div class="layui-row" style="padding-left:15px;">
         <span class="layui-breadcrumb" lay-separator=">">
-          <a href="{% url 'manage_project' %}">{% trans "文集管理" %}</a>
-          <a><cite>{% trans "文集设置" %}</cite></a>
-          <a><cite>{% trans "文集：" %}{{pro.name}}</cite></a>
+          <a href="{% url 'manage_project' %}">{% trans "空间管理" %}</a>
+          <a><cite>{% trans "空间设置" %}</cite></a>
+          <a><cite>{% trans "空间：" %}{{pro.name}}</cite></a>
         </span>
     </div>
     </div>
@@ -32,11 +32,11 @@
             <li>{% trans "管理控制" %}</li>
         </ul>
         <div class="layui-tab-content">
-            <!-- 文集基础信息配置 -->
+            <!-- 空间基础信息配置 -->
             <div class="layui-tab-item layui-show layui-form">
                 <div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">{% trans "文集名称" %}</label>
+                        <label class="layui-form-label">{% trans "空间名称" %}</label>
                         <div class="layui-input-inline" style="width: 30px;">
                             <button class="layui-btn layui-btn-primary layui-btn-sm" id="project-icon-select">
                                 {% if pro.icon %}
@@ -51,11 +51,11 @@
                             </div>
                         </div>
                         <div class="layui-input-inline" style="min-width: 300px;">
-                            <input class="layui-input" type="text" id="pname" style="margin-bottom:10px;" placeholder="{% trans '输入文集名' %}" required  lay-verify="required" value="{{pro.name}}">
+                            <input class="layui-input" type="text" id="pname" style="margin-bottom:10px;" placeholder="{% trans '输入空间名' %}" required  lay-verify="required" value="{{pro.name}}">
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">文集水印</label>
+                        <label class="layui-form-label">空间水印</label>
                         <div class="layui-input-block">
                             <input type="checkbox" name="is_watermark" id="is_watermark" lay-skin="switch" lay-text="开启|关闭" {% if pro.is_watermark %}checked{% endif %}>
                         </div>
@@ -67,7 +67,7 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">{% trans "文集简介" %}</label>
+                        <label class="layui-form-label">{% trans "空间简介" %}</label>
                         <div class="layui-input-block">
                             <div id="editor-md">
                                 <textarea style="display: none;">{{pro.intro}}</textarea>
@@ -81,7 +81,7 @@
                     </div>
                 </div>
             </div>
-            <!-- 文集权限配置 -->
+            <!-- 空间权限配置 -->
             <div class="layui-tab-item">
                 <div class="layui-form">
                     <div class="layui-form-item">
@@ -137,13 +137,13 @@
                                 {% if project_files %}
                                     {% for file in project_files %}
                                         {% if file.file_type == 'epub' %}
-                                            | <a href="{{file.file_path}}" target="_blank"><i class="layui-icon layui-icon-download-circle"></i><u>{% trans "下载文集EPUB文件" %}</u></a>
+                                            | <a href="{{file.file_path}}" target="_blank"><i class="layui-icon layui-icon-download-circle"></i><u>{% trans "下载空间EPUB文件" %}</u></a>
                                         {% else %}
                                             
                                         {% endif %}
                                     {% endfor %}
                                 {% else %}
-                                | <span style="color: #ff213b;">{% trans "未生成文集导出文件" %}</span>
+                                | <span style="color: #ff213b;">{% trans "未生成空间导出文件" %}</span>
                                 {% endif %}
                         </div>
                     </div>
@@ -159,50 +159,50 @@
                                 {% if project_files %}
                                     {% for file in project_files %}
                                         {% if file.file_type == 'pdf' %}
-                                            | <a href="{{file.file_path}}" target="_blank"><i class="layui-icon layui-icon-download-circle"></i><u>{% trans "下载文集PDF文件" %}</u></a>
+                                            | <a href="{{file.file_path}}" target="_blank"><i class="layui-icon layui-icon-download-circle"></i><u>{% trans "下载空间PDF文件" %}</u></a>
                                         {% else %}
                                             
                                         {% endif %}
                                     {% endfor %}
                                 {% else %}
-                                | <span style="color: #ff213b;">{% trans "未生成文集导出文件" %}</span>
+                                | <span style="color: #ff213b;">{% trans "未生成空间导出文件" %}</span>
                                 {% endif %}
                         </div>
                     </div>
                     <hr>
                     <div class="layui-form-item">
                         <div class="layui-input-block">
-                          <button class="layui-btn layui-btn-primary layui-btn-sm" id="modify-project-download">{% trans "保存文集导出配置" %}</button>
+                          <button class="layui-btn layui-btn-primary layui-btn-sm" id="modify-project-download">{% trans "保存空间导出配置" %}</button>
                         </div>
                     </div>
                     
                 </div>
             </div>
             {% endif %}
-            <!-- 文集删除和转让 -->
+            <!-- 空间删除和转让 -->
             <div class="layui-tab-item">
                 <div class="layui-row">
                     <div style="float: left;">
-                        <strong>{% trans "导出文集" %}</strong>
-                        <p>{% trans "将文集内的文档以Markdown（.md）的形式导出为zip压缩文件" %}</p>
+                        <strong>{% trans "导出空间" %}</strong>
+                        <p>{% trans "将空间内的文档以Markdown（.md）的形式导出为zip压缩文件" %}</p>
                     </div>
-                    <button class="layui-btn layui-btn-primary" style="float: right;" id="export-project">{% trans "导出文集" %}</button>
+                    <button class="layui-btn layui-btn-primary" style="float: right;" id="export-project">{% trans "导出空间" %}</button>
                 </div>
                 <hr>
                 <div class="layui-row">
                     <div style="float: left;">
-                        <strong>{% trans "转让文集" %}</strong>
-                        <p>{% trans "将文集的管理权限和文集下自己创建的文档转让给站点的其他用户" %}</p>
+                        <strong>{% trans "转让空间" %}</strong>
+                        <p>{% trans "将空间的管理权限和空间下自己创建的文档转让给站点的其他用户" %}</p>
                     </div>
-                    <a class="layui-btn layui-btn-primary" style="float: right;" id="transfer-project" href="{% url 'manage_pro_transfer' pro.id %}">{% trans "转让文集" %}</a>
+                    <a class="layui-btn layui-btn-primary" style="float: right;" id="transfer-project" href="{% url 'manage_pro_transfer' pro.id %}">{% trans "转让空间" %}</a>
                 </div>
                 <hr>
                 <div class="layui-row">
                     <div style="float: left;">
-                        <strong>{% trans "删除文集" %}</strong>
-                        <p>{% trans "删除文集及文集下的所有文档" %}</p>
+                        <strong>{% trans "删除空间" %}</strong>
+                        <p>{% trans "删除空间及空间下的所有文档" %}</p>
                     </div>
-                    <button class="layui-btn layui-btn-warm" style="float: right;" id="delete-project">{% trans "删除文集" %}</button>
+                    <button class="layui-btn layui-btn-warm" style="float: right;" id="delete-project">{% trans "删除空间" %}</button>
                 </div>
             </div>
             
@@ -241,7 +241,7 @@
                 $("#role-pwd").css("display","block");
         }
     });
-    // 动态生成文集图标列表
+    // 动态生成空间图标列表
     for(var i=1;i<44;i++){
             var icon_elem = '<div class="layui-iconpicker-icon-item" style="width:20%" data-icon="mrdoc-icon-pro-'+ i +'"><svg class="icon" aria-hidden="true"><use xlink:href="#mrdoc-icon-pro-'+ i +'"></use></svg></div>'
             $("#mrdoc-project-icon-list").append(icon_elem)
@@ -259,7 +259,7 @@
             $("#picon").val(selected_icon);
             $("#project-icon-select-box").toggleClass("hide-project-icon-list");
         });
-    //修改文集基础信息
+    //修改空间基础信息
     modifyProject = function(pro_id,pro_name,pro_intro){
         layer.load(1);
         var project_data = {
@@ -286,7 +286,7 @@
     $("#modify-project-btn").click(function(){
         modifyProject();
     });
-    // 修改文集权限
+    // 修改空间权限
     modifyProjectRole = function(){
         layer.load(1);
         var role_data = {
@@ -310,7 +310,7 @@
     $('#modify-project-role').click(function(){
         modifyProjectRole();
     });
-    // 修改文集导出配置
+    // 修改空间导出配置
     modifyProjectDownload = function(){
         layer.load(1);
         var download_data = {
@@ -332,7 +332,7 @@
     $('#modify-project-download').click(function(){
         modifyProjectDownload();
     });
-    // 生成文集文件
+    // 生成空间文件
     reportFile = function(pro_id,types){
         layer.load(1)
         var data = {'pro_id':pro_id,'types':types};
@@ -355,14 +355,14 @@
             }
         })
     };
-    // 删除文集
+    // 删除空间
     delProject = function(pro_id){
         layer.open({
             type:1,
-            title:'删除文集',
+            title:'删除空间',
             area:'300px;',
             id:'delPro',//配置ID
-            content:'<div style="margin-left:10px;">警告：此操作将删除文集及文集下所有文档！</div>',
+            content:'<div style="margin-left:10px;">警告：此操作将删除空间及空间下所有文档！</div>',
             btn:['确定','取消'], //添加按钮
             btnAlign:'c', //按钮居中
             yes:function (index,layero) {
@@ -374,7 +374,7 @@
                     layer.closeAll('loading'); //关闭loading
                     if(r.status){
                         //删除成功
-                        layer.msg('删除成功，即将返回文集列表……',function(){
+                        layer.msg('删除成功，即将返回空间列表……',function(){
                             window.location.href = "{% url 'manage_project' %}"
                         })
                         //layer.close(index)
@@ -394,10 +394,10 @@
     reportMd = function(pro_id){
         layer.open({
             type:1,
-            title:"导出文集",
+            title:"导出空间",
             area:"300px",
             id:"reportMd",
-            content:'<div style="margin-left:10px;">将此文集下所有文档导出为MD文件并打包？</div>',
+            content:'<div style="margin-left:10px;">将此空间下所有文档导出为MD文件并打包？</div>',
             btn:['确定','取消'], //添加按钮
             btnAlign:'c', //按钮居中
             yes:function (index,layero) {
@@ -443,7 +443,7 @@
     };
 
 </script>
-<!-- 文集简介的Editor.MD编辑器 -->
+<!-- 空间简介的Editor.MD编辑器 -->
 <script src="{% static 'editor.md/editormd.js' %}?version={{mrdoc_version}}"></script>
 <script>
     // 视频iframe域名白名单

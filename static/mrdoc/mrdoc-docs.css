@@ -109,13 +109,13 @@ li.L1, li.L3, li.L5, li.L7, li.L9 {
     cursor: pointer;
 }
 
-/* 文集大纲图标 */
+/* 空间大纲图标 */
 i.switch-toc{
     padding:10px;
     cursor: pointer;
 }
 
-/* 文集大纲样式 */
+/* 空间大纲样式 */
 ul#doc-tree{
     padding-left: 0;
 }

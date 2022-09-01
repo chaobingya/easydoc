@@ -48,14 +48,14 @@ def user_center_menu(request):
         },
         {
             "id": "my_project",
-            "title": _("我的文集"),
+            "title": _("我的空间"),
             "icon": "layui-icon layui-icon-component",
             "type": 0,
             "href": "",
             "children": [
                 {
                     "id": "manage_project",
-                    "title": _("文集管理"),
+                    "title": _("空间管理"),
                     "icon": "layui-icon layui-icon-console",
                     "type": 1,
                     "openType": "_iframe",
@@ -71,7 +71,7 @@ def user_center_menu(request):
                 },
                 {
                     "id": "import_project",
-                    "title": _("导入文集"),
+                    "title": _("导入空间"),
                     "icon": "layui-icon layui-icon-console",
                     "type": 1,
                     "openType": "_iframe",

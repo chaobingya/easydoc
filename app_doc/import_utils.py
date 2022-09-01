@@ -3,7 +3,7 @@
 # @创建者：州的先生
 # #日期：2020/6/17
 # 博客地址：zmister.com
-# 文集导入相关方法
+# 空间导入相关方法
 
 from django.utils.translation import gettext_lazy as _
 from app_doc.models import Doc,Project,Image
@@ -21,7 +21,7 @@ import yaml
 import sys
 
 
-# 导入Zip文集
+# 导入Zip空间
 class ImportZipProject():
     # 读取 Zip 压缩包
     def read_zip(self,zip_file_path,create_user):
@@ -106,7 +106,7 @@ class ImportZipProject():
         with transaction.atomic():
             save_id = transaction.savepoint()
             try:
-                # 新建文集
+                # 新建空间
                 project = Project.objects.create(
                     name=project_name,
                     intro=project_desc,
@@ -269,6 +269,62 @@ class ImportDocxDoc():
         except:
             os.remove(self.docx_file_path)
             return {'status':False,'data':_('读取异常')}
+
+# 导入PDF文档(.docx)
+# class ImportPdfDoc():
+#     def __init__(self,pdf_file_path,editor_mode,create_user):
+#         self.pdf_file_path = pdf_file_path # docx文件绝对路径
+#         self.tmp_img_dir = self.pdf_file_path.split('.')
+#         self.create_user = create_user
+#         self.editor_mode = int(editor_mode)
+#
+#     # 转存docx文件中的图片
+#     def convert_img(self,image):
+#         with image.open() as image_bytes:
+#             file_suffix = image.content_type.split("/")[1]
+#             file_time_name = str(time.time())
+#             dir_name = upload_generation_dir()  # 获取当月文件夹名称
+#             # 图片在媒体文件夹内的路径，形如 /202012/12542542.jpg
+#             copy2_filename = dir_name + '/' + file_time_name + '.' + file_suffix
+#             # 文件的绝对路径 形如/home/MrDoc/media/202012/12542542.jpg
+#             new_media_file_path = settings.MEDIA_ROOT + copy2_filename
+#             # 图片文件的相对url路径
+#             new_media_filename = '/media' + copy2_filename
+#
+#             # 图片数据写入数据库
+#             Image.objects.create(
+#                 user=self.create_user,
+#                 file_path=new_media_filename,
+#                 file_name=file_time_name + '.' + file_suffix,
+#                 remark=_('本地上传'),
+#             )
+#             with open(new_media_file_path, 'wb') as f:
+#                 f.write(image_bytes.read())
+#         return {"src": new_media_filename}
+#
+#     # 转换docx文件内容为HTML和Markdown
+#     def convert_docx(self):
+#         # 读取Word文件
+#         with open(self.docx_file_path, "rb") as docx_file:
+#             # 转化Word文档为HTML
+#             result = mammoth.convert_to_html(docx_file, convert_image=mammoth.images.img_element(self.convert_img))
+#             # 获取HTML内容
+#             html = result.value
+#             if self.editor_mode in [1,2]:
+#                 # 转化HTML为Markdown
+#                 md = markdownify(html, heading_style="ATX")
+#                 return md
+#             else:
+#                 return html
+#
+#     def run(self):
+#         try:
+#             result = self.convert_docx()
+#             os.remove(self.docx_file_path)
+#             return {'status':True,'data':result}
+#         except:
+#             os.remove(self.docx_file_path)
+#             return {'status':False,'data':_('读取异常')}
 
 if __name__ == '__main__':
     imp = ImportZipProject()
