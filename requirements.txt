@@ -10,7 +10,7 @@ whoosh==2.7.4
 django-haystack==3.1.1
 Markdown==3.3.3
 jieba==0.42.1
-mammoth==1.4.13
+mammoth==1.5.0
 markdownify==0.6.0
 selenium==3.141.0
 webdriver_manager==3.3.0

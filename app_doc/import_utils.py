@@ -6,7 +6,7 @@
 # 空间导入相关方法
 
 from django.utils.translation import gettext_lazy as _
-from app_doc.models import Doc,Project,Image
+from app_doc.models import Doc, Project, Image
 from app_doc.util_upload_img import upload_generation_dir
 from django.db import transaction
 from django.conf import settings
@@ -24,7 +24,7 @@ import sys
 # 导入Zip空间
 class ImportZipProject():
     # 读取 Zip 压缩包
-    def read_zip(self,zip_file_path,create_user):
+    def read_zip(self, zip_file_path, create_user):
         # 导入流程：
         # 1、解压zip压缩包文件到temp文件夹
         # 2、遍历temp文件夹内的解压后的.md文件
@@ -59,7 +59,7 @@ class ImportZipProject():
 
         # 读取yaml文件
         try:
-            with open(os.path.join(self.temp_dir ,'mrdoc.yaml'),'r',encoding='utf-8') as yaml_file:
+            with open(os.path.join(self.temp_dir, 'mrdoc.yaml'), 'r', encoding='utf-8') as yaml_file:
                 yaml_str = yaml.safe_load(yaml_file.read())
                 project_name = yaml_str['project_name'] \
                     if 'project_name' in yaml_str.keys() else zip_file_path[:-4].split('/')[-1]
@@ -120,21 +120,21 @@ class ImportZipProject():
                         if f.endswith('.md'):
                             # print(f)
                             # 读取 .md 文件文本内容
-                            with open(os.path.join(self.temp_dir,f),'r',encoding='utf-8') as md_file:
+                            with open(os.path.join(self.temp_dir, f), 'r', encoding='utf-8') as md_file:
                                 md_content = md_file.read()
-                                md_content = self.operat_md_media(md_content,create_user)
+                                md_content = self.operat_md_media(md_content, create_user)
                                 # 新建文档
                                 doc = Doc.objects.create(
-                                    name = f[:-3],
-                                    pre_content = md_content,
-                                    top_doc = project.id,
-                                    status = 0,
-                                    editor_mode = editor_mode,
-                                    create_user = create_user
+                                    name=f[:-3],
+                                    pre_content=md_content,
+                                    top_doc=project.id,
+                                    status=0,
+                                    editor_mode=editor_mode,
+                                    create_user=create_user
                                 )
                 else:
                     for i in toc_item_list:
-                        with open(os.path.join(self.temp_dir,i['file']),'r',encoding='utf-8') as md_file:
+                        with open(os.path.join(self.temp_dir, i['file']), 'r', encoding='utf-8') as md_file:
                             md_content = md_file.read()
                             md_content = self.operat_md_media(md_content, create_user)
                             # 新建文档
@@ -142,7 +142,7 @@ class ImportZipProject():
                                 name=i['name'],
                                 pre_content=md_content,
                                 top_doc=project.id,
-                                parent_doc = (Doc.objects.get(top_doc=project.id,name=i['parent'])).id \
+                                parent_doc=(Doc.objects.get(top_doc=project.id, name=i['parent'])).id \
                                     if i['parent'] != 0 else 0,
                                 status=0,
                                 editor_mode=editor_mode,
@@ -163,7 +163,7 @@ class ImportZipProject():
             return None
 
     # 处理MD内容中的静态文件
-    def operat_md_media(self,md_content,create_user):
+    def operat_md_media(self, md_content, create_user):
         # 查找MD内容中的静态文件
         pattern = r"\!\[.*?\]\(.*?\)"
         media_list = re.findall(pattern, md_content)
@@ -171,7 +171,7 @@ class ImportZipProject():
         # 存在静态文件,进行遍历
         if len(media_list) > 0:
             for media in media_list:
-                media_filename = media.split("(")[-1].split(")")[0] # 媒体文件的文件名
+                media_filename = media.split("(")[-1].split(")")[0]  # 媒体文件的文件名
                 # 存在本地图片路径
                 if media_filename.startswith("./") or media_filename.startswith("/"):
                     # 获取文件后缀
@@ -180,12 +180,12 @@ class ImportZipProject():
                         continue
                     # 判断本地图片路径是否存在
                     if media_filename.startswith("./"):
-                        temp_media_file_path = os.path.join(self.temp_dir,media_filename[2:])
-                    else :
+                        temp_media_file_path = os.path.join(self.temp_dir, media_filename[2:])
+                    else:
                         temp_media_file_path = os.path.join(self.temp_dir, media_filename[1:])
                     if os.path.exists(temp_media_file_path):
                         # 如果存在，上传本地图片
-                        dir_name = upload_generation_dir() # 获取当月文件夹名称
+                        dir_name = upload_generation_dir()  # 获取当月文件夹名称
 
                         # 复制文件到媒体文件夹
                         copy2_filename = dir_name + '/' + str(time.time()) + '.' + file_suffix
@@ -195,14 +195,14 @@ class ImportZipProject():
                         )
 
                         # 替换MD内容的静态文件链接
-                        new_media_filename = new_media_file_path.split(settings.MEDIA_ROOT,1)[-1]
+                        new_media_filename = new_media_file_path.split(settings.MEDIA_ROOT, 1)[-1]
                         new_media_filename = '/media' + new_media_filename
 
                         # 图片数据写入数据库
                         Image.objects.create(
                             user=create_user,
                             file_path=new_media_filename,
-                            file_name=str(time.time())+'.'+file_suffix,
+                            file_name=str(time.time()) + '.' + file_suffix,
                             remark=_('本地上传'),
                         )
                         md_content = md_content.replace(media_filename, new_media_filename)
@@ -216,14 +216,14 @@ class ImportZipProject():
 
 # 导入Word文档(.docx)
 class ImportDocxDoc():
-    def __init__(self,docx_file_path,editor_mode,create_user):
-        self.docx_file_path = docx_file_path # docx文件绝对路径
+    def __init__(self, docx_file_path, editor_mode, create_user):
+        self.docx_file_path = docx_file_path  # docx文件绝对路径
         self.tmp_img_dir = self.docx_file_path.split('.')
         self.create_user = create_user
         self.editor_mode = int(editor_mode)
 
     # 转存docx文件中的图片
-    def convert_img(self,image):
+    def convert_img(self, image):
         with image.open() as image_bytes:
             file_suffix = image.content_type.split("/")[1]
             file_time_name = str(time.time())
@@ -254,7 +254,7 @@ class ImportDocxDoc():
             result = mammoth.convert_to_html(docx_file, convert_image=mammoth.images.img_element(self.convert_img))
             # 获取HTML内容
             html = result.value
-            if self.editor_mode in [1,2]:
+            if self.editor_mode in [1, 2]:
                 # 转化HTML为Markdown
                 md = markdownify(html, heading_style="ATX")
                 return md
@@ -265,10 +265,11 @@ class ImportDocxDoc():
         try:
             result = self.convert_docx()
             os.remove(self.docx_file_path)
-            return {'status':True,'data':result}
+            return {'status': True, 'data': result}
         except:
             os.remove(self.docx_file_path)
-            return {'status':False,'data':_('读取异常')}
+            return {'status': False, 'data': _('读取异常')}
+
 
 # 导入PDF文档(.docx)
 # class ImportPdfDoc():
