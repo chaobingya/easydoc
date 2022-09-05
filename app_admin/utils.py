@@ -34,11 +34,11 @@ def send_email(to_email,vcode_str):
         msg_from = send_emailer  # 发件人邮箱
         passwd = dectry(pwd)  # 发件人邮箱密码
         msg_to = to_email  # 收件人邮箱
-        subject = "MrDoc - 重置密码验证码"
+        subject = "EasyDoc - 重置密码验证码"
         content = "你的验证码为：{}，验证码30分钟内有效！".format(vcode_str)
         msg = MIMEText(content, _subtype='html', _charset='utf-8')
         msg['Subject'] = subject
-        msg['From'] = 'MrDoc助手[{}]'.format(msg_from)
+        msg['From'] = 'EasyDoc助手[{}]'.format(msg_from)
         msg['To'] = msg_to
         try:
             # print(smtp_host,smtp_port)

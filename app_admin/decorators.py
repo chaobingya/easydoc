@@ -66,10 +66,10 @@ def allow_report_file(function):
 #         if django_version[0] == 2 and django_version[1] >= 2:
 #             headers = request.headers
 #             print(headers)
-#             if 'Mrdoc-Token' not in headers:
+#             if 'EasyDoc-Token' not in headers:
 #                 return JsonResponse({'data':'非法请求'})
 #             else:
-#                 token = headers['Mrdoc-Token']
+#                 token = headers['EasyDoc-Token']
 #                 is_vail = UserToken.objects.filter(token=token)
 #                 if is_vail.exists():
 #                     return function(request,*args,**kwargs)

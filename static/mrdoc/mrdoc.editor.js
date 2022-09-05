@@ -576,6 +576,53 @@ $("#doc-tag-set").click(function(){
     })
 });
 
+
+// 按钮上传pdf文档
+var upload_pdf_doc = layui.upload;
+upload_pdf_doc.render({
+    elem:"#import-doc-pdf",
+    url:"/import/doc_pdf/",
+    data:{'type':'pdf','editor_mode':editor_mode},
+    before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+        layer.load(1); //上传loading
+    },
+    accept: 'file', //允许上传的文件类型
+    exts:'pdf',
+    field:'import-doc-pdf',
+    done: function(res, index, upload){ //上传后的回调
+        //上传成功，刷新页面
+        if(res.status){
+            if(editor_mode == 3){
+                editor.addValue(res.data)
+            }else if(editor_mode == 1){
+                editor.insertValue(res.data);
+            }else if(editor_mode == 2){
+                editor.setValue(res.data);
+            }
+            layer.closeAll();
+            layer.msg("导入成功");
+        }else{
+            layer.closeAll('loading');
+            layer.msg(res.data)
+        }
+    },
+    error:function(){
+        layer.closeAll('loading'); //关闭loading
+        layer.msg("系统异常，请稍后再试！")
+    },
+});
+
+$("#doc-tag-set").click(function(){
+    layer.open({
+        type:1,
+        title:"文档标签设置",
+        content:$("#doc-tag-div"),
+        area:['300px'],
+        btn:['确定']
+    })
+});
+
+
 // 粘贴表格文本框侦听paste粘贴事件
 // 列宽的函数
 function columnWidth(rows, columnIndex) {

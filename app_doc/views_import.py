@@ -1,7 +1,5 @@
 # coding:utf-8
 # @文件: import_views.py
-# @创建者：州的先生
-# #日期：2020/6/17
 # 博客地址：zmister.com
 # 空间导入相关视图函数
 
@@ -13,6 +11,8 @@ from django.views.decorators.http import require_http_methods, require_GET, requ
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage, InvalidPage  # 后端分页
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from pdf2docx import parse as pdf_parse
+
 from app_doc.models import Project, Doc, DocTemp
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -352,6 +352,54 @@ def import_doc_docx(request):
                 if os.path.exists(temp_file_path):
                     import_file = ImportDocxDoc(
                         docx_file_path=temp_file_path,
+                        editor_mode=editor_mode,
+                        create_user=request.user
+                    ).run()
+                    return JsonResponse(import_file)
+                else:
+                    return JsonResponse({'status': False, 'data': _('上传失败')})
+            else:
+                return JsonResponse({'status': False, 'data': _('仅支持.docx格式')})
+        else:
+            return JsonResponse({'status': False, 'data': _('无有效文件')})
+    else:
+        return JsonResponse({'status': False, 'data': _('参数错误')})
+
+
+# 导入pdf文档
+@login_required()
+@csrf_exempt
+@require_POST
+def import_doc_pdf(request):
+    file_type = request.POST.get('type', None)
+    editor_mode = request.POST.get('editor_mode', 1)
+    # 上传Zip压缩文件
+    if file_type == 'pdf':
+        import_file = request.FILES.get('import-doc-pdf', None)
+        if import_file:
+            file_name = import_file.name
+            # 限制文件大小在50mb以内
+            if import_file.size > 52428800:
+                return JsonResponse({'status': False, 'data': _('文件大小超出限制')})
+            # 限制文件格式为.zip
+            if file_name.endswith('.pdf'):
+                if os.path.exists(os.path.join(settings.MEDIA_ROOT, 'import_temp')) is False:
+                    os.mkdir(os.path.join(settings.MEDIA_ROOT, 'import_temp'))
+
+                temp_file_name = str(time.time())
+                temp_pdf_path = os.path.join(settings.MEDIA_ROOT, 'import_temp/' + str(import_file))
+                temp_docx_path = os.path.join(settings.MEDIA_ROOT, 'import_temp/' + temp_file_name+'.docx')
+                with open(temp_pdf_path, 'wb+') as docx_file:
+                    for chunk in import_file:
+                        docx_file.write(chunk)
+
+                if os.path.exists(temp_pdf_path):
+                    # convert pdf to docx
+                    pdf_parse(temp_pdf_path, temp_docx_path)
+
+                if os.path.exists(temp_docx_path):
+                    import_file = ImportDocxDoc(
+                        docx_file_path=temp_docx_path,
                         editor_mode=editor_mode,
                         create_user=request.user
                     ).run()
