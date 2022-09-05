@@ -2,11 +2,13 @@ version: "3"
 services:
   web:
     image: doc-web:latest
-    container_name: mrdoc-mysql
+    container_name: easydoc-web
     restart: always
+    labels:
+      - topsec.role=web
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile_topsec
 
     volumes:
       - /path/to/you/dir/config:/app/MrDoc/config  # 请注意修改 /path/to/you/dir 为您要存储mrdoc数据的绝对路径.
@@ -26,8 +28,10 @@ services:
 
   mysql:
     image: mysql:5.7
-    container_name: mysql-with-mrdoc    # 这里名字不要修改,否则无法连接数据库.如果修改,请注意自行更改mrdoc的配置文件.
+    container_name: easydoc-db    # 这里名字不要修改,否则无法连接数据库.如果修改,请注意自行更改mrdoc的配置文件.
     restart: always
+    labels:
+      - topsec.role=db
     volumes:
       - /path/to/you/dir:/var/lib/mysql # 请注意修改 /path/to/you/dir 为您要存储mysql数据的目录绝对路径.
     environment:
