@@ -55,7 +55,7 @@
               <dd><a href="?pid={{pid}}&eid=2">Vditor{% if editor_mode == 2 %}<span class="layui-badge-dot layui-bg-blue"> </span>{% endif %}</a></dd>
               <dd><a href="?pid={{pid}}&eid=3">富文本{% if editor_mode == 3 %}<span class="layui-badge-dot layui-bg-blue"> </span>{% endif %}</a></dd>
               <dd><a href="?pid={{pid}}&eid=4">在线表格{% if editor_mode == 4 %}<span class="layui-badge-dot layui-bg-blue"> </span>{% endif %}</a></dd>
-
+              <dd><a href="?pid={{pid}}&eid=5">Word{% if editor_mode == 5 %}<span class="layui-badge-dot layui-bg-blue"> </span>{% endif %}</a></dd>
             </dl>
         </li>
 
@@ -282,7 +282,9 @@
             }else if(editor_mode == 4){
                 var content  = '';
                 var pre_content = JSON.stringify(luckysheet.getAllSheets());
-            }
+            }else if(editor_mode == 5){
+                var content = DOMPurify.sanitize(editor.getHTML(),{ADD_TAGS: ['iframe']})
+                var pre_content = editor.getText()
 
             var data = {
                 'project':$("#project").val(),
@@ -413,6 +415,9 @@
                     }else if(editor_mode == 3){
                         editor.addValue(this.result)
                     }
+                    else if(editor_mode == 5){
+                        editor.addValue(this.result)
+                    }
                     
                 }
                 reader.readAsText(file);
@@ -476,7 +481,7 @@
                     });
                 });
             },
-        })
+        })}
 
     </script>
     <!-- 在线表格文档根据窗口高度调整表格高度 -->
