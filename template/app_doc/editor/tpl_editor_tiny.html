@@ -1,53 +1,56 @@
+<!--初始化tinymce-->
+<script >
+tinymce.init({
+    selector: '#mytextarea',
+    //skin:'oxide-dark',
+    language:'zh_CN',
+    plugins: 'autolink directionality visualblocks visualchars fullscreen image link media template code codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount imagetools textpattern help emoticons autosave bdmap indent2em autoresize formatpainter axupimgs',
+    toolbar: 'code undo redo restoredraft | cut copy paste pastetext | forecolor backcolor bold italic underline strikethrough link anchor | alignleft aligncenter alignright alignjustify outdent indent | \
+    styleselect formatselect fontselect fontsizeselect | bullist numlist | blockquote subscript superscript removeformat | \
+    table image media charmap emoticons hr pagebreak insertdatetime print preview | fullscreen | bdmap indent2em lineheight formatpainter axupimgs',
+    height: 650, //编辑器高度
+    min_height: 400,
+    /*content_css: [ //可设置编辑区内容展示的css，谨慎使用
+        '/static/reset.css',
+        '/static/ax.css',
+        '/static/css.css',
+    ],*/
+    fontsize_formats: '12px 14px 16px 18px 24px 36px 48px 56px 72px',
+    font_formats: '微软雅黑=Microsoft YaHei,Helvetica Neue,PingFang SC,sans-serif;苹果苹方=PingFang SC,Microsoft YaHei,sans-serif;宋体=simsun,serif;仿宋体=FangSong,serif;黑体=SimHei,sans-serif;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;',
+    {#link_list: [#}
+    {#    { title: '预置链接1', value: 'http://www.tinymce.com' },#}
+    {#    { title: '预置链接2', value: 'http://tinymce.ax-z.cn' }#}
+    {#],#}
+    {#image_list: [#}
+        {#{ title: '预置图片1', value: 'https://www.tiny.cloud/images/glyph-tinymce@2x.png' },#}
+        {#{ title: '预置图片2', value: 'https://www.baidu.com/img/bd_logo1.png' }#}
+    {#],#}
+    {#image_class_list: [#}
+    {#{ title: 'None', value: '' },#}
+    {#{ title: 'Some class', value: 'class-name' }#}
+    {#],#}
+    importcss_append: true,
+    //自定义文件选择器的回调内容
+    file_picker_callback: function (callback, value, meta) {
+        if (meta.filetype === 'file') {
+          callback('https://www.baidu.com/img/bd_logo1.png', { text: 'My text' });
+        }
+        if (meta.filetype === 'image') {
+          callback('https://www.baidu.com/img/bd_logo1.png', { alt: 'My alt text' });
+        }
+        if (meta.filetype === 'media') {
+          callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.baidu.com/img/bd_logo1.png' });
+        }
+    },
+    toolbar_sticky: true,
+    autosave_ask_before_unload: false,
+});
 
-<textarea id="basic-example">
-  <p><img style="display: block; margin-left: auto; margin-right: auto;" title="Tiny Logo" src="https://www.tiny.cloud/docs/images/logos/android-chrome-256x256.png" alt="TinyMCE Logo" width="128" height="128" /></p>
-  <h2 style="text-align: center;">Welcome to the TinyMCE editor demo!</h2>
 
-  <h2>Got questions or need help?</h2>
 
-  <ul>
-    <li>Our <a href="https://www.tiny.cloud/docs/">documentation</a> is a great resource for learning how to configure TinyMCE.</li>
-    <li>Have a specific question? Try the <a href="https://stackoverflow.com/questions/tagged/tinymce" target="_blank" rel="noopener"><code>tinymce</code> tag at Stack Overflow</a>.</li>
-    <li>We also offer enterprise grade support as part of <a href="https://www.tiny.cloud/pricing">TinyMCE premium plans</a>.</li>
-  </ul>
+</script>
 
-  <h2>A simple table to play with</h2>
-
-  <table style="border-collapse: collapse; width: 100%;" border="1">
-    <thead>
-      <tr>
-        <th>Product</th>
-        <th>Cost</th>
-        <th>Really?</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>TinyMCE</td>
-        <td>Free</td>
-        <td>YES!</td>
-      </tr>
-      <tr>
-        <td>Plupload</td>
-        <td>Free</td>
-        <td>YES!</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <h2>Found a bug?</h2>
-
-  <p>
-    If you think you have found a bug please create an issue on the <a href="https://github.com/tinymce/tinymce/issues">GitHub repo</a> to report it to the developers.
-  </p>
-
-  <h2>Finally ...</h2>
-
-  <p>
-    Don't forget to check out our other product <a href="http://www.plupload.com" target="_blank">Plupload</a>, your ultimate upload solution featuring HTML5 upload support.
-  </p>
-  <p>
-    Thanks for supporting TinyMCE! We hope it helps you and your users create great content.<br>All the best from the TinyMCE team.
-  </p>
-</textarea>
-
+{#editor.uploadUrl="{% url 'upload_ice_img' %}";  #}
+<form method="post" >
+<textarea id="mytextarea" > </textarea>
+</form>

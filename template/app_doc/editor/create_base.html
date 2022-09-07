@@ -243,9 +243,8 @@
             <script src="{% static 'luckysheet/dist/luckyexcel.umd.js' %}?version={{mrdoc_version}}"></script>
             {% include 'app_doc/editor/tpl_editor_table.html' %}
         {% elif editor_mode == 5 %}
-            <!-- iceEditor富文本编辑器 -->
-            <script src="{% static 'iceEditor/src/iceEditor.min.js' %}?version={{mrdoc_version}}"></script>
-            <script src="{% static 'editor.md/lib/purify.min.js' %}?version={{mrdoc_version}}"></script>
+            <!-- word 编辑器 -->
+            <script src="{% static 'tinymce/tinymce.min.js' %}"></script>
             {% include 'app_doc/editor/tpl_editor_tiny.html' %}
 
         {% endif %}

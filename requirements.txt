@@ -1,6 +1,6 @@
 django==2.2.*
 beautifulsoup4==4.8.2
-lxml
+lxml>=4.9.1
 pillow>=7.1.0
 loguru==0.4.1
 djangorestframework==3.11.2
@@ -16,4 +16,4 @@ selenium==3.141.0
 webdriver_manager==3.3.0
 PyYAML==5.4.1
 django-cors-headers>=3.10.0
-pdf2docx
+pdf2docx>=0.5.6

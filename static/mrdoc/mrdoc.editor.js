@@ -200,7 +200,8 @@ function autoCacheDoc(){
         var editor_value = editor.getValue()
       }else if(editor_mode == 3){
         var editor_value = editor.getHTML()
-      }
+      }else if(editor_mode == 5){
+        var editor_value = editor.getHTML()}
       window.localStorage.setItem('mrdoc_doc_cache',editor_value)
   }, 10000);
 };
