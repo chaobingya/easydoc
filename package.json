@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@tinymce/tinymce-vue": "^5.0.0",
+    "editor.md": "^1.5.0",
+    "tinymce": "^6.1.2"
+  }
+}
