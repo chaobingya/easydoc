@@ -1,0 +1,9 @@
+# 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释
+deb http://mirror.topsec.com.cn/debian/ bullseye main contrib non-free
+# deb-src http://mirror.topsec.com.cn/debian/ bullseye main contrib non-free
+deb http://mirror.topsec.com.cn/debian/ bullseye-updates main contrib non-free
+# deb-src http://mirror.topsec.com.cn/debian/ bullseye-updates main contrib non-free
+deb http://mirror.topsec.com.cn/debian/ bullseye-backports main contrib non-free
+# deb-src http://mirror.topsec.com.cn/debian/ bullseye-backports main contrib non-free
+deb http://mirror.topsec.com.cn/debian-security bullseye-security main contrib non-free
+# deb-src http://mirror.topsec.com.cn/debian-security bullseye-security main contrib non-free

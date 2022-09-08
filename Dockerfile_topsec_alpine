@@ -1,0 +1,54 @@
+FROM python:3.10-alpine3.15 as build
+
+RUN set -ex && \
+   sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories &&\
+   export http_proxy=http://10.8.22.241:8888 && \
+   export https_proxy=http://10.8.22.241:8888 && \
+   apk update && \
+   # lib64
+    mkdir /lib64 && \
+    ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2 && \
+#    apk add --no-cache libffi-dev gcc g++ musl musl-dev  tzdata make perl g++ openssl-dev \
+#     libtool autoconf  automake linux-headers bsd-compat-headers&& \
+
+    apk add --no-cache --virtual .build-deps build-base g++ gcc libxslt-dev  linux-headers &&\
+    apk add --no-cache pwgen tzdata zlib-dev freetype-dev jpeg-dev  mariadb-dev postgresql-dev &&\
+#    python -m pip install --upgrade pip &&\
+    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &&  echo "Asia/Shanghai" > /etc/timezone
+
+RUN set -ex && python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+
+COPY ./requirements.txt /requirements.txt
+
+# apk 更新太慢，剥离开，放到了第一层
+RUN set -ex && \
+    python -m pip install --upgrade setuptools pip  --no-cache-dir  -i https://pypi.tuna.tsinghua.edu.cn/simple  --proxy=http://10.8.22.241:8888 && \
+    pip install -r /requirements.txt --no-cache-dir  -i https://pypi.tuna.tsinghua.edu.cn/simple  --proxy=http://10.8.22.241:8888 && \
+    pip --no-cache-dir install mysqlclient uwsgi -i https://pypi.tuna.tsinghua.edu.cn/simple  --proxy=http://10.8.22.241:8888 &&\
+    rm -rf /root/.cache  /requirements.txt &&   apk del .build-deps   && rm -rf /var/cache/apk/*
+
+
+FROM python:alpine3.15
+
+# application=topsec-ctrlapp 这个标签可用于判断是否为该容器
+LABEL application=topsec-web maintainer="Topsec, Inc. <zhao_lanbao@topsec.com.cn>" maintainer="rambo.site"
+ENV PYTHONUNBUFFERED=0 \
+    TZ=Asia/Shanghai \
+    LISTEN_PORT=80\
+    USER=chaobing \
+    PATH="/opt/venv/bin:$PATH"
+COPY --from=build /etc/localtime /etc/localtime
+COPY --from=build /opt/venv /opt/venv
+
+RUN  echo "Asia/Shanghai" > /etc/timezone
+
+COPY . /app/MrDoc/
+
+WORKDIR /app/MrDoc
+
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories &&\
+ chmod +x docker_mrdoc.sh
+
+ENTRYPOINT ["./docker_mrdoc.sh"]
