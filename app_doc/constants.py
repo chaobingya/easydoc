@@ -1,9 +1,9 @@
 PDFConvertKwargs = {
     'debug': False,  # plot layout if True
-    'ocr': 2,  # ocr status: 0 - no ocr; 1 - to do ocr; 2 - ocr-ed pdf
+    'ocr': 0,  # ocr status: 0 - no ocr; 1 - to do ocr; 2 - ocr-ed pdf
     'ignore_page_error': True,  # not break the conversion process due to failure of a certain page if True
     'multi_processing': True,  # convert pages with multi-processing if True
-    'cpu_count': 4,  # working cpu count when convert pages with multi-processing
+    'cpu_count': 6,  # working cpu count when convert pages with multi-processing
     'min_section_height': 20.0,  # The minimum height of a valid section.
     'connected_border_tolerance': 0.5,  # two borders are intersected if the gap lower than this value
     'max_border_width': 6.0,  # max border width
