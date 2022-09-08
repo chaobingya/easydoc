@@ -63,7 +63,6 @@
     editormd.homePage     = "https://pandao.github.io/editor.md/";
     editormd.classPrefix  = "editormd-";
     
-    // 编辑器工具栏模式
     editormd.toolbarModes = {
         full : [
             "undo", "redo", "|", 
@@ -89,7 +88,6 @@
         ]
     };
     
-    // 编辑器默认配置
     editormd.defaults     = {
         mode                 : "gfm",          //gfm or markdown
         name                 : "",             // Form element name
@@ -131,7 +129,7 @@
         dialogDraggable      : true,
         dialogMaskBgColor    : "#fff",
         dialogMaskOpacity    : 0.1,
-        fontSize             : "15px",
+        fontSize             : "13px",
         saveHTMLToTextarea   : false,
         disabledKeyMaps      : [],
         
@@ -161,18 +159,15 @@
         tocStartLevel        : 1,              // Said from H1 to create ToC
         htmlDecode           : false,          // Open the HTML tag identification 
         pageBreak            : true,           // Enable parse page break [========]
-        atLink               : false,           // for @link
+        atLink               : true,           // for @link
         emailLink            : true,           // for email address auto link
-        taskList             : true,          // Enable Github Flavored Markdown task lists
+        taskList             : false,          // Enable Github Flavored Markdown task lists
         emoji                : false,          // :emoji: , Support Github emoji, Twitter Emoji (Twemoji);
                                                // Support FontAwesome icon emoji :fa-xxx: > Using fontAwesome icon web fonts;
                                                // Support Editor.md logo icon emoji :editormd-logo: :editormd-logo-1x: > 1~8x;
         tex                  : false,          // TeX(LaTeX), based on KaTeX
         flowChart            : false,          // flowChart.js only support IE9+
         sequenceDiagram      : false,          // sequenceDiagram.js only support IE9+
-        mindMap              : true,           // 脑图
-        echart               : true,           // echart 图表
-        mermaid              : true,            // mermaid图表
         previewCodeHighlight : true,
                 
         toolbar              : true,           // show/hide toolbar
@@ -192,46 +187,44 @@
             "ucwords"        : "<a href=\"javascript:;\" title=\"ucwords\" unselectable=\"on\"><i class=\"fa\" name=\"ucwords\" style=\"font-size:20px;margin-top: -3px;\">Aa</i></a>"
         }, 
         toolbarIconsClass    : {
-            "undo"             : "fa-undo",
-            "redo"             : "fa-repeat",
-            "bold"             : "fa-bold",
-            "mark"             : "fa-paint-brush",
-            "del"              : "fa-strikethrough",
-            "italic"           : "fa-italic",
-            "quote"            : "fa-quote-left",
-            "uppercase"        : "fa-font",
-            "h1"               : editormd.classPrefix + "bold",
-            "h2"               : editormd.classPrefix + "bold",
-            "h3"               : editormd.classPrefix + "bold",
-            "h4"               : editormd.classPrefix + "bold",
-            "h5"               : editormd.classPrefix + "bold",
-            "h6"               : editormd.classPrefix + "bold",
-            "list-ul"          : "fa-list-ul",
-            "list-ol"          : "fa-list-ol",
-            "hr"               : "fa-minus",
-            "link"             : "fa-link",
+            undo             : "fa-undo",
+            redo             : "fa-repeat",
+            bold             : "fa-bold",
+            del              : "fa-strikethrough",
+            italic           : "fa-italic",
+            quote            : "fa-quote-left",
+            uppercase        : "fa-font",
+            h1               : editormd.classPrefix + "bold",
+            h2               : editormd.classPrefix + "bold",
+            h3               : editormd.classPrefix + "bold",
+            h4               : editormd.classPrefix + "bold",
+            h5               : editormd.classPrefix + "bold",
+            h6               : editormd.classPrefix + "bold",
+            "list-ul"        : "fa-list-ul",
+            "list-ol"        : "fa-list-ol",
+            hr               : "fa-minus",
+            link             : "fa-link",
             "reference-link" : "fa-anchor",
-            "image"            : "fa-picture-o",
-            "code"             : "fa-code",
+            image            : "fa-picture-o",
+            code             : "fa-code",
             "preformatted-text" : "fa-file-code-o",
             "code-block"     : "fa-file-code-o",
-            "table"            : "fa-table",
-            "datetime"         : "fa-clock-o",
-            "emoji"            : "fa-smile-o",
+            table            : "fa-table",
+            datetime         : "fa-clock-o",
+            emoji            : "fa-smile-o",
             "html-entities"  : "fa-copyright",
-            "pagebreak"        : "fa-newspaper-o",
+            pagebreak        : "fa-newspaper-o",
             "goto-line"      : "fa-terminal", // fa-crosshairs
-            "watch"            : "fa-eye-slash",
-            "unwatch"          : "fa-eye",
-            "preview"          : "fa-desktop",
-            "search"           : "fa-search",
-            "fullscreen"       : "fa-arrows-alt",
-            "clear"            : "fa-eraser",
-            "help"             : "fa-question-circle",
-            "info"             : "fa-info-circle"
+            watch            : "fa-eye-slash",
+            unwatch          : "fa-eye",
+            preview          : "fa-desktop",
+            search           : "fa-search",
+            fullscreen       : "fa-arrows-alt",
+            clear            : "fa-eraser",
+            help             : "fa-question-circle",
+            info             : "fa-info-circle"
         },        
         toolbarIconTexts     : {},
-        toolbarIconSvgs      : {},
         
         lang : {
             name        : "zh-cn",
@@ -241,7 +234,6 @@
                 undo             : "撤销（Ctrl+Z）",
                 redo             : "重做（Ctrl+Y）",
                 bold             : "粗体",
-                mark             : "文本高亮",
                 del              : "删除线",
                 italic           : "斜体",
                 quote            : "引用",
@@ -363,6 +355,7 @@
          */
         
         init : function (id, options) {
+            
             options              = options || {};
             
             if (typeof id === "object")
@@ -372,7 +365,7 @@
             
             var _this            = this;
             var classPrefix      = this.classPrefix  = editormd.classPrefix; 
-            var settings         = this.settings     = $.extend(true, editormd.defaults, options);
+            var settings         = this.settings     = $.extend(true, {}, editormd.defaults, options);
             
             id                   = (typeof id === "object") ? settings.id : id;
             
@@ -408,11 +401,11 @@
                         
             var markdownTextarea = this.markdownTextarea = editor.children("textarea");
             
-            // if (markdownTextarea.length < 1)
-            // {
-            //     editor.append("<textarea></textarea>");
-            //     markdownTextarea = this.markdownTextarea = editor.children("textarea");
-            // }
+            if (markdownTextarea.length < 1)
+            {
+                editor.append("<textarea></textarea>");
+                markdownTextarea = this.markdownTextarea = editor.children("textarea");
+            }
             
             markdownTextarea.addClass(classNames.textarea.markdown).attr("placeholder", settings.placeholder);
             
@@ -512,7 +505,7 @@
                     
                     return ;
                 }
-                // 加载流程图和序列图 JS 文件
+
                 if (settings.flowChart || settings.sequenceDiagram) 
                 {
                     editormd.loadScript(loadPath + "raphael.min", function() {
@@ -552,35 +545,13 @@
                     _this.loadedDisplay();
                 }
             }; 
-            // 加载 echarts.min.js
-            editormd.loadScript(loadPath + "echarts.min", function() {
-                // _this.loadedDisplay();
-            });
 
-            // 加载 mermaid
-            // editormd.loadScript(loadPath + "mermaid.min", function() {
-            //     // _this.loadedDisplay();
-            // });
-
-            // 加载 mindmap 相关js
-            editormd.loadScript(loadPath + 'mindmap/d3@5',function(){
-                editormd.loadScript(loadPath + 'mindmap/transform.min', function(){
-                    editormd.loadScript(loadPath + 'mindmap/view.min',function(){
-
-                    })
-                })
-            })
-
-            // 加载DOMPurify过滤HTML
-            editormd.loadScript(loadPath + 'purify.min',function(){});
-
-            editormd.loadCSS(loadPath + "codemirror/lib/codemirror");
+            editormd.loadCSS(loadPath + "codemirror/codemirror.min");
             
             if (settings.searchReplace && !settings.readOnly)
             {
                 editormd.loadCSS(loadPath + "codemirror/addon/dialog/dialog");
                 editormd.loadCSS(loadPath + "codemirror/addon/search/matchesonscrollbar");
-                editormd.loadCSS(loadPath + "codemirror/addon/hint/show-hint");
             }
             
             if (settings.codeFold)
@@ -588,14 +559,12 @@
                 editormd.loadCSS(loadPath + "codemirror/addon/fold/foldgutter");            
             }
             
-            editormd.loadScript(loadPath + "codemirror/lib/codemirror", function() {
+            editormd.loadScript(loadPath + "codemirror/codemirror.min", function() {
                 editormd.$CodeMirror = CodeMirror;
                 
-                editormd.loadScript(loadPath + "codemirror/modes", function() {
-                // editormd.loadScript(loadPath + "codemirror/mode/meta", function() {
+                editormd.loadScript(loadPath + "codemirror/modes.min", function() {
                     
-                    editormd.loadScript(loadPath + "codemirror/addons", function() {
-                    // editormd.loadScript(loadPath + "codemirror/addon/display/placeholder", function() {
+                    editormd.loadScript(loadPath + "codemirror/addons.min", function() {
                         
                         _this.setCodeMirror();
                         
@@ -720,35 +689,6 @@
             {
                 editormd.loadCSS(settings.path + "codemirror/theme/" + settings.editorTheme);
             }
-
-            var md_comp = [
-                ["#", "##", "###", "####","#####","######","#######"],
-                ["`", "``", "```", "```\n\n```", "```echart\n\n```", "```mindmap\n\n```"],
-                ["*", "**"],
-                ["[", "[]()"],
-                ["!", "![]()"],
-                ["-", "- [] ", "- [x] "],
-              ]
-            
-            function markdownHint(cm, option) {
-                return new Promise(function(accept) {
-                    setTimeout(function() {
-                    var cursor = cm.getCursor(), line = cm.getLine(cursor.line)
-                    console.log(cursor)
-                    var start = cursor.ch, end = cursor.ch
-                    while (start && /\W/.test(line.charAt(start - 1))) --start
-                    while (end < line.length && /\W/.test(line.charAt(end))) ++end
-                    console.log(line,start,end)
-                    var word = line.slice(start, end).toLowerCase()
-                    console.log(word)
-                    for (var i = 0; i < md_comp.length; i++) if (md_comp[i].indexOf(word) != -1)
-                        return accept({list: md_comp[i],
-                                        from: editormd.$CodeMirror.Pos(cursor.line, start),
-                                        to: editormd.$CodeMirror.Pos(cursor.line, end)})
-                    return accept(null)
-                    }, 100)
-                })
-            }
             
             var codeMirrorConfig = {
                 mode                      : settings.mode,
@@ -762,10 +702,9 @@
                 lineNumbers               : settings.lineNumbers,
                 lineWrapping              : settings.lineWrapping,
                 extraKeys                 : {
-                                                // "Ctrl-Q": function(cm) { 
-                                                //     cm.foldCode(cm.getCursor()); 
-                                                // },
-                                                "Ctrl-Q":"autocomplete"
+                                                "Ctrl-Q": function(cm) { 
+                                                    cm.foldCode(cm.getCursor()); 
+                                                }
                                             },
                 foldGutter                : settings.codeFold,
                 gutters                   : ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
@@ -775,7 +714,6 @@
                 styleSelectedText         : settings.styleSelectedText,
                 autoCloseBrackets         : settings.autoCloseBrackets,
                 showTrailingSpace         : settings.showTrailingSpace,
-                hintOptions: {hint: markdownHint},
                 highlightSelectionMatches : ( (!settings.matchWordHighlight) ? false : { showToken: (settings.matchWordHighlight === "onselected") ? false : /\w/ } )
             };
             
@@ -1133,14 +1071,12 @@
                     return false;
                 }
 
-                // if (top - editor.offset().top > 10 && top < editor.height())
-                if (top - editor.offset().top > 10 && top - editor.offset().top < editor.height() - toolbar.height())
+                if (top - editor.offset().top > 10 && top < editor.height())
                 {
                     toolbar.css({
                         position : "fixed",
                         width    : editor.width() + "px",
-                        // left     : ($window.width() - editor.width()) / 2 + "px"
-                        left     : editor.offset().left + "px"
+                        left     : ($window.width() - editor.width()) / 2 + "px"
                     });
                 }
                 else
@@ -1227,12 +1163,10 @@
                     
                     var title     = settings.lang.toolbar[index];
                     var iconTexts = settings.toolbarIconTexts[index];
-                    var iconSvgs  = settings.toolbarIconSvgs[index];
                     var iconClass = settings.toolbarIconsClass[index];
                     
                     title     = (typeof title     === "undefined") ? "" : title;
                     iconTexts = (typeof iconTexts === "undefined") ? "" : iconTexts;
-                    iconSvgs = (typeof iconSvgs === "undefined") ? "" : iconSvgs;
                     iconClass = (typeof iconClass === "undefined") ? "" : iconClass;
 
                     var menuItem = pullRight ? "<li class=\"pull-right\">" : "<li>";
@@ -1558,6 +1492,7 @@
          */
         
         katexRender : function() {
+            
             if (timer === null)
             {
                 return this;
@@ -1572,66 +1507,6 @@
 
             return this;
         },
-
-        /**
-         * 解析思维导图 - 2020-04-12
-         * 
-         * @returns {editormd}             返回editormd的实例对象
-         */
-        mindmapRender:function(){
-            // console.log("开始解析脑图")
-            this.previewContainer.find(".mindmap").each(function(){
-                var mmap  = $(this);
-                var md_data = window.markmap.transform(mmap.text().trim());
-                window.markmap.markmap("svg#"+this.id,md_data)
-            });   
-
-            return this;
-        },
-
-        /**
-         * 解析和渲染 Echarts - 2020-05-21
-         * 
-         * @returns {editormd}             返回editormd的实例对象
-         */
-        echartRender:function(){
-            // console.log("开始解析echart")
-            this.previewContainer.find(".echart").each(function(){
-                var echart  = $(this);
-                if(echart.text() != ''){
-                    var echart_data = eval("(" + echart.text() + ")");
-                    echart.empty();
-                    var myChart = echarts.init(document.getElementById(this.id),null,{renderer: 'svg'});
-                    myChart.setOption(echart_data);
-                }
-            });   
-
-            return this;
-        },
-
-        /**
-         * 解析mermaid - 2022-05-08
-         *
-         * @returns {editormd}             返回editormd的实例对象
-         */
-        mermaidRender:function(){
-            if(typeof(mermaid) == 'undefined'){
-                // console.log("加载mermaid")
-                editormd.loadScript('/static/editor.md/lib/' + "mermaid.min", function() {
-                    mermaid.initialize({
-                        startOnload:false,
-                    })
-                    mermaid.init(undefined,$(".mermaid"))
-                });
-            }else{
-                mermaid.initialize({
-                    startOnload:false,
-                })
-                mermaid.init(undefined,$(".mermaid"))
-            }
-            return this;
-        },
-
         
         /**
          * 解析和渲染流程图及时序图
@@ -1654,7 +1529,7 @@
                     return this;
                 }
                 
-                previewContainer.find(".flowchart").flowChart();
+                previewContainer.find(".flowchart").flowChart(); 
             }
 
             if (settings.sequenceDiagram) {
@@ -2124,9 +1999,6 @@
                 emailLink            : settings.emailLink,        // for mail address auto link
                 flowChart            : settings.flowChart,
                 sequenceDiagram      : settings.sequenceDiagram,
-                mindMap              : settings.mindMap,
-                echart               : settings.echart,
-                mermaid              : settings.mermaid,
                 previewCodeHighlight : settings.previewCodeHighlight,
             };
             
@@ -2144,14 +2016,12 @@
             marked.setOptions(markedOptions);
                     
             var newMarkdownDoc = editormd.$marked(cmValue, markedOptions);
-            // console.info("cmValue", cmValue, newMarkdownDoc);
             
-            // newMarkdownDoc = editormd.filterHTMLTags(newMarkdownDoc, settings.htmlDecode);
-            // 加载DOMPurify过滤HTML
-            newMarkdownDoc = DOMPurify.sanitize(newMarkdownDoc,{ADD_TAGS: ['iframe']})
+            //console.info("cmValue", cmValue, newMarkdownDoc);
             
-            // console.log(newMarkdownDoc)
-            // console.error("cmValue", cmValue, newMarkdownDoc);
+            newMarkdownDoc = editormd.filterHTMLTags(newMarkdownDoc, settings.htmlDecode);
+            
+            //console.error("cmValue", cmValue, newMarkdownDoc);
             
             this.markdownTextarea.text(cmValue);
             
@@ -2162,13 +2032,13 @@
                 this.htmlTextarea.text(newMarkdownDoc);
             }
             
-            if(settings.watch || (!settings.watch && state.preview))//如果开启了预览
+            if(settings.watch || (!settings.watch && state.preview))
             {
                 previewContainer.html(newMarkdownDoc);
 
                 this.previewCodeHighlight();
                 
-                if (settings.toc) // 渲染目录
+                if (settings.toc) 
                 {
                     var tocContainer = (settings.tocContainer === "") ? previewContainer : $(settings.tocContainer);
                     var tocMenu      = tocContainer.find("." + this.classPrefix + "toc-menu");
@@ -2193,7 +2063,7 @@
                     }
                 }
                 
-                if (settings.tex) // 渲染公式
+                if (settings.tex)
                 {
                     if (!editormd.kaTeXLoaded && settings.autoLoadModules) 
                     {
@@ -2208,33 +2078,8 @@
                         editormd.$katex = katex;
                         this.katexRender();
                     }
-                }
-
-                // 渲染脑图
-                if(settings.mindMap){
-                    setTimeout(function(){
-                        _this.mindmapRender();
-                    },10)
-                   
-                }
-
-                // 渲染 echart
-                if(settings.echart){
-                    setTimeout(function(){
-                        _this.echartRender();
-                    },10)                    
-                   
-                }
-
-                // 渲染 mermaid
-                if(settings.mermaid){
-                    setTimeout(function(){
-                        _this.mermaidRender();
-                    },10)
-
-                }
+                }                
                 
-                // 渲染流程图和时序图
                 if (settings.flowChart || settings.sequenceDiagram)
                 {
                     flowchartTimer = setTimeout(function(){
@@ -2984,19 +2829,6 @@
                 cm.setCursor(cursor.line, cursor.ch + 2);
             }
         },
-
-        mark : function(){
-            var cm        = this.cm;
-            var cursor    = cm.getCursor();
-            var selection = cm.getSelection();
-
-            cm.replaceSelection("==" + selection + "==");
-
-            if(selection === "") {
-                cm.setCursor(cursor.line, cursor.ch + 2);
-            }
-
-        },
         
         del : function() {
             var cm        = this.cm;
@@ -3523,9 +3355,7 @@
         atLink        : /@(\w+)/g,
         email         : /(\w+)@(\w+)\.(\w+)\.?(\w+)?/g,
         emailLink     : /(mailto:)?([\w\.\_]+)@(\w+)\.(\w+)\.?(\w+)?/g,
-        // mark          : /==([^\s][^\<\/code\>][\s\S]*?[^\s])==(?!=)/g,
-        mark          : /(={2})([^\<\/code\>].+?)\1/g,
-        emoji         : /:([A-Za-z\+-]+):/g,
+        emoji         : /:([\w\+-]+):/g,
         emojiDatetime : /(\d{2}:\d{2}:\d{2})/g,
         twemoji       : /:(tw-([\w]+)-?(\w+)?):/g,
         fontAwesome   : /:(fa-([\w]+)(-(\w+)){0,}):/g,
@@ -3535,7 +3365,7 @@
 
     // Emoji graphics files url path
     editormd.emoji     = {
-        path  : "/static/editor.md/plugins/emoji-dialog/emoji/",
+        path  : "https://www.webpagefx.com/tools/emoji-cheat-sheet/graphics/emojis/",
         ext   : ".png"
     };
 
@@ -3575,7 +3405,6 @@
             
         var regexs          = editormd.regexs;
         var atLinkReg       = regexs.atLink;
-        var markReg         = regexs.mark;
         var emojiReg        = regexs.emoji;
         var emailReg        = regexs.email;
         var emailLinkReg    = regexs.emailLink;
@@ -3584,172 +3413,103 @@
         var editormdLogoReg = regexs.editormdLogo;
         var pageBreakReg    = regexs.pageBreak;
 
-	    // 增加引用样式解析规则
-        markedRenderer.blockquote = function($quote) {
-            var quoteBegin = "";
-
-            var ps = $quote.match(/<p\s*?>/i);
-			
-            if(ps !== null) {
-                quoteBegin = ps[0];
-                $quote = $quote.substr(3);
-            }
-            var $class = "default";
-
-            if($quote.indexOf("i ") === 0){
-                $class = "info";
-                $quote = $quote.substr(1);
-            }else if($quote.indexOf("w ") === 0){
-                $class = "warning";
-                $quote = $quote.substr(1);
-            }else if($quote.indexOf("s ") === 0){
-                $class = "success";
-                $quote = $quote.substr(1);
-            }else if($quote.indexOf("d ") === 0){
-                $class = "danger";
-                $quote = $quote.substr(1);
-            }
-
-            return '<blockquote class="'+$class+'">\n' + quoteBegin + $quote + '</blockquote>\n';
-        };
-
-        // marked 解析图片
-        markedRenderer.image = function(href,title,text) {
-            var attr = "";
-            var begin = "";
-            var end = "";
-            // console.log(href,title,text)
-            // console.log(iframe_whitelist)
-            if(/^=(.*?)/.test(text)){
-                // console.log(text)
-                switch(text){
-                    case '=video':
-                        if(href.match(/^.+.(mp4|m4v|ogg|ogv|webm)$/)){
-                            return "<video src='"+ href + "' controls='controls' preload width=500></video>"
-                        }else{
-                            for(var i = 0; i< iframe_whitelist.length; i++){
-                                if(href.match(iframe_whitelist[i])){
-                                    return "<video src='"+ href + "' controls='controls' preload width=500></video>"
-                                }
-                            }
-                        }
-                        break;
-                    case '=audio':
-                        if(href.match(/^.+.(mp3|wav|flac|m4a)$/)){
-                            return "<audio src='"+ href + "' controls='controls'></audio>"
-                        }else{
-                            for(var i = 0; i< iframe_whitelist.length; i++){
-                                if(href.match(iframe_whitelist[i])){
-                                    return "<audio src='"+ href + "' controls='controls'></audio>"
-                                }
-                            }
-                        }
-                        break;
-                    case '=video_iframe':                      
-                        const youtubeMatch = href.match(/\/\/(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w|-]{11})(?:(?:[\?&]t=)(\S+))?/);
-                        const youkuMatch = href.match(/\/\/v\.youku\.com\/v_show\/id_(\w+)=*\.html/);
-                        const qqMatch = href.match(/\/\/v\.qq\.com\/x\/cover\/.*\/([^\/]+)\.html\??.*/);
-                        const coubMatch = href.match(/(?:www\.|\/\/)coub\.com\/view\/(\w+)/);
-                        const facebookMatch = href.match(/(?:www\.|\/\/)facebook\.com\/([^\/]+)\/videos\/([0-9]+)/);
-                        const dailymotionMatch = href.match(/.+dailymotion.com\/(video|hub)\/(\w+)\?/);
-                        const bilibiliMatch = href.match(/(?:www\.|\/\/)bilibili\.com\/video\/(\w+)/);
-                        const tedMatch = href.match(/(?:www\.|\/\/)ted\.com\/talks\/(\w+)/);
-
-                        if (youtubeMatch && youtubeMatch[1].length === 11) {
-                            return `<iframe height=400 width=500 frameborder=0 allowfullscreen src="//www.youtube.com/embed/${youtubeMatch[1] + (youtubeMatch[2] ? "?start=" + youtubeMatch[2] : "")}"></iframe>`
-                        } else if (youkuMatch && youkuMatch[1]) {
-                            return `<iframe height=400 width=500 frameborder=0 allowfullscreen src="//player.youku.com/embed/${youkuMatch[1]}"></iframe>`
-                        } else if (qqMatch && qqMatch[1]) {
-                            return `<iframe height=400 width=500 frameborder=0 allowfullscreen src="https://v.qq.com/txp/iframe/player.html?vid=${qqMatch[1]}"></iframe>`
-                        } else if (coubMatch && coubMatch[1]) {
-                            return `<iframe height=400 width=500 frameborder=0 allowfullscreen src="//coub.com/embed/${coubMatch[1]}?muted=false&autostart=false&originalSize=true&startWithHD=true"></iframe>`
-                        } else if (facebookMatch && facebookMatch[0]) {
-                            return `<iframe height=400 width=500 frameborder=0 allowfullscreen src="https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(facebookMatch[0])}"></iframe>`
-                        } else if (dailymotionMatch && dailymotionMatch[2]) {
-                            return `<iframe height=400 width=500 frameborder=0 allowfullscreen src="https://www.dailymotion.com/embed/video/${dailymotionMatch[2]}"></iframe>`
-                        } else if (bilibiliMatch && bilibiliMatch[1]) {
-                            return `<iframe height=400 width=500 frameborder=0 allowfullscreen src="//player.bilibili.com/player.html?bvid=${bilibiliMatch[1]}"></iframe>`
-                        } else if (tedMatch && tedMatch[1]) {
-                            return `<iframe height=400 width=500 frameborder=0 allowfullscreen src="//embed.ted.com/talks/${tedMatch[1]}"></iframe>`
-                        }else{
-                            if(iframe_whitelist.length == 1 && iframe_whitelist[0] == ""){
-                                return href
-                            }else{
-                                for(var i = 0; i< iframe_whitelist.length; i++){
-                                    if(href.match(iframe_whitelist[i])){
-                                        return '<iframe height=400 width=500 src="' + href +'" frameborder=0 allowfullscreen />'
-                                    }
-                                }
-                            }
-
-                        }
-                        break;
-                }
-            }
-
-            if(href && href !== ""){
-                var a =  document.createElement('a');
-                a.href = href;
-                var attrs = a.hash.match(/size=\d+x\d+/i);
-                if(attrs !== null) {
-                    a.hash = a.hash.replace(attrs[0],"");
-                    href = a.href;
-                    attrs = attrs[0].replace("size=","").split("x");
-                    if(attrs[0] > 0) {
-                        attr += " width=\"" + attrs[0] + "\""
-                    }
-                    if(attrs[1] > 0) {
-                        attr += " height=\"" + attrs[1] + "\""
-                    }
-                }
-                attrs = a.hash.match(/align=(center|left|right)/i)
-                if (attrs !== null) {
-                    var hash = a.hash.replace(attrs[0],"");
-                    if (hash.indexOf("#&") === 0) {
-                        hash = "#" + hash.substr(2);
-                    }
-                    a.hash = hash;
-
-                    href = a.href;
-                    attrs = attrs[0].replace("align=","");
-                    end = "</p>";
-                    if(attrs === "center"){
-                        begin = '<p align="center">';
-                    }else if (attrs === "left") {
-                        begin = '<p align="left">';
-                    }else if (attrs === "right") {
-                        begin = '<p align="right">';
-                    }
-                }
-            }
-            return begin + "<img src=\""+href+"\" title=\""+title+"\" alt=\""+text+"\" "+attr+" />" + end;
-        };
-
-        // marked emoji 解析
         markedRenderer.emoji = function(text) {
-            return text;
-        };
+            
+            text = text.replace(editormd.regexs.emojiDatetime, function($1) {           
+                return $1.replace(/:/g, "&#58;");
+            });
+            
+            var matchs = text.match(emojiReg);
 
-        // marked @ 解析
-        markedRenderer.atLink = function(text) {
-            return text;
-        };
-
-        // marked 高亮标记解析
-        markedRenderer.mark = function(text){
-            if(markReg.test(text)){
-                // console.log(1,text)
-                var mark_replace_reg = /==(.+)==/g
-                text = text.replace(markReg,function(e){
-                    // console.log(2,e)
-                    return "<mark>" + e.replace(mark_replace_reg,function($1,$2){return $2}) + "</mark>"
-                })
+            if (!matchs || !settings.emoji) {
+                return text;
             }
-            return text
+
+            for (var i = 0, len = matchs.length; i < len; i++)
+            {            
+                if (matchs[i] === ":+1:") {
+                    matchs[i] = ":\\+1:";
+                }
+
+                text = text.replace(new RegExp(matchs[i]), function($1, $2){
+                    var faMatchs = $1.match(faIconReg);
+                    var name     = $1.replace(/:/g, "");
+
+                    if (faMatchs)
+                    {                        
+                        for (var fa = 0, len1 = faMatchs.length; fa < len1; fa++)
+                        {
+                            var faName = faMatchs[fa].replace(/:/g, "");
+                            
+                            return "<i class=\"fa " + faName + " fa-emoji\" title=\"" + faName.replace("fa-", "") + "\"></i>";
+                        }
+                    }
+                    else
+                    {
+                        var emdlogoMathcs = $1.match(editormdLogoReg);
+                        var twemojiMatchs = $1.match(twemojiReg);
+
+                        if (emdlogoMathcs)                                        
+                        {                            
+                            for (var x = 0, len2 = emdlogoMathcs.length; x < len2; x++)
+                            {
+                                var logoName = emdlogoMathcs[x].replace(/:/g, "");
+                                return "<i class=\"" + logoName + "\" title=\"Editor.md logo (" + logoName + ")\"></i>";
+                            }
+                        }
+                        else if (twemojiMatchs) 
+                        {
+                            for (var t = 0, len3 = twemojiMatchs.length; t < len3; t++)
+                            {
+                                var twe = twemojiMatchs[t].replace(/:/g, "").replace("tw-", "");
+                                return "<img src=\"" + editormd.twemoji.path + twe + editormd.twemoji.ext + "\" title=\"twemoji-" + twe + "\" alt=\"twemoji-" + twe + "\" class=\"emoji twemoji\" />";
+                            }
+                        }
+                        else
+                        {
+                            var src = (name === "+1") ? "plus1" : name;
+                            src     = (src === "black_large_square") ? "black_square" : src;
+                            src     = (src === "moon") ? "waxing_gibbous_moon" : src;
+
+                            return "<img src=\"" + editormd.emoji.path + src + editormd.emoji.ext + "\" class=\"emoji\" title=\"&#58;" + name + "&#58;\" alt=\"&#58;" + name + "&#58;\" />";
+                        }
+                    }
+                });
+            }
+
+            return text;
         };
 
-        // marked 链接解析
+        markedRenderer.atLink = function(text) {
+
+            if (atLinkReg.test(text))
+            { 
+                if (settings.atLink) 
+                {
+                    text = text.replace(emailReg, function($1, $2, $3, $4) {
+                        return $1.replace(/@/g, "_#_&#64;_#_");
+                    });
+
+                    text = text.replace(atLinkReg, function($1, $2) {
+                        return "<a href=\"" + editormd.urls.atLinkBase + "" + $2 + "\" title=\"&#64;" + $2 + "\" class=\"at-link\">" + $1 + "</a>";
+                    }).replace(/_#_&#64;_#_/g, "@");
+                }
+                
+                if (settings.emailLink)
+                {
+                    text = text.replace(emailLinkReg, function($1, $2, $3, $4, $5) {
+                        return (!$2 && $.inArray($5, "jpg|jpeg|png|gif|webp|ico|icon|pdf".split("|")) < 0) ? "<a href=\"mailto:" + $1 + "\">"+$1+"</a>" : $1;
+                    });
+                }
+
+                return text;
+            }
+
+            return text;
+        };
+                
         markedRenderer.link = function (href, title, text) {
+
             if (this.options.sanitize) {
                 try {
                     var prot = decodeURIComponent(unescape(href)).replace(/[^\w:]/g,"").toLowerCase();
@@ -3783,7 +3543,6 @@
             return out;
         };
         
-        // marked 解析标题
         markedRenderer.heading = function(text, level, raw) {
                     
             var linkText       = text;
@@ -3805,32 +3564,28 @@
             
             text = trim(text);
             
-            var isChinese = /^[\u4e00-\u9fa5]+$/.test(text);
-            //var id        = (isChinese) ? escape(text).replace(/\%/g, "") : text.toLowerCase().replace(/[^\w]+/g, "-");
-            var id        = escape(text.toLowerCase().replace(' ','')).replace(/\%/g, "") // 生成包含中文编码的标题ID
-
             var escapedText    = text.toLowerCase().replace(/[^\w]+/g, "-");
             var toc = {
                 text  : text,
                 level : level,
-                slug  : escapedText,
-                id    : "h"+ level + "-" + this.options.headerPrefix + id
+                slug  : escapedText
             };
+            
+            var isChinese = /^[\u4e00-\u9fa5]+$/.test(text);
+            var id        = (isChinese) ? escape(text).replace(/\%/g, "") : text.toLowerCase().replace(/[^\w]+/g, "-");
 
             markdownToC.push(toc);
             
             var headingHTML = "<h" + level + " id=\"h"+ level + "-" + this.options.headerPrefix + id +"\">";
             
-            // headingHTML    += "<a name=\"" + text + "\" class=\"reference-link\"></a>";
-            headingHTML    += "<a name=\"" + text.replace(/<[^>]*>\s?/g,'') + "\" class=\"reference-link\"></a>";
+            headingHTML    += "<a name=\"" + text + "\" class=\"reference-link\"></a>";
             headingHTML    += "<span class=\"header-link octicon octicon-link\"></span>";
-            headingHTML    += (hasLinkReg) ? this.atLink(this.mark(this.emoji(linkText))) : this.mark(this.emoji(text));
+            headingHTML    += (hasLinkReg) ? this.atLink(this.emoji(linkText)) : this.atLink(this.emoji(text));
             headingHTML    += "</h" + level + ">";
-            // console.log(headingHTML)
+
             return headingHTML;
         };
         
-        // marked 解析分页符
         markedRenderer.pageBreak = function(text) {
             if (pageBreakReg.test(text) && settings.pageBreak)
             {
@@ -3839,7 +3594,7 @@
             
             return text;
         };
-        // marked 解析段落
+
         markedRenderer.paragraph = function(text) {
             var isTeXInline     = /\$\$(.*)\$\$/g.test(text);
             var isTeXLine       = /^\$\$(.*)\$\$$/.test(text);
@@ -3859,30 +3614,13 @@
             }
             
             var tocHTML = "<div class=\"markdown-toc editormd-markdown-toc\">" + text + "</div>";
+            
             return (isToC) ? ( (isToCMenu) ? "<div class=\"editormd-toc-menu\">" + tocHTML + "</div><br/>" : tocHTML )
-                           : ( (pageBreakReg.test(text)) ? this.pageBreak(text) : "<p" + isTeXAddClass + ">" + this.atLink(this.mark(text)) + "</p>\n" );
+                           : ( (pageBreakReg.test(text)) ? this.pageBreak(text) : "<p" + isTeXAddClass + ">" + this.atLink(this.emoji(text)) + "</p>\n" );
         };
-        // marked 解析代码块
-        markedRenderer.code = function (code, lang, escaped) {
-            // 自定义颜色function
-            function custom_color(color) {
-                if(color === 'red'){
-                    return 'layui-bg-red';
-                }else if (color === 'orange'){
-                    return 'layui-bg-orange';
-                }else if (color === 'green'){
-                    return 'layui-bg-green';
-                }else if (color === 'cyan'){
-                    return 'layui-bg-cyan';
-                }else if (color === 'black'){
-                    return 'layui-bg-black';
-                }else if (color === 'grey'){
-                    return 'layui-bg-grey';
-                }else{
-                    return '';
-                }
 
-            }
+        markedRenderer.code = function (code, lang, escaped) { 
+
             if (lang === "seq" || lang === "sequence")
             {
                 return "<div class=\"sequence-diagram\">" + code + "</div>";
@@ -3894,167 +3632,21 @@
             else if ( lang === "math" || lang === "latex" || lang === "katex")
             {
                 return "<p class=\"" + editormd.classNames.tex + "\">" + code + "</p>";
-            }
-            else if( lang === 'mermaid') {
-                return '<div class="mermaid">' + code + '</div>'
-            }
-            else if (/^mindmap/i.test(lang)){ // 思维导图
-            　　var len = 9 || 32;
-            　　var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678'; 
-            　　var maxPos = $chars.length;
-            　　var map_id = '';
-            　　for (var i = 0; i < len; i++) {
-            　　　　map_id += $chars.charAt(Math.floor(Math.random() * maxPos));
-                }
-                // var map_id = lang.split('>')[1];
-                // console.log(map_id)
-                var custom_height;
-                var h = lang.split('>')[1];
-                if(h != undefined){
-                    custom_height = h;
-                }else{
-                    custom_height = 150;
-                }
-
-                return "<svg class='mindmap' style='width:100%;min-height:150px;height:"+ custom_height +"px;' id='mindmap-"+ map_id +"'>"+code+"</svg>";
-            }
-            else if(/^echart/i.test(lang)||/^echarts/i.test(lang)){ // echart 图表
-                var len = 9 || 32;
-            　　var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678'; 
-            　　var maxPos = $chars.length;
-            　　var map_id = '';
-            　　for (var i = 0; i < len; i++) {
-            　　　　map_id += $chars.charAt(Math.floor(Math.random() * maxPos));
-                }
-                // var map_id = lang.split('>')[1];
-                // console.log(map_id)
-                var custom_height;
-                var h = lang.split('>')[1];
-                if(h != undefined){
-                    custom_height = h;
-                }else{
-                    custom_height = 150;
-                }
-
-                return "<div class='echart' style='width:100%;min-height:350px;height:"+ custom_height +"px;' id='echart-"+ map_id +"'>"+code+"</div>";
-            }
-            else if(/^timeline/i.test(lang)){ // 时间线
-                var time_line = '<ul class="layui-timeline">'
-                // console.log(code)
-                var timeline_code = code.split(/(\r\n\t|\n|\r\t)+/);
-                // console.log(timeline_code)
-                timeline_code.forEach(function(item,index){
-                    // console.log(item,index)
-                    if(item.match(/^# /)){ // 时间标题
-                        time_line += '<li class="layui-timeline-item" style="list-style:none;">'
-                        time_line += '<i class="layui-icon layui-timeline-axis">&#xe63f;</i>'
-                        time_line += '<div class="layui-timeline-content layui-text">'
-                        time_line += '<h3 class="layui-timeline-title" style="margin-top:0px;">'
-                        time_line += item.replace('# ','')
-                        time_line += '</h3>'
-                    }else if(/^[=]{4,}$/.test(item)){
-                        time_line += '</div></li>'
-                    }else{
-                        var markedOptions = { // marked 选项
-                            renderer    : editormd.markedRenderer(), // 渲染器
-                            gfm         : settings.gfm, // 风格
-                            tables      : true, // 表格
-                            breaks      : true, //
-                            pedantic    : false,
-                            sanitize    : (settings.htmlDecode) ? false : true, // 是否忽略HTML标签，即是否开启HTML标签解析，为了安全性，默认不开启
-                            smartLists  : true,
-                            smartypants : true
-                        };
-                        time_line += marked(item,markedOptions)
-                    }
-                })
-
-                time_line += '</ul>'
-                return time_line;
-            }
-            else if(/^title/i.test(lang)){ // site-title
-                var site_title = '<div class="site-title" style="margin:30px 0 20px;">'
-                // console.log(code)
-                var title_code = code.split(/[(\r\n)\r\n]+/);
-                // console.log(title_code)
-                title_code.forEach(function(item,index){
-                    // console.log(item,index)
-                    if(item.match(/^# /)){ // 时间标题
-                        site_title += '<fieldset style="border: none;padding: 0;border-top: 1px solid #eee;">'
-                        site_title += '<legend style="margin-left: 20px;  padding: 0 10px; font-size: 22px; font-weight: 300;">'
-                        site_title += '<div name="default">'
-                        site_title += item.replace('# ','')
-                        site_title += '</div></legend></fieldset>'
-                    }else{
-                        site_title += marked(item)
-                    }
-                })
-
-                site_title += '</div>'
-                return site_title;
-            }
-            else if(/^tblock/i.test(lang)){ // site-title-block
-                var title_block = '<div class="site-text" style="position: relative;">'
-                // console.log(code)
-                var titleblock_code = code.split(/[(\r\n)\r\n]+/);
-                // console.log(titleblock_code)
-                titleblock_code.forEach(function(item,index){
-                    // console.log(item,index)
-                    if(item.match(/^# /)){ // 时间标题
-                        title_block += '<fieldset class="layui-elem-field">'
-                        title_block += '<legend>'
-                        title_block += item.replace('# ','')
-                        title_block += '</div></legend><div class="layui-field-box">'
-                    }else{
-                        title_block += marked(item)
-                    }
-                })
-
-                title_block += '</fieldset></div>'
-                return title_block;
-            }
-            else if(/^hr/i.test(lang)){ // 分割线
-                var color = lang.split(' ')[1];
-                var ccolor = custom_color(color);
-                var hr = '<hr class="' + ccolor + '">'
-                hr += '</hr>'
-                return hr;
-            }
-            else if(/^card/i.test(lang)){ // 卡片面板
-                var color = lang.split(' ')[1];
-                var ccolor = custom_color(color);
-                var card = '<div class="layui-card">'
-                // console.log(code)
-                var card_code = code.split(/[(\r\n)\r\n]+/);
-                // console.log(card_code)
-                card_code.forEach(function(item,index){
-                    // console.log(item,index)
-                    if(item.match(/^# /)){ // 时间标题
-                        card += '<div class="layui-card-header ' + ccolor + '">'
-                        card += item.replace('# ','')
-                        card += '</div>'
-                        card += '<div class="layui-card-body">'
-                    }else{
-                        card += marked(item)
-                    }
-                })
-
-                card += '</div>'
-                return card;
-            }
+            } 
             else 
             {
+
                 return marked.Renderer.prototype.code.apply(this, arguments);
             }
         };
-        // marked 解析表格
+
         markedRenderer.tablecell = function(content, flags) {
             var type = (flags.header) ? "th" : "td";
             var tag  = (flags.align)  ? "<" + type +" style=\"text-align:" + flags.align + "\">" : "<" + type + ">";
             
             return tag + this.atLink(this.emoji(content)) + "</" + type + ">\n";
         };
-        // marked 解析列表项
+
         markedRenderer.listitem = function(text) {
             if (settings.taskList && /^\s*\[[x\s]\]\s*/.test(text)) 
             {
@@ -4095,7 +3687,6 @@
         {
             var text  = toc[i].text;
             var level = toc[i].level;
-            var id = toc[i].id;
             
             if (level < startLevel) {
                 continue;
@@ -4114,8 +3705,7 @@
                 html += "</ul></li>";
             }
 
-            //html += "<li><a class=\"toc-level-" + level + "\" href=\"#" + text + "\" level=\"" + level + "\">" + text + "</a><ul>";
-            html += "<li><a class=\"toc-level-" + level + "\" href=\"#" + id + "\" level=\"" + level + "\">" + text + "</a><ul>";
+            html += "<li><a class=\"toc-level-" + level + "\" href=\"#" + text + "\" level=\"" + level + "\">" + text + "</a><ul>";
             lastLevel = level;
         }
         
@@ -4218,72 +3808,41 @@
      */
     
     editormd.filterHTMLTags = function(html, filters) {
-        console.log(html)
-        console.log(filters)
+        
         if (typeof html !== "string") {
-            html = new String(html).toString();
+            html = new String(html);
         }
             
         if (typeof filters !== "string") {
-            //return html;
-            // If no filters set use "script|on*" by default to avoid XSS
-            filters = "script|on*";
+            return html;
         }
 
         var expression = filters.split("|");
         var filterTags = expression[0].split(",");
         var attrs      = expression[1];
-        console.log(attrs)
-
-        if(!filterTags.includes('allowScript') && !filterTags.includes('script'))
-         {
-             // Only allow script if requested specifically
-             filterTags.push('script');
-         }
 
         for (var i = 0, len = filterTags.length; i < len; i++)
         {
             var tag = filterTags[i];
 
             html = html.replace(new RegExp("\<\s*" + tag + "\s*([^\>]*)\>([^\>]*)\<\s*\/" + tag + "\s*\>", "igm"), "");
-            html = html.replace(new RegExp("\<\s*" + tag + ".*?/?>", "igm"), "") // 过滤单闭合标签
         }
-
+        
         //return html;
-
-        if (typeof attrs === "undefined")
-         {
-            // If no attrs set block "on*" to avoid XSS
-            attrs = "on*"
-         }
 
         if (typeof attrs !== "undefined")
         {
             var htmlTagRegex = /\<(\w+)\s*([^\>]*)\>([^\>]*)\<\/(\w+)\>/ig;
 
-            var filterAttrs = attrs.split(",");
-            var filterOn = true;
-
-            if(filterAttrs.includes('allowOn'))
-            {
-                // Only allow on* if requested specifically
-                filterOn = false;
-            }
-
             if (attrs === "*")
             {
                 html = html.replace(htmlTagRegex, function($1, $2, $3, $4, $5) {
                     return "<" + $2 + ">" + $4 + "</" + $5 + ">";
-                });  
+                });         
             }
-            // else if (attrs === "on*")
-            else if ((attrs === "on*") || filterOn)
+            else if (attrs === "on*")
             {
                 html = html.replace(htmlTagRegex, function($1, $2, $3, $4, $5) {
-                    console.log($1)
-                    console.log($2)
-                    console.log($4)
-                    console.log($5)
                     var el = $("<" + $2 + ">" + $4 + "</" + $5 + ">");
                     var _attrs = $($1)[0].attributes;
                     var $attrs = {};
@@ -4305,14 +3864,13 @@
                     return el[0].outerHTML + text;
                 });
             }
-            // else
-            if(filterAttrs.length > 1 || (filterAttrs[0]!=="*" && filterAttrs[0]!=="on*"))
+            else
             {
                 html = html.replace(htmlTagRegex, function($1, $2, $3, $4) {
-                    // var filterAttrs = attrs.split(",");
+                    var filterAttrs = attrs.split(",");
                     var el = $($1);
                     el.html($4);
-                    
+
                     $.each(filterAttrs, function(i) {
                         el.attr(filterAttrs[i], null);
                     });
@@ -4321,7 +3879,7 @@
                 });
             }
         }
-
+        
         return html;
     };
     
@@ -4334,8 +3892,8 @@
      * @returns {Object}   div           返回jQuery对象元素
      */
     
-    editormd.markdownToHTML = function(id, options) { // Markdown 渲染为 HTML
-        var defaults = { // 默认属性
+    editormd.markdownToHTML = function(id, options) {
+        var defaults = {
             gfm                  : true,
             toc                  : true,
             tocm                 : false,
@@ -4346,7 +3904,7 @@
             markdown             : "",
             markdownSourceCode   : false,
             htmlDecode           : false,
-            autoLoadKaTeX        : false, // 自动默认加载katex的js
+            autoLoadKaTeX        : true,
             pageBreak            : true,
             atLink               : true,    // for @link
             emailLink            : true,    // for mail address auto link
@@ -4354,21 +3912,16 @@
             taskList             : false,   // Github Flavored Markdown task lists
             emoji                : false,
             flowChart            : false,
-            mindMap              : true, //脑图
-            echart               : true,
-            mermaid              : true,
             sequenceDiagram      : false,
-            previewCodeHighlight : true,
-            plugin_path          : '/static/editor.md/lib/'
+            previewCodeHighlight : true
         };
         
-        editormd.$marked  = marked; // 定义 editormd 的 marked 属性 为 marked
+        editormd.$marked  = marked;
 
-        var div           = $("#" + id); // Markdown 内容所在的 div
+        var div           = $("#" + id);
         var settings      = div.settings = $.extend(true, defaults, options || {});
-        var saveTo        = div.find("textarea"); // HTML 保存的 DIV
+        var saveTo        = div.find("textarea");
         
-        // 如果页面没有保存 HTML 的div，则自动添加一个
         if (saveTo.length < 1)
         {
             div.append("<textarea></textarea>");
@@ -4378,43 +3931,37 @@
         var markdownDoc   = (settings.markdown === "") ? saveTo.val() : settings.markdown; 
         var markdownToC   = [];
 
-        var rendererOptions = {  // 渲染选项
-            toc                  : settings.toc, // 目录
-            tocm                 : settings.tocm, // 目录
-            tocStartLevel        : settings.tocStartLevel, // 目录开始级别
-            taskList             : settings.taskList, // 人物列表
-            emoji                : settings.emoji, // emoji 表情
-            tex                  : settings.tex, // 公式
-            pageBreak            : settings.pageBreak, // 分页符
+        var rendererOptions = {  
+            toc                  : settings.toc,
+            tocm                 : settings.tocm,
+            tocStartLevel        : settings.tocStartLevel,
+            taskList             : settings.taskList,
+            emoji                : settings.emoji,
+            tex                  : settings.tex,
+            pageBreak            : settings.pageBreak,
             atLink               : settings.atLink,           // for @link
             emailLink            : settings.emailLink,        // for mail address auto link
-            flowChart            : settings.flowChart, // 流程图
-            sequenceDiagram      : settings.sequenceDiagram, // 序列图
-            mindMap              : settings.mindMap, // 思维导图
-            echart              : settings.echart, // 思维导图
-            mermaid              : settings.mermaid, // mermaid 图表
-            previewCodeHighlight : settings.previewCodeHighlight, // 预览代码高度
+            flowChart            : settings.flowChart,
+            sequenceDiagram      : settings.sequenceDiagram,
+            previewCodeHighlight : settings.previewCodeHighlight,
         };
 
-        var markedOptions = { // marked 选项
-            renderer    : editormd.markedRenderer(markdownToC, rendererOptions), // 渲染器
-            gfm         : settings.gfm, // 风格
-            tables      : true, // 表格
-            breaks      : true, // 
+        var markedOptions = {
+            renderer    : editormd.markedRenderer(markdownToC, rendererOptions),
+            gfm         : settings.gfm,
+            tables      : true,
+            breaks      : true,
             pedantic    : false,
             sanitize    : (settings.htmlDecode) ? false : true, // 是否忽略HTML标签，即是否开启HTML标签解析，为了安全性，默认不开启
             smartLists  : true,
             smartypants : true
         };
         
-		markdownDoc = new String(markdownDoc).toString();
+		markdownDoc = new String(markdownDoc);
         
         var markdownParsed = marked(markdownDoc, markedOptions);
         
-        // markdownParsed = editormd.filterHTMLTags(markdownParsed, settings.htmlDecode);
-        // 使用DOMPurify过滤HTML
-        markdownParsed = DOMPurify.sanitize(markdownParsed,{ADD_TAGS: ['iframe']});
-        // console.log(markdownParsed)
+        markdownParsed = editormd.filterHTMLTags(markdownParsed, settings.htmlDecode);
         
         if (settings.markdownSourceCode) {
             saveTo.text(markdownDoc);
@@ -4448,76 +3995,31 @@
             
         if (settings.previewCodeHighlight) 
         {
-//            div.find("pre").addClass("prettyprint linenums");
-            editormd.loadScript(settings.plugin_path + 'raphael.min', function(){
-                editormd.loadScript(settings.plugin_path + 'underscore.min', function(){
-//                    editormd.loadScript(settings.plugin_path + 'prettify.min',function(){
-//                        prettyPrint();
-//                    })
-                })
-            })
-            div.find("pre").addClass("line-numbers");
+            div.find("pre").addClass("prettyprint linenums");
+            prettyPrint();
         }
         
         if (!editormd.isIE8) 
         {
-            // 渲染流程图
             if (settings.flowChart) {
-                var has_flowchart = false;
-                div.find(".flowchart").each(function(){
-                    console.log("渲染流程图");
-                    has_flowchart = true;
-                })
-                if(has_flowchart){
-                    editormd.loadScript(settings.plugin_path + 'flowchart.min',function(){
-                        editormd.loadScript(settings.plugin_path + 'jquery.flowchart.min',function(){
-                            div.find(".flowchart").flowChart(); 
-                        })
-                    })
-                }
+                div.find(".flowchart").flowChart(); 
             }
-            // 渲染时序图
+
             if (settings.sequenceDiagram) {
-                var has_sequence_dia = false;
-                div.find(".sequence-diagram").each(function(){
-                    console.log("渲染时序图");
-                    has_sequence_dia = true;
-                })
-                if(has_sequence_dia){
-                    editormd.loadScript(settings.plugin_path + 'underscore.min', function(){
-                        editormd.loadScript(settings.plugin_path + 'sequence-diagram.min',function(){
-                            div.find(".sequence-diagram").sequenceDiagram({theme: "simple"});
-                        })    
-                    })
-                }
-                // div.find(".sequence-diagram").sequenceDiagram({theme: "simple"});
+                div.find(".sequence-diagram").sequenceDiagram({theme: "simple"});
             }
         }
 
-        // 渲染公式
         if (settings.tex)
         {
             var katexHandle = function() {
                 div.find("." + editormd.classNames.tex).each(function(){
-                    var tex  = $(this);
-                    // editormd.loadKaTeX(function(){
-                    //     editormd.$katex      = katex;
-                    //     editormd.kaTeXLoaded = true;
-                    //     katex.render(tex.html().replace(/&lt;/g, "<").replace(/&gt;/g, ">"), tex[0]);                    
-                    //     tex.find(".katex").css("font-size", "1.6em");
-                    // });
-                    editormd.loadCSS(settings.plugin_path + 'katex/katex.min', function(){
-                        editormd.loadScript(settings.plugin_path + 'katex/katex.min', function(){
-                            editormd.$katex      = katex;
-                            editormd.kaTeXLoaded = true;
-                            katex.render(tex.html().replace(/&lt;/g, "<").replace(/&gt;/g, ">"), tex[0]);                    
-                            tex.find(".katex").css("font-size", "1.6em");
-    
-                        });
-                    });
-                                
+                    var tex  = $(this);                    
+                    katex.render(tex.html().replace(/&lt;/g, "<").replace(/&gt;/g, ">"), tex[0]);                    
+                    tex.find(".katex").css("font-size", "1.6em");
                 });
             };
+            
             if (settings.autoLoadKaTeX && !editormd.$katex && !editormd.kaTeXLoaded)
             {
                 this.loadKaTeX(function() {
@@ -4530,73 +4032,6 @@
             {
                 katexHandle();
             }
-        }
-
-        // 前台渲染脑图
-        if(settings.mindMap){
-            // console.log("前台渲染脑图")
-            var mindmapHandle = function(){
-                div.find(".mindmap").each(function(){
-                    console.log("存在脑图")
-                    var mmap  = $(this);
-                    var mmap_id = this.id;
-                    editormd.loadScript(settings.plugin_path + 'mindmap/d3@5',function(){
-                        editormd.loadScript(settings.plugin_path + 'mindmap/transform.min',function(){
-                            editormd.loadScript(settings.plugin_path + 'mindmap/view.min',function(){
-                                var md_data = window.markmap.transform(mmap.text().trim());
-                                window.markmap.markmap("svg#"+mmap_id,md_data)
-                            })
-                        })
-                    })
-                    
-                });   
-            };
-            mindmapHandle();
-        }
-
-        // 前台渲染 Echart
-        if(settings.echart){
-            var echartHandle = function(){
-                div.find(".echart").each(function(){
-                    // console.log("存在echart")
-                    var echart  = $(this);
-                    var echart_id = this.id;
-                    editormd.loadScript(settings.plugin_path + 'echarts.min',function(){
-                        if(echart.text() != ''){
-                            // console.log("渲染echarts")
-                            var echart_data = eval("(" + echart.text() + ")");
-                            echart.empty();
-                            var myChart = echarts.init(document.getElementById(echart_id),null,{renderer: 'svg'});
-                            myChart.setOption(echart_data);
-                        }
-                    });
-                    
-                });
-            };
-            echartHandle();
-
-        }
-
-        // 前台渲染mermaid图表
-        if(settings.mermaid){
-            // console.log("解析mermaid")
-            var mermaidHandle = function(){
-                var has_mermaid = false;
-                div.find(".mermaid").each(function(){
-                    // console.log("存在mermaid图表")
-                    has_mermaid = true;
-                })
-                if(has_mermaid){
-                    editormd.loadScript(settings.plugin_path + 'mermaid.min',function(){
-                        mermaid.initialize({
-                            startOnload:false,
-                        })
-                        mermaid.init(undefined,$(".mermaid"))
-                    })
-                }
-            };
-            mermaidHandle();
-
         }
         
         div.getMarkdown = function() {            
@@ -4744,8 +4179,8 @@
     // 使用国外的CDN，加载速度有时会很慢，或者自定义URL
     // You can custom KaTeX load url.
     editormd.katexURL  = {
-        css :   "/static/editor.md/lib/katex/katex.min",
-        js  :   "/static/editor.md/lib/katex/katex.min",
+        css : "//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.3.0/katex.min",
+        js  : "//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.3.0/katex.min"
     };
     
     editormd.kaTeXLoaded = false;
@@ -4762,7 +4197,7 @@
             editormd.loadScript(editormd.katexURL.js, callback || function(){});
         });
     };
-
+        
     /**
      * 锁屏
      * lock screen

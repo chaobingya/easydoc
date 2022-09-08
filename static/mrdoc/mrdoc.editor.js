@@ -194,14 +194,15 @@ function createMarkdownDividerRow(cellCount) {
 // 文档浏览器缓存
 function autoCacheDoc(){
   setInterval(() => {
-      if(editor_mode == 1){
+      if(editor_mode === 1){
         var editor_value = editor.getMarkdown()
-      }else if(editor_mode == 2){
+      }else if(editor_mode === 2){
         var editor_value = editor.getValue()
-      }else if(editor_mode == 3){
+      }else if(editor_mode === 3){
         var editor_value = editor.getHTML()
-      }else if(editor_mode == 5){
-        var editor_value = editor.getHTML()}
+      }else if(editor_mode === 5){
+        var editor_value = editor.getHTML();
+      }
       window.localStorage.setItem('mrdoc_doc_cache',editor_value)
   }, 10000);
 };
@@ -597,6 +598,8 @@ upload_pdf_doc.render({
                 editor.addValue(res.data)
             }else if(editor_mode == 1){
                 editor.insertValue(res.data);
+            }else if(editor_mode == 5){
+                editor.addValue(res.data);
             }else if(editor_mode == 2){
                 editor.setValue(res.data);
             }
@@ -611,16 +614,6 @@ upload_pdf_doc.render({
         layer.closeAll('loading'); //关闭loading
         layer.msg("系统异常，请稍后再试！")
     },
-});
-
-$("#doc-tag-set").click(function(){
-    layer.open({
-        type:1,
-        title:"文档标签设置",
-        content:$("#doc-tag-div"),
-        area:['300px'],
-        btn:['确定']
-    })
 });
 
 

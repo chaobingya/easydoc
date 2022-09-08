@@ -244,7 +244,7 @@
             {% include 'app_doc/editor/tpl_editor_table.html' %}
         {% elif editor_mode == 5 %}
             <!-- word 编辑器 -->
-            <script src="{% static 'tinymce/tinymce.min.js' %}"></script>
+            <script src="{% static 'tinymce/tinymce.min.js' %}?version={{mrdoc_version}}"></script>
             {% include 'app_doc/editor/tpl_editor_tiny.html' %}
 
         {% endif %}

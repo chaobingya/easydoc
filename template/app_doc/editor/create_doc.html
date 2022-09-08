@@ -282,9 +282,11 @@
             }else if(editor_mode == 4){
                 var content  = '';
                 var pre_content = JSON.stringify(luckysheet.getAllSheets());
-            }else if(editor_mode == 5){
-                var content = DOMPurify.sanitize(editor.getHTML(),{ADD_TAGS: ['iframe']})
-                var pre_content = editor.getText()
+            }
+            else if(editor_mode == 5){
+                var content = DOMPurify.sanitize(editor.getHTML(),{ADD_TAGS: ['iframe']});
+                var pre_content = editor.getText();
+            }
 
             var data = {
                 'project':$("#project").val(),
@@ -481,7 +483,7 @@
                     });
                 });
             },
-        })}
+        })
 
     </script>
     <!-- 在线表格文档根据窗口高度调整表格高度 -->
