@@ -1190,7 +1190,7 @@ def create_doc(request):
     if request.method == 'GET':
         # 获取url切换的编辑器模式
         eid = request.GET.get('eid', editor_mode)
-        if eid in [1, 2, 3, 4,5, '1', '2', '3', '4','5']:
+        if eid in [1, 2, 3, 4, 5, '1', '2', '3', '4', '5']:
             editor_mode = int(eid)
         try:
             editor_type = _("新建表格") if editor_mode == 4 else _("新建文档")

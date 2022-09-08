@@ -10,15 +10,17 @@ register = template.Library()
 # 获取空间下的文档数量
 @register.filter(name='get_doc_count')
 def get_doc_count(value):
-    return Doc.objects.filter(top_doc=int(value),status=1).count()
+    return Doc.objects.filter(top_doc=int(value), status=1).count()
+
 
 # 获取空间下最新的文档及其修改时间
 @register.filter(name='get_new_doc')
 def get_new_doc(value):
-    new_doc = Doc.objects.filter(top_doc=int(value),status=1).order_by('-modify_time')[:3]
+    new_doc = Doc.objects.filter(top_doc=int(value), status=1).order_by('-modify_time')[:3]
     if new_doc is None:
         new_doc = _('它还没有文档……')
     return new_doc
+
 
 # 获取空间的EPUB开放导出状态
 @register.filter(name='report_status_epub')
@@ -31,6 +33,7 @@ def get_report_status_epub(value):
         status = 0
     return status
 
+
 # 获取空间的PDF开放导出状态
 @register.filter(name='report_status_pdf')
 def get_report_status_pdf(value):
@@ -42,17 +45,20 @@ def get_report_status_pdf(value):
         status = 0
     return status
 
+
 # 获取图片分组的图片数量
 @register.filter(name='img_group_cnt')
 def get_img_group_cnt(value):
     cnt = Image.objects.filter(group_id=value).count()
     return cnt
 
+
 # 获取空间的协作用户数
 @register.filter(name='project_collaborator_cnt')
 def get_project_collaborator_cnt(value):
     cnt = ProjectCollaborator.objects.filter(project=value).count()
     return cnt
+
 
 # 获取标签的文档数量
 @register.filter(name='tag_doc_cnt')

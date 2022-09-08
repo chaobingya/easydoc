@@ -13,6 +13,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage, Invali
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from pdf2docx import parse as pdf_parse
 
+from app_doc.constants import PDFConvertKwargs
 from app_doc.models import Project, Doc, DocTemp
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -395,7 +396,7 @@ def import_doc_pdf(request):
 
                 if os.path.exists(temp_pdf_path):
                     # convert pdf to docx
-                    pdf_parse(temp_pdf_path, temp_docx_path)
+                    pdf_parse(temp_pdf_path, temp_docx_path, **PDFConvertKwargs)
 
                 if os.path.exists(temp_docx_path):
                     import_file = ImportDocxDoc(
