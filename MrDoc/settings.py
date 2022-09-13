@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles',  # 静态文件服务
     'haystack',  # 全文搜索
     'app_admin',  # 管理APP
     'app_doc',  # 文档APP
