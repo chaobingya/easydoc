@@ -234,9 +234,6 @@
         {% elif editor_mode == 3 %}
             <!-- iceEditor富文本编辑器 -->
             <!-- 也可以直接使用textarea，放在form表单中可以直接提交 -->
-            <!-- <textarea id="editor" name="content"> 欢迎使用iceEditor富文本编辑器 </textarea> -->
-{#            <div id="editor"> 欢迎使用iceEditor富文本编辑器 </div>#}
-{#            <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/iceuinet/iceEditor/src/iceEditor.min.js"></script>#}
             <script src="{% static 'iceEditor/src/iceEditor.min.js' %}?version={{mrdoc_version}}"></script>
             <script src="{% static 'editor.md/lib/purify.min.js' %}?version={{mrdoc_version}}"></script>
             {% include 'app_doc/editor/tpl_editor_ice.html' %}
