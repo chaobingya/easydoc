@@ -18,7 +18,7 @@ import traceback, json
 import datetime
 
 
-# MrDoc 基于用户的Token访问API模块
+# EasyDoc 基于用户的Token访问API模块
 
 # 用户通过该url获取服务器时间戳，便于接口访问
 # url范例：http://127.0.0.1:8000/api/get_timestamp/

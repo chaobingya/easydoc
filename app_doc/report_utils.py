@@ -3,7 +3,7 @@
 # @创建者：州的先生
 # #日期：2019/12/7
 # 博客地址：zmister.com
-# MrDoc空间文档导出相关功能代码
+# EasyDoc空间文档导出相关功能代码
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
@@ -17,7 +17,7 @@ import shutil
 
 from django.core.wsgi import get_wsgi_application
 sys.path.extend([settings.BASE_DIR])
-os.environ.setdefault("DJANGO_SETTINGS_MODULE","MrDoc.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE","EasyDoc.settings")
 application = get_wsgi_application()
 import django
 django.setup()
@@ -467,7 +467,7 @@ class ReportEPUB():
                     <h1 class="title"">{title}</h1>
                     <p class="author"><b>{author} 著</b></p><br>
                     <p class="author">{create_time}</p>
-                    <p class="book-src">本书籍由<a href='http://mrdoc.zmister.com'>MrDoc(mrdoc.zmister.com)</a>生成</p>
+                    <p class="book-src">本书籍由<a href='http://mrdoc.zmister.com'>EasyDoc(mrdoc.zmister.com)</a>生成</p>
                   </div>
             </body>
             </html>

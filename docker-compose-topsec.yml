@@ -1,6 +1,9 @@
 version: "3"
 services:
   web:
+    image: nginx
+
+  server:
     image: doc-web:latest
     container_name: easydoc-web
     restart: always
@@ -13,7 +16,7 @@ services:
     volumes:
       - /topsec/EasyDoc/config:/EasyDoc/config
       - /topsec/EasyDoc/media:/EasyDoc/media
-#      - /topsec/EasyDoc/db:/EasyDoc/db
+      - /topsec/EasyDoc/log:/EasyDoc/log
     environment:
       - TZ=Asia/Shanghai
 ##### 以下注释项为可选变量
@@ -25,9 +28,9 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - mysql
+      - db
 
-  easydoc-db:
+  db:
     image: mysql:5.7
     container_name: easydoc-db
     restart: always
@@ -41,10 +44,10 @@ services:
       - MYSQL_DATABASE=easydoc
       - MYSQL_USER=topsec
       - MYSQL_PASSWORD=Topsec123!@#
-    expose:
-      - "3306"
-    ports:
-      - "33306:3306"  # 如果不需要外部连接mysql,可注释此行+上一行.
+    #expose:
+    #  - "3306"
+    #ports:
+    #  - "33306:3306"  # 如果不需要外部连接mysql,可注释此行+上一行.
     command:
       - "--character-set-server=utf8mb4"
       - "--collation-server=utf8mb4_unicode_ci"

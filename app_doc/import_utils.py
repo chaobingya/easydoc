@@ -39,7 +39,7 @@ class ImportZipProject():
         shutil.unpack_archive(zip_file_path, extract_dir=self.temp_dir)
 
         # 处理文件夹和文件名的中文乱码
-        sys_encoding = sys.getdefaultencoding()
+        sys_encoding = 'gbk'
         for root, dirs, files in os.walk(self.temp_dir):
             for dir in dirs:
                 try:
@@ -230,7 +230,7 @@ class ImportDocxDoc():
             dir_name = upload_generation_dir()  # 获取当月文件夹名称
             # 图片在媒体文件夹内的路径，形如 /202012/12542542.jpg
             copy2_filename = dir_name + '/' + file_time_name + '.' + file_suffix
-            # 文件的绝对路径 形如/home/MrDoc/media/202012/12542542.jpg
+            # 文件的绝对路径 形如/home/EasyDoc/media/202012/12542542.jpg
             new_media_file_path = settings.MEDIA_ROOT + copy2_filename
             # 图片文件的相对url路径
             new_media_filename = '/media' + copy2_filename

@@ -19,8 +19,8 @@ msgstr ""
 "X-Generator: Poedit 2.4.2\n"
 
 #: .\app_admin\utils.py:40
-msgid "MrDoc - 重置密码验证码"
-msgstr "MrDoc - Reset the password verification code"
+msgid "EasyDoc - 重置密码验证码"
+msgstr "EasyDoc - Reset the password verification code"
 
 #: .\app_admin\utils.py:41
 msgid "你的验证码为：{}，验证码30分钟内有效！"
