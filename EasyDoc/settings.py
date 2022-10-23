@@ -259,7 +259,7 @@ CACHES = {
         "LOCATION": "redis://redis:6379/1",  # 这里直接使用redis别名作为host ip地址
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "PASSWORD": "yourpassword",  # 换成你自己密码
+            "PASSWORD": "Topsec123!@#",  # 换成你自己密码
         },
     }
 }

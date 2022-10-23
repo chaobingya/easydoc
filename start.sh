@@ -12,6 +12,8 @@ done
 
 # 2. 收集静态文件到根目录static文件夹
 # python /EasyDoc/manage.py collectstatic --noinput&&
+#创建缓存数据库
+python /EasyDoc/manage.py createcachetable  &&
 # 3. 生成数据库可执行、迁移文件
 python /EasyDoc/manage.py makemigrations app_doc app_admin app_api &&
 # 4. 根据数据库可执行文件来修改数据库
