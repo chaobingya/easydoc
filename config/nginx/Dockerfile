@@ -13,6 +13,7 @@ RUN chown -R www-data:www-data /usr/share/nginx/html/media \
 
 # 添加配置文件
 ADD ./nginx.conf /etc/nginx/conf.d/
+COPY ssl /usr/share/nginx/
 
 # 关闭守护模式
 CMD ["nginx", "-g", "daemon off;"]
