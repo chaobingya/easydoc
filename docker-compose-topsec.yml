@@ -1,22 +1,42 @@
 version: "3"
 services:
   web:
-    image: nginx
+    build: ./config/nginx
+    container_name: easydoc-web
+    ports:
+      - "80:80"
+      - "443:443"
+#    expose:
+#      - "80"
+    volumes:
+      - ./config/nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf # 挂载nginx配置文件
+      - ./config/nginx/ssl:/usr/share/nginx/ssl # 挂载ssl证书目录
+      - ./topsec/EasyDoc/nginx/log:/var/log/nginx # 挂载日志
+#      - html-data:/usr/share/nginx/html/
+      - ./static:/usr/share/nginx/html/static # 挂载静态文件
+      - media-data:/usr/share/nginx/html/media # 挂载用户上传媒体文件
+    networks:
+      - web_network
+    depends_on:
+      - server
+    restart: always
+#    entrypoint: ["tail","-f","/dev/null"]
 
   server:
-    image: doc-web:latest
-    container_name: easydoc-web
-    restart: always
+    image: doc-server:latest
+    container_name: easydoc-server
     labels:
-      - topsec.role=web
+      - topsec.role=server
     build:
       context: .
       dockerfile: ./Dockerfile_topsec
 
     volumes:
-      - /topsec/EasyDoc/config:/EasyDoc/config
-      - /topsec/EasyDoc/media:/EasyDoc/media
+      - ./config:/EasyDoc/config
+      - media-data:/EasyDoc/media
+#      - ./static:/EasyDoc/static
       - /topsec/EasyDoc/log:/EasyDoc/log
+#      - ./config/uwsgi:/tmp # 挂载uwsgi日志
     environment:
       - TZ=Asia/Shanghai
 ##### 以下注释项为可选变量
@@ -25,10 +45,22 @@ services:
       - USER=topsec     # 自定义管理员用户名
       - MM=Topsec123!@#                # 自定义管理员密码
 ##### 如果默认用户密码,以及变量添加用户密码无法登录,请参考:https://www.mrdoc.fun/project-1/doc-242/
-    ports:
-      - "80:80"
+    expose:
+      - "80"
+#    ports:
+#      - "20080:80"
+
+    networks:
+      - web_network
+      - db_network
+      - redis_network
     depends_on:
       - db
+      - redis
+    restart: always
+    tty: true
+    stdin_open: true
+#    entrypoint: ["tail","-f","/dev/null"]
 
   db:
     image: mysql:5.7
@@ -44,18 +76,57 @@ services:
       - MYSQL_DATABASE=easydoc
       - MYSQL_USER=topsec
       - MYSQL_PASSWORD=Topsec123!@#
-    #expose:
-    #  - "3306"
-    #ports:
-    #  - "33306:3306"  # 如果不需要外部连接mysql,可注释此行+上一行.
+    networks:
+      - db_network
+    expose:
+      - "3306"
+#    ports:
+#      - "3306:3306"  # 如果不需要外部连接mysql,可注释此行+上一行.
     command:
       - "--character-set-server=utf8mb4"
       - "--collation-server=utf8mb4_unicode_ci"
 
+  redis:
+    image: redis:latest
+    command: redis-server /etc/redis/redis.conf # 容器启动后启动redis服务器
+    container_name: easydoc-redis
+    networks:
+      - redis_network
+    volumes:
+      - redis-data:/data # 通过挂载给redis数据备份
+      - ./config/redis/redis.conf:/etc/redis/redis.conf # 挂载redis配置文件
+    ports:
+      - "6379:6379"
+#    expose:
+#      - "6739"
+    restart: always # always表容器运行发生错误时一直重启
+
+#  tools:
+#    image: alpine
+#    container_name: easydoc-tools
+#    networks:
+#      - web_network
+#    entrypoint: ["tail","-f","/dev/null"]
+
+networks: # 自定义网络(默认桥接), 不使用links通信
+  web_network:
+    driver: bridge
+  server_network:
+    driver: bridge
+  db_network:
+    driver: bridge
+  redis_network:
+    driver: bridge
 
 # Volumes for persisting data, see https://docs.docker.com/engine/admin/volumes/volumes/
 volumes:
-  easydoc-data:
+
+  redis-data: #定义数据卷同步存放redis数据
+  media-data: #定义数据卷同步存放web项目用户上传到media文件夹的数据
+  static-data: #定义数据卷同步存放web项目static文件夹的数据
+  html-data: #定义html
+  log-data: # 定义日志存储
+  server-data:
     driver: local
-  mysql-data:
+  db-data: #定义数据卷同步存放容器内mysql数据
     driver: local
