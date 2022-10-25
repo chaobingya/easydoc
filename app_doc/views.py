@@ -2015,7 +2015,8 @@ def create_doctemp(request):
             editor_mode = user_opt.editor_mode
         except ObjectDoesNotExist:
             editor_mode = 1
-        doctemps = DocTemp.objects.filter(create_user=request.user)
+        # doctemps = DocTemp.objects.filter(create_user=request.user) #不能查看他人的
+        doctemps = DocTemp.objects.all()
         return render(request, 'app_doc/editor/create_doctemp.html', locals())
     elif request.method == 'POST':
         try:
@@ -2044,17 +2045,19 @@ def modify_doctemp(request, doctemp_id):
         editor_type = _('修改文档模板')
         try:
             doctemp = DocTemp.objects.get(id=doctemp_id)
-            if request.user.id == doctemp.create_user.id:
-                # 获取用户的编辑器模式
-                try:
-                    user_opt = UserOptions.objects.get(user=request.user)
-                    editor_mode = user_opt.editor_mode
-                except ObjectDoesNotExist:
-                    editor_mode = 1
-                doctemps = DocTemp.objects.filter(create_user=request.user)
-                return render(request, 'app_doc/editor/modify_doctemp.html', locals())
-            else:
-                return HttpResponse(_('非法请求'))
+            # if request.user.id == doctemp.create_user.id:
+            # 获取用户的编辑器模式
+            try:
+                user_opt = UserOptions.objects.get(user=request.user)
+                editor_mode = user_opt.editor_mode
+            except ObjectDoesNotExist:
+                editor_mode = 1
+            # doctemps = DocTemp.objects.filter(create_user=request.user) #不能修改他人的
+
+            doctemps = DocTemp.objects.all()
+            return render(request, 'app_doc/editor/modify_doctemp.html', locals())
+            # else:
+            #     return HttpResponse(_('非法请求'))
         except Exception as e:
             logger.exception(_("访问文档模板修改页面出错"))
             return render(request, '404.html')
@@ -2065,13 +2068,13 @@ def modify_doctemp(request, doctemp_id):
             content = request.POST.get('content', '')
             if doctemp_id != '' and name != '':
                 doctemp = DocTemp.objects.get(id=doctemp_id)
-                if request.user.id == doctemp.create_user.id:
-                    doctemp.name = name
-                    doctemp.content = content
-                    doctemp.save()
-                    return JsonResponse({'status': True, 'data': _('修改成功')})
-                else:
-                    return JsonResponse({'status': False, 'data': _('非法操作')})
+                # if request.user.id == doctemp.create_user.id:#不能查看他人的
+                doctemp.name = name
+                doctemp.content = content
+                doctemp.save()
+                return JsonResponse({'status': True, 'data': _('修改成功')})
+                # else:
+                #     return JsonResponse({'status': False, 'data': _('非法操作')})
             else:
                 return JsonResponse({'status': False, 'data': _('参数错误')})
         except Exception as e:
@@ -2086,11 +2089,12 @@ def del_doctemp(request):
         doctemp_id = request.POST.get('doctemp_id', '')
         if doctemp_id != '':
             doctemp = DocTemp.objects.get(id=doctemp_id)
-            if request.user.id == doctemp.create_user.id:
+            if (request.user.id == doctemp.create_user.id) or request.user.is_superuser:
                 doctemp.delete()
                 return JsonResponse({'status': True, 'data': _('删除完成')})
             else:
-                return JsonResponse({'status': False, 'data': _('非法请求')})
+                return JsonResponse(
+                    {'status': False, 'data': _('非法操作，请与模板创建人%联系'.format(doctemp.create_user.username))})
         else:
             return JsonResponse({'status': False, 'data': _('参数错误')})
     except Exception as e:
@@ -2106,7 +2110,7 @@ def manage_doctemp(request):
         search_kw = request.GET.get('kw', None)
         if search_kw:
             doctemp_list = DocTemp.objects.filter(
-                create_user=request.user,
+                # create_user=request.user,
                 content__icontains=search_kw
             ).order_by('-modify_time')
             paginator = Paginator(doctemp_list, 10)
@@ -2119,7 +2123,8 @@ def manage_doctemp(request):
                 doctemps = paginator.page(paginator.num_pages)
             doctemps.kw = search_kw
         else:
-            doctemp_list = DocTemp.objects.filter(create_user=request.user).order_by('-modify_time')
+            # doctemp_list = DocTemp.objects.filter(create_user=request.user).order_by('-modify_time')#不能查看他人的
+            doctemp_list = DocTemp.objects.all().order_by('-modify_time')
             paginator = Paginator(doctemp_list, 10)
             page = request.GET.get('page', 1)
             try:
