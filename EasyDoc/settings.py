@@ -264,6 +264,11 @@ CACHES = {
     }
 }
 
+# session start
 SESSION_COOKIE_AGE = 900  # Session的cookie失效日期（15分钟）
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # 是否关闭浏览器使得Session过期（默认）
 SESSION_SAVE_EVERY_REQUEST = True  # 是否每次请求都保存Session，需要与SESSION_EXPIRE_AT_BROWSER_CLOSE 同时设置
+# session end
+
+# 更新4.2django，默认指定主键
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
