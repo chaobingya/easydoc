@@ -62,8 +62,8 @@
             <form class="layui-form" action=""  method='POST'>
                 {% csrf_token %}
                 <div class="layui-form-item">
-                    <img src="{% static 'logo_ridus.png' %}" style="width: 60px;height: 60px;margin-bottom: 10px;" />
-                    <h3><strong>{% trans "登录" %} - <a href="/">{% if site_name != None %}{{site_name}} {% else %}{% trans "知识共享平台" %}{% endif %}</a></strong></h3>
+                    <img src="{% static 'logo.png' %}" style="width: 154px;height: 58px;margin-bottom: 10px;" />
+{#                    <h3><strong>{% trans "登录" %} - <a href="/">{% if site_name != None %}{{site_name}} {% else %}{% trans "知识共享平台" %}{% endif %}</a></strong></h3>#}
                 </div>
                 <span style='color:red;margin-bottom: 10px;'>{{ errormsg }}</span>
                 <div class="layui-form-item">
@@ -96,16 +96,16 @@
                     </div>
                 </div>
                 {% if close_register == 'on' %}
-                <a class="register-link">{% trans "本站暂不开放注册" %}</a>&nbsp;
+                <a class="register-link">{% trans "内部站点，本站暂不开放注册" %}</a>&nbsp;
                 {% else %}
                 <a href="{% url 'register' %}" class="register-link">{% trans "注册账号" %}</a>&nbsp;
                 {% endif %}
                 {% if enable_email == 'on' %}
                 <a href="{% url 'forget_pwd' %}" class="register-link">{% trans "忘记密码" %}</a>
                 {% endif %}
-                <a href="{% url 'pro_list' %}" class="register-link">{% trans "返回首页" %}</a>
+{#                <a href="{% url 'pro_list' %}" class="register-link">{% trans "返回首页" %}</a>#}
                 <hr>
-                <span style="font-size: 12px;color: #666;">知识共享平台 - Rambo</span>
+                <span style="font-size: 12px;color: #666;">知识共享平台 - VSP</span>
             </form>
         </div>
     </div>
