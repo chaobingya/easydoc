@@ -9,8 +9,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.expected_conditions import staleness_of
-from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.utils import ChromeType
+# from webdriver_manager.chrome import ChromeDriverManager
+# from webdriver_manager.utils import ChromeType
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 import sys

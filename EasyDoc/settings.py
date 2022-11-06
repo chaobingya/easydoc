@@ -264,6 +264,6 @@ CACHES = {
     }
 }
 
-SESSION_COOKIE_AGE = 1200  # Session的cookie失效日期（20分钟）
+SESSION_COOKIE_AGE = 900  # Session的cookie失效日期（15分钟）
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # 是否关闭浏览器使得Session过期（默认）
-SESSION_SAVE_EVERY_REQUEST = False  # 是否每次请求都保存Session，默认修改之后才保存（默认）
+SESSION_SAVE_EVERY_REQUEST = True  # 是否每次请求都保存Session，需要与SESSION_EXPIRE_AT_BROWSER_CLOSE 同时设置
