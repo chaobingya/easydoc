@@ -4,45 +4,40 @@
 # #日期：2019/12/7
 # 博客地址：zmister.com
 # EasyDoc空间文档导出相关功能代码
-from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils.translation import gettext_lazy as _
-from bs4 import BeautifulSoup
-import subprocess
-import datetime,time
+import datetime
+import os
 import re
-import os,sys
 import shutil
-
-
-from django.core.wsgi import get_wsgi_application
-sys.path.extend([settings.BASE_DIR])
-os.environ.setdefault("DJANGO_SETTINGS_MODULE","EasyDoc.settings")
-application = get_wsgi_application()
-import django
-django.setup()
-from app_doc.models import *
-from subprocess import Popen
-from loguru import logger
-from app_doc.report_html2pdf import convert
-import traceback
 import time
+import traceback
+
 import markdown
 import yaml
-# import PyPDF2
+from bs4 import BeautifulSoup
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import gettext_lazy as _
+from loguru import logger
+
+from app_doc.models import Project, Doc
+from app_doc.report_html2pdf import convert
+
+
 # from pdfminer import high_level
 
 
 # 替换前端传来的非法字符
 def validate_title(title):
-  rstr = r"[\/\\\:\*\?\"\<\>\|\[\]]" # '/ \ : * ? " < > |'
-  new_title = re.sub(rstr, "_", title) # 替换为下划线
-  return new_title
+    rstr = r"[\/\\\:\*\?\"\<\>\|\[\]]"  # '/ \ : * ? " < > |'
+    new_title = re.sub(rstr, "_", title)  # 替换为下划线
+    return new_title
+
 
 # 导出MD文件压缩包
 @logger.catch()
 class ReportMD():
-    def __init__(self,project_id):
+    def __init__(self, project_id):
         # 查询空间信息
         self.pro_id = project_id
         self.project_data = Project.objects.get(pk=project_id)
@@ -83,15 +78,15 @@ class ReportMD():
         for d in data:
             top_item = {
                 'name': validate_title(d.name),
-                'file': validate_title(d.name)+'.md',
+                'file': validate_title(d.name) + '.md',
             }
-            md_name = validate_title(d.name) # 文档名称
+            md_name = validate_title(d.name)  # 文档名称
             # 文档内容，如果使用Markdown编辑器编写则导出Markdown文本，如果使用富文本编辑器编写则导出HTML文本
             md_content = self.operat_md_media(d.pre_content) \
-                if d.editor_mode in [1,2] else self.operat_md_media(d.content)
+                if d.editor_mode in [1, 2] else self.operat_md_media(d.content)
 
             # 新建MD文件
-            with open('{}/{}.md'.format(self.project_path,md_name),'w',encoding='utf-8') as files:
+            with open('{}/{}.md'.format(self.project_path, md_name), 'w', encoding='utf-8') as files:
                 files.write(md_content)
 
             # 查询二级文档
@@ -101,12 +96,12 @@ class ReportMD():
                 for d2 in data_2:
                     sec_item = {
                         'name': validate_title(d2.name),
-                        'file': validate_title(d2.name)+'.md',
+                        'file': validate_title(d2.name) + '.md',
                     }
 
                     md_name_2 = validate_title(d2.name)
                     md_content_2 = self.operat_md_media(d2.pre_content) \
-                        if d2.editor_mode in [1,2] else self.operat_md_media(d2.content)
+                        if d2.editor_mode in [1, 2] else self.operat_md_media(d2.content)
 
                     # 新建MD文件
                     with open('{}/{}.md'.format(self.project_path, md_name_2), 'w', encoding='utf-8') as files:
@@ -119,12 +114,12 @@ class ReportMD():
                         for d3 in data_3:
                             item = {
                                 'name': validate_title(d3.name),
-                                'file': validate_title(d3.name)+'.md',
+                                'file': validate_title(d3.name) + '.md',
                             }
                             sec_item['children'].append(item)
                             md_name_3 = validate_title(d3.name)
                             md_content_3 = self.operat_md_media(d3.pre_content) \
-                                if d3.editor_mode in [1,2] else self.operat_md_media(d3.content)
+                                if d3.editor_mode in [1, 2] else self.operat_md_media(d3.content)
 
                             # 新建MD文件
                             with open('{}/{}.md'.format(self.project_path, md_name_3), 'w', encoding='utf-8') as files:
@@ -134,7 +129,7 @@ class ReportMD():
 
         # 写入层级YAML
         with open('{}/mrdoc.yaml'.format(self.project_path), 'a+', encoding='utf-8') as toc_yaml:
-            yaml.dump(project_toc_list,toc_yaml,allow_unicode=True)
+            yaml.dump(project_toc_list, toc_yaml, allow_unicode=True)
 
         # 压缩文件
         md_file = shutil.make_archive(
@@ -149,7 +144,7 @@ class ReportMD():
         return "{}.zip".format(self.project_path)
 
     # 处理MD内容中的静态文件
-    def operat_md_media(self,md_content):
+    def operat_md_media(self, md_content):
         # 查找MD内容中的静态文件
         pattern = r"\!\[.*?\]\(.*?\)"
         media_list = re.findall(pattern, md_content)
@@ -158,22 +153,22 @@ class ReportMD():
         if len(media_list) > 0:
             for media in media_list:
                 try:
-                    media_filename = media.replace('//','/').split("(")[-1].split(")")[0] # 媒体文件的文件名
+                    media_filename = media.replace('//', '/').split("(")[-1].split(")")[0]  # 媒体文件的文件名
                 except:
-                    continue                # 对本地静态文件进行复制
+                    continue  # 对本地静态文件进行复制
                 if media_filename.startswith("/media"):
                     # print(media_filename)
-                    sub_folder = "/" + media_filename.split("/")[2] # 获取子文件夹的名称
+                    sub_folder = "/" + media_filename.split("/")[2]  # 获取子文件夹的名称
                     # print(sub_folder)
-                    is_sub_folder = os.path.exists(self.media_path+sub_folder)
+                    is_sub_folder = os.path.exists(self.media_path + sub_folder)
                     # 创建子文件夹
                     if is_sub_folder is False:
-                        os.mkdir(self.media_path+sub_folder)
+                        os.mkdir(self.media_path + sub_folder)
                     # 替换MD内容的静态文件链接
                     md_content = md_content.replace(media_filename, "." + media_filename)
                     # 复制静态文件到指定文件夹
                     try:
-                        shutil.copy(settings.BASE_DIR + media_filename, self.media_path+sub_folder)
+                        shutil.copy(settings.BASE_DIR + media_filename, self.media_path + sub_folder)
                     except FileNotFoundError:
                         pass
 
@@ -185,7 +180,7 @@ class ReportMD():
 
 # 批量导出空间Markdown压缩包
 class ReportMdBatch():
-    def __init__(self,username,project_id_list):
+    def __init__(self, username, project_id_list):
         self.project_list = project_id_list
         self.username = username
         # 判断MD导出临时文件夹是否存在
@@ -194,7 +189,7 @@ class ReportMdBatch():
 
         # 判断用户名+日期文件夹是否存在
         self.report_file_path = settings.MEDIA_ROOT + "/reportmd_temp/{}_{}".format(
-            self.username,datetime.datetime.strftime(datetime.datetime.now(),"%y%m%d%H%M%S")
+            self.username, datetime.datetime.strftime(datetime.datetime.now(), "%y%m%d%H%M%S")
         )
         is_fold = os.path.exists(self.report_file_path)
         if is_fold is False:
@@ -210,7 +205,7 @@ class ReportMdBatch():
 
         # 遍历打包好的空间列表，将其移入统一文件夹
         for file in project_file_list:
-            shutil.move(file,self.report_file_path)
+            shutil.move(file, self.report_file_path)
 
         # 压缩打包空间合集文件夹
         md_file = shutil.make_archive(
@@ -228,7 +223,7 @@ class ReportMdBatch():
 # 导出EPUB
 @logger.catch()
 class ReportEPUB():
-    def __init__(self,project_id):
+    def __init__(self, project_id):
         self.project = Project.objects.get(id=project_id)
         self.base_path = settings.MEDIA_ROOT + '/report_epub/{}/'.format(project_id)
 
@@ -245,29 +240,31 @@ class ReportEPUB():
             os.makedirs(self.base_path + '/META-INF')
 
         # 复制样式文件到相关目录
-        shutil.copyfile(settings.BASE_DIR+'/static/report_epub/style.css',self.base_path + '/OEBPS/Styles/style.css')
+        shutil.copyfile(settings.BASE_DIR + '/static/report_epub/style.css', self.base_path + '/OEBPS/Styles/style.css')
         # shutil.copyfile(settings.BASE_DIR+'/static/katex/katex.min.css',self.base_path + '/OEBPS/Styles/katex.css')
-        shutil.copyfile(settings.BASE_DIR+'/static/editor.md/css/editormd.min.css',self.base_path + '/OEBPS/Styles/editormd.css')
+        shutil.copyfile(settings.BASE_DIR + '/static/editor.md/css/editormd.min.css',
+                        self.base_path + '/OEBPS/Styles/editormd.css')
         # 复制封面图片到相关目录
-        shutil.copyfile(settings.BASE_DIR+'/static/report_epub/epub_cover1.jpg',self.base_path + '/OEBPS/Images/epub_cover1.jpg')
+        shutil.copyfile(settings.BASE_DIR + '/static/report_epub/epub_cover1.jpg',
+                        self.base_path + '/OEBPS/Images/epub_cover1.jpg')
 
     # 将文档内容写入HTML文件
     def write_html(self, d, html_str):
         # 使用BeautifulSoup解析拼接好的HTML文本
         html_soup = BeautifulSoup(html_str, 'lxml')
         src_tag = html_soup.find_all(lambda tag: tag.has_attr("src"))  # 查找所有包含src的标签
-        mindmap_tag = html_soup.select('svg.mindmap') # 查找所有脑图的SVG标签
-        tex_tag = html_soup.select('.editormd-tex') # 查找所有公式标签
-        flowchart_tag = html_soup.select('.flowchart') # 查找所有流程图标签
-        seque_tag = html_soup.select('.sequence-diagram') # 查找所有时序图标签
-        echart_tag = html_soup.select('.echart') # 查找所有echart图表标签
-        code_tag = html_soup.find_all(name="code") # 查找code代码标签
-        iframe_tag = html_soup.find_all(name='iframe') # 查找iframe
+        mindmap_tag = html_soup.select('svg.mindmap')  # 查找所有脑图的SVG标签
+        tex_tag = html_soup.select('.editormd-tex')  # 查找所有公式标签
+        flowchart_tag = html_soup.select('.flowchart')  # 查找所有流程图标签
+        seque_tag = html_soup.select('.sequence-diagram')  # 查找所有时序图标签
+        echart_tag = html_soup.select('.echart')  # 查找所有echart图表标签
+        code_tag = html_soup.find_all(name="code")  # 查找code代码标签
+        iframe_tag = html_soup.find_all(name='iframe')  # 查找iframe
 
         # 添加css样式标签
-        style_link = html_soup.new_tag(name='link',href="../Styles/style.css",rel="stylesheet",type="text/css")
+        style_link = html_soup.new_tag(name='link', href="../Styles/style.css", rel="stylesheet", type="text/css")
         html_soup.body.insert_before(style_link)
-        editormd_link = html_soup.new_tag(name='link',href='../Styles/editormd.css',rel="stylesheet",type="text/css")
+        editormd_link = html_soup.new_tag(name='link', href='../Styles/editormd.css', rel="stylesheet", type="text/css")
         html_soup.body.insert_before(editormd_link)
 
         # 添加html标签的xmlns属性
@@ -282,14 +279,14 @@ class ReportEPUB():
         # 替换HTML文本中静态文件的相对链接为绝对链接
         for src in src_tag:
             if src['src'].startswith("/"):
-                src_path = src['src'] # 媒体文件原始路径
-                src_filename = src['src'].split("/")[-1] # 媒体文件名
-                src['src'] = '../Images/' + src_filename # 媒体文件在EPUB中的路径
+                src_path = src['src']  # 媒体文件原始路径
+                src_filename = src['src'].split("/")[-1]  # 媒体文件名
+                src['src'] = '../Images/' + src_filename  # 媒体文件在EPUB中的路径
                 # 复制文件到epub的Images文件夹
                 try:
                     shutil.copyfile(
-                        src= settings.BASE_DIR + src_path,
-                        dst= self.base_path + '/OEBPS/Images/' + src_filename
+                        src=settings.BASE_DIR + src_path,
+                        dst=self.base_path + '/OEBPS/Images/' + src_filename
                     )
                 except FileNotFoundError as e:
                     pass
@@ -328,16 +325,16 @@ class ReportEPUB():
             if d.content is None:
                 d.content = markdown.markdown(
                     d.pre_content,
-                    extensions=['markdown.extensions.fenced_code','markdown.extensions.tables']
+                    extensions=['markdown.extensions.fenced_code', 'markdown.extensions.tables']
                 )
             html_str += d.content
-            self.write_html(d=d,html_str=html_str) # 生成HTML
+            self.write_html(d=d, html_str=html_str)  # 生成HTML
             # 生成HTML的目录位置
             toc = {
-                'id':d.id,
-                'link':'{}.xhtml'.format(d.id),
-                'pid':d.parent_doc,
-                'title':d.name
+                'id': d.id,
+                'link': '{}.xhtml'.format(d.id),
+                'pid': d.parent_doc,
+                'title': d.name
             }
             self.toc_list.append(toc)
 
@@ -345,11 +342,11 @@ class ReportEPUB():
             toc_nav = '''<navPoint id="np_{nav_num}" playOrder="{nav_num}">
                     <navLabel><text>{title}</text></navLabel>
                     <content src="Text/{file}"/>
-                '''.format(nav_num=nav_num,title=d.name,file=toc['link'])
+                '''.format(nav_num=nav_num, title=d.name, file=toc['link'])
             nav_str += toc_nav
 
             # toc_summary
-            toc_summary_str += '''<li><a href="./{}">{}</a>'''.format(toc['link'],toc['title'])
+            toc_summary_str += '''<li><a href="./{}">{}</a>'''.format(toc['link'], toc['title'])
             # content.opf
             manifest += '<item id="{}" href="Text/{}.xhtml" media-type="application/xhtml+xml"/>'.format(d.id, d.id)
             spine += '<itemref idref="{}"/>'.format(d.id)
@@ -357,7 +354,7 @@ class ReportEPUB():
             nav_num += 1
 
             # 获取第二级文档
-            data_2 = Doc.objects.filter(parent_doc=d.id,status=1).order_by("sort")
+            data_2 = Doc.objects.filter(parent_doc=d.id, status=1).order_by("sort")
             if data_2.count() > 0:
                 toc_summary_str += '<ul>'
             for d2 in data_2:
@@ -368,7 +365,7 @@ class ReportEPUB():
                         extensions=['markdown.extensions.fenced_code', 'markdown.extensions.tables']
                     )
                 html_str += d2.content
-                self.write_html(d=d2,html_str=html_str)
+                self.write_html(d=d2, html_str=html_str)
                 # 生成HTML的目录位置
                 toc = {
                     'id': d2.id,
@@ -386,13 +383,14 @@ class ReportEPUB():
                 # toc_summary
                 toc_summary_str += '''<li><a href="./{}">{}</a>'''.format(toc['link'], toc['title'])
                 # content.opf
-                manifest += '<item id="{}" href="Text/{}.xhtml" media-type="application/xhtml+xml"/>'.format(d2.id, d2.id)
+                manifest += '<item id="{}" href="Text/{}.xhtml" media-type="application/xhtml+xml"/>'.format(d2.id,
+                                                                                                             d2.id)
                 spine += '<itemref idref="{}"/>'.format(d2.id)
 
                 nav_num += 1
 
                 # 获取第三级文档
-                data_3 = Doc.objects.filter(parent_doc=d2.id,status=1).order_by("sort")
+                data_3 = Doc.objects.filter(parent_doc=d2.id, status=1).order_by("sort")
                 if data_3.count() > 0:
                     toc_summary_str += '<ul>'
                 for d3 in data_3:
@@ -404,7 +402,7 @@ class ReportEPUB():
                             extensions=['markdown.extensions.fenced_code', 'markdown.extensions.tables']
                         )
                     html_str += d3.content
-                    self.write_html(d=d3,html_str=html_str)
+                    self.write_html(d=d3, html_str=html_str)
                     # 生成HTML的目录位置
                     toc = {
                         'id': d3.id,
@@ -425,7 +423,7 @@ class ReportEPUB():
                     toc_summary_str += '''<li><a href="./{}">{}</a></li>'''.format(toc['link'], toc['title'])
                     # content.opf
                     manifest += '<item id="{}" href="Text/{}.xhtml" media-type="application/xhtml+xml"/>'.format(d3.id,
-                                                                                                                d3.id)
+                                                                                                                 d3.id)
                     spine += '<itemref idref="{}"/>'.format(d3.id)
 
                     nav_num += 1
@@ -474,9 +472,9 @@ class ReportEPUB():
         '''.format(
             title=self.project.name,
             author=self.project.create_user,
-            create_time = time.strftime('%Y{y}%m{m}%d{d}').format(y='年',m='月',d='日')
+            create_time=time.strftime('%Y{y}%m{m}%d{d}').format(y='年', m='月', d='日')
         )
-        with open(self.base_path+'/OEBPS/Text/book_title.xhtml','a+',encoding='utf-8') as file:
+        with open(self.base_path + '/OEBPS/Text/book_title.xhtml', 'a+', encoding='utf-8') as file:
             file.write(title_str)
 
         desc_str = '''<?xml version="1.0" encoding="UTF-8"?>
@@ -494,7 +492,7 @@ class ReportEPUB():
             </body>
             </html>
         '''.format(desc=self.project.intro)
-        with open(self.base_path+'/OEBPS/Text/book_desc.xhtml','a+',encoding='utf-8') as file:
+        with open(self.base_path + '/OEBPS/Text/book_desc.xhtml', 'a+', encoding='utf-8') as file:
             file.write(desc_str)
 
     # 生成元信息container.xml文件
@@ -507,12 +505,12 @@ class ReportEPUB():
             </container>
             '''
         folder = self.base_path + '/META-INF'
-        with open(folder+'/container.xml','a+',encoding='utf-8') as metafile:
+        with open(folder + '/container.xml', 'a+', encoding='utf-8') as metafile:
             metafile.write(xml)
 
     # 生成元类型mimetype文件
     def generate_metatype(self):
-        with open(self.base_path+'/mimetype','a+',encoding='utf-8') as metatype:
+        with open(self.base_path + '/mimetype', 'a+', encoding='utf-8') as metatype:
             metatype.write('application/epub+zip')
 
     # 生成封面
@@ -535,7 +533,7 @@ class ReportEPUB():
             </body>
             </html>
         '''
-        with open(self.base_path + '/OEBPS/Text/book_cover.xhtml','a+', encoding='utf-8') as cover:
+        with open(self.base_path + '/OEBPS/Text/book_cover.xhtml', 'a+', encoding='utf-8') as cover:
             cover.write(xml_str)
 
     # 生成文档目录.ncx文件
@@ -554,9 +552,9 @@ class ReportEPUB():
               </docTitle>
               {nav_map}
             </ncx>
-        '''.format(title=self.project.name,nav_map=self.nav_str)
+        '''.format(title=self.project.name, nav_map=self.nav_str)
 
-        with open(self.base_path+'/OEBPS/toc.ncx','a+',encoding='utf-8') as file:
+        with open(self.base_path + '/OEBPS/toc.ncx', 'a+', encoding='utf-8') as file:
             file.write(ncx)
 
     # 生成文档目录toc_summary.html文件
@@ -578,7 +576,7 @@ class ReportEPUB():
             </html>
         ''' % (self.toc_summary_str)
 
-        with open(self.base_path+'/OEBPS/Text/toc_summary.xhtml','a+',encoding='utf-8') as file:
+        with open(self.base_path + '/OEBPS/Text/toc_summary.xhtml', 'a+', encoding='utf-8') as file:
             file.write(summary)
 
     # 生成content.opf文件
@@ -613,15 +611,15 @@ class ReportEPUB():
             </package>
             '''
 
-        with open(self.base_path+'/OEBPS/content.opf','a+',encoding='utf-8') as file:
+        with open(self.base_path + '/OEBPS/content.opf', 'a+', encoding='utf-8') as file:
             file.write(
                 content_info.format(
-                    title = self.project.name,
-                    creator = self.project.create_user,
-                    create_time = str(datetime.date.today()),
+                    title=self.project.name,
+                    creator=self.project.create_user,
+                    create_time=str(datetime.date.today()),
                     desc=self.project.intro,
                     manifest=self.manifest,
-                    spine = self.spine,
+                    spine=self.spine,
                 )
             )
 
@@ -629,15 +627,16 @@ class ReportEPUB():
     def generate_epub(self):
         try:
             # 生成ZIP压缩文件
-            zipfile_name = settings.MEDIA_ROOT + '/report_epub/{}'.format(self.project.name)+'_'+str(int(time.time()))
+            zipfile_name = settings.MEDIA_ROOT + '/report_epub/{}'.format(self.project.name) + '_' + str(
+                int(time.time()))
             zip_name = shutil.make_archive(
-                base_name = zipfile_name,
+                base_name=zipfile_name,
                 format='zip',
-                root_dir= settings.MEDIA_ROOT + '/report_epub/{}'.format(self.project.id)
+                root_dir=settings.MEDIA_ROOT + '/report_epub/{}'.format(self.project.id)
             )
             # print(zip_name)
             # 修改zip压缩文件后缀为EPUB
-            os.rename(zip_name,zipfile_name+'.epub')
+            os.rename(zip_name, zipfile_name + '.epub')
             # 删除生成的临时文件夹
             shutil.rmtree(self.base_path)
             return zipfile_name
@@ -647,14 +646,14 @@ class ReportEPUB():
             return None
 
     def work(self):
-        self.generate_html() # 生成HTML
-        self.generate_metainfo() # 生成元信息
-        self.generate_metatype() # 生成元类型
-        self.generate_toc_ncx() # 生成目录ncx
-        self.generate_toc_html() # 生成目录html
-        self.generate_cover() # 生成封面html
-        self.generate_title_html() # 生产书籍的标题页和简介页
-        self.generate_opf() # 生成content.opf
+        self.generate_html()  # 生成HTML
+        self.generate_metainfo()  # 生成元信息
+        self.generate_metatype()  # 生成元类型
+        self.generate_toc_ncx()  # 生成目录ncx
+        self.generate_toc_html()  # 生成目录html
+        self.generate_cover()  # 生成封面html
+        self.generate_title_html()  # 生产书籍的标题页和简介页
+        self.generate_opf()  # 生成content.opf
         epub_file = self.generate_epub()
         return epub_file
 
@@ -662,7 +661,7 @@ class ReportEPUB():
 # 导出PDF
 @logger.catch()
 class ReportPDF():
-    def __init__(self,project_id,user_id):
+    def __init__(self, project_id, user_id):
         # 查询空间信息
         self.pro_id = project_id
         self.user_id = user_id
@@ -759,7 +758,7 @@ class ReportPDF():
     def work(self):
         try:
             user = User.objects.get(id=self.user_id)
-            project = Project.objects.get(pk=self.pro_id,create_user=user)
+            project = Project.objects.get(pk=self.pro_id, create_user=user)
         except ObjectDoesNotExist:
             logger.error("查询空间或用户失败")
             return False
@@ -767,26 +766,26 @@ class ReportPDF():
             logger.exception("未知异常")
             return False
         # 拼接文档的HTML字符串
-        data = Doc.objects.filter(top_doc=self.pro_id,parent_doc=0,status=1).order_by("sort")
-        toc_list = {'1':[],'2':[],'3':[]}
+        data = Doc.objects.filter(top_doc=self.pro_id, parent_doc=0, status=1).order_by("sort")
+        toc_list = {'1': [], '2': [], '3': []}
         for d in data:
             self.content_str += "<h1 style='page-break-before: always;'>{}</h1>\n\n".format(d.name)
-            if d.editor_mode in [1,2]:
+            if d.editor_mode in [1, 2]:
                 self.content_str += d.pre_content + '\n'
             elif d.editor_mode == 3:
                 self.content_str += d.content + '\n'
-            toc_list['1'].append({'id':d.id,'name':d.name})
+            toc_list['1'].append({'id': d.id, 'name': d.name})
             # 获取第二级文档
-            data_2 = Doc.objects.filter(parent_doc=d.id,status=1).order_by("sort")
+            data_2 = Doc.objects.filter(parent_doc=d.id, status=1).order_by("sort")
             for d2 in data_2:
                 self.content_str += "\n\n<h1 style='page-break-before: always;'>{}</h1>\n\n".format(d2.name)
                 if d2.editor_mode in [1, 2]:
                     self.content_str += d2.pre_content + '\n'
                 elif d2.editor_mode == 3:
                     self.content_str += d2.content + '\n'
-                toc_list['2'].append({'id':d2.id,'name':d2.name,'parent':d.id})
+                toc_list['2'].append({'id': d2.id, 'name': d2.name, 'parent': d.id})
                 # 获取第三级文档
-                data_3 = Doc.objects.filter(parent_doc=d2.id,status=1).order_by("sort")
+                data_3 = Doc.objects.filter(parent_doc=d2.id, status=1).order_by("sort")
                 for d3 in data_3:
                     # print(d3.name,d3.content)
                     self.content_str += "\n\n<h1 style='page-break-before: always;'>{}</h1>\n\n".format(d3.name)
@@ -794,20 +793,20 @@ class ReportPDF():
                         self.content_str += d3.pre_content + '\n'
                     elif d3.editor_mode == 3:
                         self.content_str += d3.content + '\n'
-                    toc_list['3'].append({'id':d3.id,'name':d3.name,'parent':d2.id})
+                    toc_list['3'].append({'id': d3.id, 'name': d3.name, 'parent': d2.id})
 
         # 替换所有媒体文件链接
-        self.content_str = self.content_str.replace('![](/media/','![](../../media/')
+        self.content_str = self.content_str.replace('![](/media/', '![](../../media/')
         # print(self.html_str.format(pre_content=self.content_str))
 
         # 创建写入临时HTML文件
-        report_pdf_folder = settings.MEDIA_ROOT+'/report_pdf'
+        report_pdf_folder = settings.MEDIA_ROOT + '/report_pdf'
         is_folder = os.path.exists(report_pdf_folder)
         # 创建文件夹
         if is_folder is False:
             os.mkdir(report_pdf_folder)
         # 临时HTML和PDF文件名
-        temp_file_name =  '{}_{}'.format(
+        temp_file_name = '{}_{}'.format(
             project.name,
             str(datetime.datetime.today()).replace(' ', '-').replace(':', '-')
         )
@@ -829,7 +828,7 @@ class ReportPDF():
 
         # 执行HTML转PDF
         try:
-            convert('file://'+temp_file_path,report_file_path)
+            convert('file://' + temp_file_path, report_file_path)
         except:
             logger.exception(_("生成PDF出错"))
             return False
@@ -843,7 +842,7 @@ class ReportPDF():
 
 # 导出Docx
 class ReportDocx():
-    def __init__(self,project_id):
+    def __init__(self, project_id):
         self.project = Project.objects.get(id=project_id)
         self.base_path = settings.MEDIA_ROOT + '/report/{}/'.format(project_id)
 
@@ -946,7 +945,7 @@ class ReportDocx():
 
     def work(self):
         # 拼接HTML字符串
-        data = Doc.objects.filter(top_doc=self.project.id,parent_doc=0,status=1).order_by("sort")
+        data = Doc.objects.filter(top_doc=self.project.id, parent_doc=0, status=1).order_by("sort")
         for d in data:
             # print(d.name,d.content)
             self.content_str += "<h1 style='page-break-before: always;'>{}</h1>".format(d.name)
@@ -964,8 +963,8 @@ class ReportDocx():
                     self.content_str += d3.content
 
         # 使用BeautifulSoup解析拼接好的HTML文本
-        soup = BeautifulSoup(self.content_str,'lxml')
-        src_tag = soup.find_all(lambda tag:tag.has_attr("src")) # 查找所有包含src的标签
+        soup = BeautifulSoup(self.content_str, 'lxml')
+        src_tag = soup.find_all(lambda tag: tag.has_attr("src"))  # 查找所有包含src的标签
         print(src_tag)
 
         # 替换HTML文本中静态文件的相对链接为绝对链接
