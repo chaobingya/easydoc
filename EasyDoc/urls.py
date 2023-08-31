@@ -40,6 +40,13 @@ urlpatterns = [
     #      name='django.contrib.sitemaps.views.sitemap')  # 站点地图
 ]
 
+if settings.SITEMAP:
+    urlpatterns.extend([
+        path('sitemap.xml', views.index, {'sitemaps': sitemaps,'template_name':'sitemap/sitemap-index.xml'},name='sitemap',), # 站点地图索引
+        path('sitemap-<section>.xml', views.sitemap, {'sitemaps': sitemaps,'template_name':'sitemap/sitemap.xml'},
+             name='django.contrib.sitemaps.views.sitemap'),  # 站点地图
+    ])
+
 if settings.DEBUG:
     urlpatterns.append(
         re_path('^static/(?P<path>.*)$', serve, {'document_root': settings.STATICFILES_DIR}),  # 静态文件

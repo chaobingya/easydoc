@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -65,3 +67,18 @@ class RegisterCode(models.Model):
     class Meta:
         verbose_name = '注册邀请码'
         verbose_name_plural = verbose_name
+
+
+# 操作日志表
+class UserLog(models.Model):
+    id = models.AutoField(primary_key=True)
+    time = models.CharField(max_length=32, auto_created=datetime.datetime.now(),verbose_name='时间')
+    user = models.CharField(max_length=32,default='匿名', verbose_name='用户')
+    ip = models.CharField(max_length=32, verbose_name='请求IP')
+    moudle = models.CharField(max_length=255, verbose_name='模块')
+    method = models.CharField(max_length=11, verbose_name='动作')
+    status = models.BooleanField(default=False, verbose_name='状态')
+    content = models.TextField(null=True, max_length=255, verbose_name='详情')
+
+    class Meta:
+        db_table = 'user_log'

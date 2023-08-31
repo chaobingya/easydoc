@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',  # 站点地图
     'rest_framework',
     'corsheaders',
+
 ]
 
 MIDDLEWARE = [
@@ -73,6 +74,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'app_admin.middleware.require_login_middleware.RequiredLoginMiddleware',
+    'app_admin.middleware.log_middleware.UserLogs'
 ]
 
 ROOT_URLCONF = 'EasyDoc.urls'
@@ -244,6 +246,13 @@ except ImportError:
 X_FRAME_OPTIONS = CONFIG.get("x_frame", "option", fallback='SAMEORIGIN')
 DATA_UPLOAD_MAX_MEMORY_SIZE = None
 
+# CSRF 可信来源
+csrf_str = CONFIG.get("csrf_origin","allow",fallback=[])
+if csrf_str == []:
+    CSRF_TRUSTED_ORIGINS = csrf_str
+else:
+    CSRF_TRUSTED_ORIGINS = csrf_str.split(',')
+
 # 跨域请求配置
 cors_str = CONFIG.get("cors_origin", "allow", fallback=[])
 capacitor_origins = ['http://localhost', 'capacitor://localhost']
@@ -251,7 +260,8 @@ if not cors_str:
     CORS_ALLOWED_ORIGINS = capacitor_origins
 else:
     CORS_ALLOWED_ORIGINS = capacitor_origins + cors_str.split(',')
-
+# sitemap 站点地图
+SITEMAP = CONFIG.getboolean('sitemap','status',fallback=True)
 # 设置redis缓存。这里密码为redis.conf里设置的密码
 CACHES = {
     "default": {
@@ -272,3 +282,25 @@ SESSION_SAVE_EVERY_REQUEST = True  # 是否每次请求都保存Session，需要
 
 # 更新4.2django，默认指定主键
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# 日志
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+    },
+}

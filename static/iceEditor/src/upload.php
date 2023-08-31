@@ -21,6 +21,9 @@ session_start();
 
 
 /*********************** 上传项配置区 开始 ***********************/
+//获取域名
+$http = (isHttps() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'];
+
 // 绝对路径
 define('URL',str_ireplace(str_replace("/","\\",$_SERVER['PHP_SELF']),'',__FILE__));
 
@@ -37,9 +40,9 @@ $type = ['jpg','jpeg','png','gif','bmp','exe','flv','swf','mkv','avi','rm','rmvb
 $maxSize = 30 * 102400;
 
 //上传文件的名称命名方式，默认以'time'方式命名
-//time 将以时间戳+数字排序
-//fileName 将以文件原来的名称命名，如果该文件含有中文，则自动改为time形式命名
-//填写其它字符串（禁止填写中文），将以该字符串形式命名，如果为批量上传，则将该字符串后面添加数字排序防止重名
+//time 将以时间戳+数字排序     
+//fileName 将以文件原来的名称命名，如果该文件含有中文，则自动改为time形式命名  
+//填写其它字符串（禁止填写中文），将以该字符串形式命名，如果为批量上传，则将该字符串后面添加数字排序防止重名  
 $rename = 'time';
 /*********************** 上传项配置区 结束 ***********************/
 
@@ -56,20 +59,22 @@ $url = [];
 //网络图片下载到本地
 if(isset($_POST['iceEditor-img']) && $_POST['iceEditor-img']){
 	$fileExt = file_ext($_POST['iceEditor-img']);
-	$img = file_get_contents($_POST['iceEditor-img']);
-
-	$info = pathinfo($_POST['iceEditor-img']);
-
-	$name = file_rename($info['basename']);
-
-	//判断文件类型是否允许上传
-	if (!$img || !in_array($fileExt,['jpg','jpeg','png','gif','bmp'])){
+	$img = @file_get_contents($_POST['iceEditor-img']);
+	if(!$img){
 		$url['error'] = 1;
 		$url['url'] = '';
-	}
-	if(file_put_contents(URL.$dir.$name, $img)){
-		$url['error'] = 0;
-		$url['url'] = $dir.$name;
+	}else{
+		$info = pathinfo($_POST['iceEditor-img']);
+		$name = file_rename($info['basename']);
+		//判断文件类型是否允许上传
+		if (!$img || !in_array($fileExt,['jpg','jpeg','png','gif','bmp'])){
+			$url['error'] = 1;
+			$url['url'] = '';
+		}
+		if(file_put_contents(URL.$dir.$name, $img)){
+			$url['error'] = 0;
+			$url['url'] = $http.$dir.$name;
+		}
 	}
 	echo json_encode($url);
 	exit;
@@ -114,13 +119,25 @@ foreach ($keys as $key){
 	}
 
 	//获取文件的完整url地址
-	$url[$key]['url'] = $dir.$name;
+	$url[$key]['url'] = $http.$dir.$name;
 	$url[$key]['name'] = $fileName.'.'.$fileExt;
 	$url[$key]['error'] = $error;
 	if(!$error){
 		//将上传的文件移动到指定目录
 		move_uploaded_file($_FILES[$field]["tmp_name"][$key],URL.$dir.$name);
 	}
+}
+
+//判断当前协议是否为HTTPS
+function isHttps() {
+	if (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') {
+		return true;
+	} elseif (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+		return true;
+	} elseif (!empty($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off') {
+		return true;
+	}
+	return false;
 }
 
 //获取文件后缀名，不包含 .

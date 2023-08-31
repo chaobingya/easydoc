@@ -194,14 +194,12 @@ function createMarkdownDividerRow(cellCount) {
 // 文档浏览器缓存
 function autoCacheDoc(){
   setInterval(() => {
-      if(editor_mode === 1){
+      if(editor_mode == 1){
         var editor_value = editor.getMarkdown()
-      }else if(editor_mode === 2){
+      }else if(editor_mode == 2){
         var editor_value = editor.getValue()
-      }else if(editor_mode === 3){
+      }else if(editor_mode == 3){
         var editor_value = editor.getHTML()
-      }else if(editor_mode === 5){
-        var editor_value = editor.getHTML();
       }
       window.localStorage.setItem('mrdoc_doc_cache',editor_value)
   }, 10000);
@@ -259,7 +257,7 @@ $("div.editormd-preview").on('click','a',function(e){
 })
 
 /*
-    小屏幕下的空间大纲显示处理
+    小屏幕下的文集大纲显示处理
 */
 //监听浏览器宽度的改变
 window.onresize = function(){
@@ -280,7 +278,7 @@ function changeSidebar(){
 // 监听文档div点击
 document.querySelector('.doc-body').addEventListener('click', function (e) {
     var screen_width = window.matchMedia('(max-width: 768px)');
-    // 小屏下收起左侧空间大纲
+    // 小屏下收起左侧文集大纲
     if(screen_width.matches){
         // console.log("点击了div")
         changeSidebar();
@@ -290,7 +288,7 @@ document.querySelector('.doc-body').addEventListener('click', function (e) {
 /* 
     切换隐藏侧边栏
 */
-// 初始化左侧空间大纲状态
+// 初始化左侧文集大纲状态
 function init_sidebar(){
     var screen_width = window.matchMedia('(max-width: 768px)');
     if(screen_width.matches){}else{
@@ -577,45 +575,6 @@ $("#doc-tag-set").click(function(){
         btn:['确定']
     })
 });
-
-
-// 按钮上传pdf文档
-var upload_pdf_doc = layui.upload;
-upload_pdf_doc.render({
-    elem:"#import-doc-pdf",
-    url:"/import/doc_pdf/",
-    data:{'type':'pdf','editor_mode':editor_mode},
-    before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
-        layer.load(1); //上传loading
-    },
-    accept: 'file', //允许上传的文件类型
-    exts:'pdf',
-    field:'import-doc-pdf',
-    done: function(res, index, upload){ //上传后的回调
-        //上传成功，刷新页面
-        if(res.status){
-            if(editor_mode == 3){
-                editor.addValue(res.data)
-            }else if(editor_mode == 1){
-                editor.insertValue(res.data);
-            }else if(editor_mode == 5){
-                editor.addValue(res.data);
-            }else if(editor_mode == 2){
-                editor.setValue(res.data);
-            }
-            layer.closeAll();
-            layer.msg("导入成功");
-        }else{
-            layer.closeAll('loading');
-            layer.msg(res.data)
-        }
-    },
-    error:function(){
-        layer.closeAll('loading'); //关闭loading
-        layer.msg("系统异常，请稍后再试！")
-    },
-});
-
 
 // 粘贴表格文本框侦听paste粘贴事件
 // 列宽的函数

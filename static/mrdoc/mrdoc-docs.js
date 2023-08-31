@@ -1,6 +1,6 @@
 /*
     ########################################################
-    ### 空间、文档等前台浏览页面通用JavaScript函数和变量定义 ###
+    ### 文集、文档等前台浏览页面通用JavaScript函数和变量定义 ###
     ########################################################
 */
 
@@ -58,7 +58,7 @@ tagCurrentDoc = function(){
 tagCurrentDoc();
 
 /*
-    小屏幕下的空间大纲显示处理
+    小屏幕下的文集大纲显示处理
 */
 //监听浏览器宽度的改变
 var browserWidth = document.documentElement.clientWidth;
@@ -88,7 +88,7 @@ function changeSidebar(){
 // 监听文档div点击
 document.querySelector('.doc-body').addEventListener('click', function (e) {
     var screen_width = window.matchMedia('(max-width: 768px)');
-    // 小屏下收起左侧空间大纲
+    // 小屏下收起左侧文集大纲
     if(screen_width.matches){
         // console.log("点击了div")
         changeSidebar();
@@ -98,7 +98,7 @@ document.querySelector('.doc-body').addEventListener('click', function (e) {
 /* 
     切换隐藏侧边栏
 */
-// 初始化左侧空间大纲状态
+// 初始化左侧文集大纲状态
 function init_sidebar(){
     var screen_width = window.matchMedia('(max-width: 768px)');
     if(screen_width.matches){}else{
@@ -144,6 +144,49 @@ function toggleSidebar(){
         }
     }
     return false;
+}
+
+const darkmode =  new Darkmode({
+    autoMatchOsTheme:false,
+
+});
+
+// 页面初始化夜间模式
+initTheme = function(){
+    themeDarkStatus = window.localStorage.getItem("theme-dark")
+    // 如果本地存储为夜间模式
+    if(themeDarkStatus == '1' && $("html").hasClass("theme-dark") == false){
+        $("html").toggleClass("theme-dark")
+        $(".theme-switch i").removeClass("fa-moon-o")
+        $(".theme-switch i").addClass("fa-sun-o")
+    }
+    console.log(darkmode.isActivated())
+    if(darkmode.isActivated()){
+        darkmode.toggle()
+    }
+}
+initTheme();
+// 切换日/夜间模式
+$(function(){
+    $(".theme-switch").click(toggleDark);
+});
+function toggleDark(){
+    if($("html").hasClass("theme-dark")){
+        window.localStorage.removeItem("theme-dark")
+        $(".theme-switch i").removeClass("fa-sun-o")
+        $(".theme-switch i").addClass("fa-moon-o")
+        $("a.theme-switch").attr("title","切换至夜间模式")
+    }else{
+        window.localStorage.setItem("theme-dark","1")
+        $(".theme-switch i").removeClass("fa-moon-o")
+        $(".theme-switch i").addClass("fa-sun-o")
+        $("a.theme-switch").attr("title","切换至日间模式")
+    }
+    $("html").toggleClass("theme-dark");
+    console.log(darkmode.isActivated())
+    if(darkmode.isActivated()){
+        darkmode.toggle();
+    }
 }
 
 /*
@@ -329,7 +372,7 @@ doc_qrcode = function(){
 doc_qrcode();
 
 /* 
-    空间水印
+    文集水印
 */
 textBecomeImg = function(text,fontsize,fontcolor){
     var canvas = document.createElement('canvas');
@@ -352,7 +395,7 @@ function initWhterMark(value){
     document.getElementById("wm").style.background = 'url('+ img_base64 + ')';
 }
 
-// 空间、文档收藏函数
+// 文集、文档收藏函数
 function collect(id,type){
     $.ajax({
         url:'/my_collect/',
@@ -367,7 +410,7 @@ function collect(id,type){
     });
 
 }
-// 收藏空间
+// 收藏文集
 $("#collect_pro").click(function(e){
     $(this).toggleClass("layui-icon-star-fill layui-icon-star");
     $(this).toggleClass("collected");
@@ -382,7 +425,7 @@ $("#collect_doc").click(function(){
 
 /*
     ########################################################
-    ### 空间阅读页面JavaScript函数和变量定义 ###
+    ### 文集阅读页面JavaScript函数和变量定义 ###
     ########################################################
 */
 
@@ -507,20 +550,7 @@ function keyLight(id, key, bgColor){
     // console.log(id,key,decodeURI(key))
     if(key != false){
         key = decodeURI(key);
-        var oDiv = document.getElementById(id),
-        sText = oDiv.innerHTML,
-        num = -1,
-        rStr = new RegExp(key, "ig"),
-        rHtml = new RegExp("\<.*?\>","ig"), //匹配html元素
-        aHtml = sText.match(rHtml), //存放html元素的数组
-        sText = sText.replace(rHtml, '{~}');  //替换html标签
-        sText = sText.replace(rStr,function(text){
-            return "<mark>" + text +"</mark>"
-        }); //替换key
-        sText = sText.replace(/{~}/g,function(){  //恢复html标签
-                num++;
-                return aHtml[num];
-        });
-        oDiv.innerHTML = sText;
+        var markInstance = new Mark(document.getElementById(id));
+        markInstance.mark(key);
     }
 };

@@ -2,7 +2,8 @@ django
 beautifulsoup4
 lxml
 pillow
-loguru
+loguru==0.6.0
+importlib-metadata
 djangorestframework
 requests
 setuptools-scm
@@ -19,6 +20,5 @@ django-cors-headers
 pdf2docx
 mysqlclient
 uwsgi
-# redis
 django-redis
 redis

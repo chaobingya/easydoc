@@ -70,7 +70,7 @@ a {
     width: 480px;
     height: 120px;
     margin: 20px auto;
-    background: url(/static/search/mrdoc_search_logo.png) no-repeat center/cover;
+    background: url(/static/search/mrdoc_search_logo.svg) no-repeat center/cover;
 }
 
 .con .shlogo a {

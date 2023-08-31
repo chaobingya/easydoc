@@ -5,6 +5,7 @@ urlpatterns = [
     path('', views.project_list, name='pro_list'),  # 文档首页
     #################空间相关
     path('project-<int:pro_id>/', views.project_index, name='pro_index'),  # 空间浏览页
+    path('project/<int:pro_id>/', views.project_index, name='pro_index_id'),  # 文集浏览页
     path('create_project/', views.create_project, name='create_project'),  # 新建空间
     path('get_pro_doc/', views.get_pro_doc, name="get_pro_doc"),  # 获取某个空间的下级文档
     path('get_pro_doc_tree/', views.get_pro_doc_tree, name="get_pro_doc_tree"),  # 获取某个空间的下级文档树数据

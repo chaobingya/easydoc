@@ -40,7 +40,7 @@
         }
         {% endif %}
         {% if long_code == 'on' %}
-        pre.linenums,.vditor-reset > pre > code{
+        pre.linenums,pre.line-numbers,.vditor-reset > pre > code{
             max-height: max-content!important;
         }
         {% endif %}
@@ -75,6 +75,9 @@
             <a class="btn pull-left font-switch" href="javascript:void(0);" title="{% trans '切换字体类型' %}">
                 <i class="fa fa-text-height"></i>
             </a>
+            <a class="btn pull-left theme-switch" href="javascript:void(0);" title="{% trans '切换至夜间模式' %}">
+                <i class="fa fa-moon-o"></i>
+            </a>
             <!-- 顶部工具栏 -->
             {% block head_toolbar %}
             <!-- 文档目录 -->
@@ -97,7 +100,7 @@
                     </div>
                     <!-- 标题结束 -->
                     <!-- 正文开始 -->
-                    <div class="markdown-body" id="content" style="padding: 20px;padding-top: 5px;">
+                    <div class="markdown-body" id="content">
                         {% block page_content %}
                         {% if doc.editor_mode == 3 %}
                             {{ doc.content | safe }}
@@ -117,8 +120,8 @@
                         {% endblock %}
                     </div>
                     <!-- 正文结束 -->
+                    <hr>
                 </div>
-                <hr>
                 <!-- 分享栏 -->
                 <div style="color: rgba(0,0,0,.65);padding-bottom: 10px;margin-top: 10px;">
                 {% block doc_bottom_block %}
@@ -166,7 +169,7 @@
         </div>
         <div class="layui-tab-item" align='center'>
             <input type="text" id="copy_crt_url" name="current_url" class="layui-input" /><br>
-            <button class="layui-btn layui-btn-radius layui-btn-xs" style="background-color: #333;" id="copy_doc_url"">{% trans "复制链接" %}</button>
+            <button class="layui-btn layui-btn-radius layui-btn-xs" style="background-color: #333;" id="copy_doc_url">{% trans "复制链接" %}</button>
         </div>
     </div>
     </div>
@@ -176,6 +179,7 @@
 <script src="{% static 'layui/layui.js' %}?version={{mrdoc_version}}"></script>
 <script src="{% static 'viewerjs/viewer.min.js' %}?version={{mrdoc_version}}"></script>
 <script src="{% static 'qrcodejs/qrcode.min.js' %}?version={{mrdoc_version}}"></script>
+<script src="{% static 'darkmode-js/darkmode-js.min.js' %}?version={{mrdoc_version}}"></script>
 <script src="{% static 'mrdoc/mrdoc-docs.js' %}?version={{mrdoc_version}}"></script>
 <script src="{% static 'iconFont/iconfont.js' %}?version={{mrdoc_version}}"></script>
 <script src="{% static 'editor.md/lib/purify.min.js' %}?version={{mrdoc_version}}"></script>

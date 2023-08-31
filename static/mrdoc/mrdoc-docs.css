@@ -1,3 +1,7 @@
+/* 文档夜间模式 */
+html.theme-dark{
+    filter: invert(1) hue-rotate(180deg);
+}
 /*一级无序li显示实心圆点*/
 .doc-content ul li{
     list-style:disc;
@@ -65,7 +69,7 @@ ul.markdown-toc-list a{
 ol.linenums li{ 
     width: max-content;
 }
-pre.linenums{
+pre.linenums,pre.line-numbers{
     max-height: 500px;
 }
 li.L1, li.L3, li.L5, li.L7, li.L9 {
@@ -109,13 +113,13 @@ li.L1, li.L3, li.L5, li.L7, li.L9 {
     cursor: pointer;
 }
 
-/* 空间大纲图标 */
+/* 文集大纲图标 */
 i.switch-toc{
     padding:10px;
     cursor: pointer;
 }
 
-/* 空间大纲样式 */
+/* 文集大纲样式 */
 ul#doc-tree{
     padding-left: 0;
 }

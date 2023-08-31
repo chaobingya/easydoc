@@ -18,11 +18,32 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
+from bs4 import BeautifulSoup
+import subprocess
+import datetime,time
+import re
+import os,sys
+import shutil
+
+
+from django.core.wsgi import get_wsgi_application
+sys.path.extend([settings.BASE_DIR])
+os.environ.setdefault("DJANGO_SETTINGS_MODULE","EasyDoc.settings")
+application = get_wsgi_application()
+import django
+django.setup()
+from app_doc.models import *
+from subprocess import Popen
 from loguru import logger
 
 from app_doc.models import Project, Doc
 from app_doc.report_html2pdf import convert
-
+import traceback
+import time
+import markdown
+import yaml
+import pathlib
+from urllib.parse import unquote
 
 # from pdfminer import high_level
 
@@ -149,6 +170,9 @@ class ReportMD():
         pattern = r"\!\[.*?\]\(.*?\)"
         media_list = re.findall(pattern, md_content)
         # print(media_list)
+        # 查找<img>标签形式的静态图片
+        img_pattern = r'<img[^>]*/>'
+        img_list = re.findall(img_pattern, md_content)
         # 存在静态文件,进行遍历
         if len(media_list) > 0:
             for media in media_list:
@@ -168,14 +192,34 @@ class ReportMD():
                     md_content = md_content.replace(media_filename, "." + media_filename)
                     # 复制静态文件到指定文件夹
                     try:
-                        shutil.copy(settings.BASE_DIR + media_filename, self.media_path + sub_folder)
+                        new_file_path = pathlib.Path(settings.BASE_DIR,unquote(media_filename)[1:])
+                        shutil.copy(new_file_path, self.media_path + sub_folder)
                     except FileNotFoundError:
                         pass
-
-            return md_content
-        # 不存在静态文件，直接返回MD内容
-        else:
-            return md_content
+        if len(img_list) > 0:
+            for media in img_list:
+                try:
+                    media_filename = re.findall('src="([^"]+)"', media)[0]
+                except:
+                    continue
+                # 对本地静态文件进行复制
+                if media_filename.startswith("/media"):
+                    # print(media_filename)
+                    sub_folder = "/" + media_filename.split("/")[2]  # 获取子文件夹的名称
+                    # print(sub_folder)
+                    is_sub_folder = os.path.exists(self.media_path + sub_folder)
+                    # 创建子文件夹
+                    if is_sub_folder is False:
+                        os.mkdir(self.media_path + sub_folder)
+                    # 替换MD内容的静态文件链接
+                    md_content = md_content.replace(media_filename, "." + media_filename)
+                    # 复制静态文件到指定文件夹
+                    try:
+                        new_file_path = pathlib.Path(settings.BASE_DIR,unquote(media_filename)[1:])
+                        shutil.copy(new_file_path, self.media_path + sub_folder)
+                    except FileNotFoundError:
+                        pass
+        return md_content
 
 
 # 批量导出空间Markdown压缩包

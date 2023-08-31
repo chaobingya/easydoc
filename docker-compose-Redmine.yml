@@ -1,0 +1,58 @@
+version: "3"
+services:
+  db:
+    image: mysql:5.7
+    container_name: db
+    restart: always
+    labels:
+      - topsec.role=db
+    volumes:
+      - /topsec/REDMINE/db:/var/lib/mysql
+    environment:
+      - TZ=Asia/Shanghai
+      - MYSQL_ROOT_PASSWORD=Topsec123!@#
+      - MYSQL_DATABASE=redmine
+      - MYSQL_USER=topsec
+      - MYSQL_PASSWORD=Topsec123!@#
+    networks:
+      - mgmt_network
+    expose:
+      - "3306"
+#    ports:
+#      - "3306:3306"  # 如果不需要外部连接mysql,可注释此行+上一行.
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+
+
+
+  redmine:
+    image: redmine
+    ports:
+      - 3000:3000
+    networks:
+      - mgmt_network
+    volumes:
+      - /topsec/REDMINE/plugins:/usr/src/redmine/plugins
+      - /topsec/REDMINE/themes:/usr/src/redmine/public/themes
+      - /topsec/REDMINE/data:/usr/src/redmine/files
+    environment:
+      - REDMINE_DB_MYSQL=db
+      - REDMINE_DB_DATABASE=redmine
+      - REDMINE_DB_USERNAME=topsec
+      - REDMINE_DB_PASSWORD=Topsec123!@#
+      - REDMINE_PLUGINS_MIGRATE=true
+    depends_on:
+      - db
+    restart: always
+
+
+
+networks: # 自定义网络(默认桥接), 不使用links通信
+  mgmt_network:
+    driver: bridge
+
+# Volumes for persisting data, see https://docs.docker.com/engine/admin/volumes/volumes/
+volumes:
+  db-data: #定义数据卷同步存放容器内mysql数据
+    driver: local
