@@ -1,7 +1,7 @@
 <h1 align="center">MrDoc - Writing documents, Gathering ideas</h1>
 
 <p align="center">Personal and small team notes, documents, knowledge management privatization deployment scheme</p>
-
+<p align="ceter">根据mrdoc更改 </p>
 <p align="center">
 <a href="./README-zh.md">中文介绍</a> |
 <a href="./README.md">English Description</a> 
