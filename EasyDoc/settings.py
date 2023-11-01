@@ -247,7 +247,7 @@ X_FRAME_OPTIONS = CONFIG.get("x_frame", "option", fallback='SAMEORIGIN')
 DATA_UPLOAD_MAX_MEMORY_SIZE = None
 
 # CSRF 可信来源
-csrf_str = CONFIG.get("csrf_origin","allow",fallback=[])
+csrf_str = CONFIG.get("csrf_origin", "allow", fallback=[])
 if csrf_str == []:
     CSRF_TRUSTED_ORIGINS = csrf_str
 else:
@@ -261,7 +261,7 @@ if not cors_str:
 else:
     CORS_ALLOWED_ORIGINS = capacitor_origins + cors_str.split(',')
 # sitemap 站点地图
-SITEMAP = CONFIG.getboolean('sitemap','status',fallback=True)
+SITEMAP = CONFIG.getboolean('sitemap', 'status', fallback=True)
 # 设置redis缓存。这里密码为redis.conf里设置的密码
 CACHES = {
     "default": {
@@ -275,7 +275,7 @@ CACHES = {
 }
 
 # session start
-SESSION_COOKIE_AGE = 900  # Session的cookie失效日期（15分钟）
+SESSION_COOKIE_AGE = 6 * 60 * 60  # Session的cookie失效日期（15分钟）
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # 是否关闭浏览器使得Session过期（默认）
 SESSION_SAVE_EVERY_REQUEST = True  # 是否每次请求都保存Session，需要与SESSION_EXPIRE_AT_BROWSER_CLOSE 同时设置
 # session end
