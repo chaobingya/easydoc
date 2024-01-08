@@ -1,4 +1,4 @@
-django
+django~=4.1.3
 beautifulsoup4
 lxml
 pillow
@@ -22,3 +22,4 @@ mysqlclient
 uwsgi
 django-redis
 redis
+django-simpleui

@@ -1,0 +1,28 @@
+redis==5.0.1  # https://github.com/redis/redis-py
+Pillow~=10.2.0  # https://github.com/python-pillow/Pillow
+pdf2docx~=0.5.7
+python-docx~=1.1.0
+beautifulsoup4==4.12.2
+lxml==5.0.1
+loguru==0.6.0
+importlib-metadata==7.0.1
+requests==2.31.0
+setuptools-scm==8.0.4
+whoosh==2.7.4
+markdown==3.5.1
+jieba==0.42.1
+mammoth==1.6.0
+markdownify==0.11.6
+selenium==4.16.0
+webdriver-manager==4.0.1
+pyyaml==6.0.1
+numpy==1.26.3
+
+# Django
+# ------------------------------------------------------------------------------
+django~=4.1.13  # pyup: < 5.0  # https://www.djangoproject.com/
+django-cors-headers==4.3.1
+django-haystack==3.2.1
+django-simpleui~=2023.12.12
+djangorestframework==3.14.0
+django-redis~=5.4.0  # https://github.com/jazzband/django-redis

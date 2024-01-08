@@ -61,3 +61,5 @@ else:
     urlpatterns.append(
         re_path('^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),  # 静态文件
     )
+
+urlpatterns += [path(settings.ADMIN_URL, admin.site.urls), ]

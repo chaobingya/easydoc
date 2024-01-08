@@ -5,27 +5,28 @@ ENV PYTHONUNBUFFERED=0 \
     TZ=Asia/Shanghai \
     LISTEN_PORT=80\
     USER=chaobing
-
+COPY ./config/os/sources.list /etc/apt/sources.list
 RUN set -ex && \
-   export http_proxy=http://10.8.22.241:8888 && \
-   export https_proxy=http://10.8.22.241:8888 && \
+   export http_proxy='http://topsec:Topsec123@10.62.72.68:7883' && \
+   export https_proxy='http://topsec:Topsec123@10.62.72.68:7883' && \
    sed -i 's/deb.debian.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list &&\
    apt update &&\
    apt-get install -y apt-transport-https ca-certificates libgl1-mesa-dev  libglib2.0-dev \
    build-essential python-dev default-libmysqlclient-dev netcat &&\
    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &&  echo "Asia/Shanghai" > /etc/timezone &&\
    pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple &&\
-   pip config set global.proxy http://10.8.22.241:8888
+   pip config set global.proxy http://topsec:Topsec123@10.62.72.68:7883
 
-COPY ./requirements.txt /requirements.txt
-#COPY ./config/sources.list /etc/apt/sources.list
+ARG BUILD_ENVIRONMENT=production
+COPY ./requirements .
 
+# Create Python Dependency and Sub-Dependency Wheels.
+#    pip wheel --wheel-dir /usr/src/app/wheels -r ${BUILD_ENVIRONMENT}.txt  && \
 # apk 更新太慢，剥离开，放到了第一层
 RUN set -ex && \
     pip install --upgrade setuptools pip  --no-cache-dir && \
-    pip install -r /requirements.txt --no-cache-dir  && \
-    pip --no-cache-dir install mysqlclient  uwsgi &&\
-    rm -rf /root/.cache  /requirements.txt
+    pip install --no-cache-dir -r ${BUILD_ENVIRONMENT}.txt  && \
+    rm -rf /root/.cache
 
 RUN  echo "Asia/Shanghai" > /etc/timezone
 COPY . /EasyDoc/

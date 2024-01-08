@@ -18,7 +18,7 @@ class DocSearchView2(BaseSearchView):
     def get_queryset(self):
         queryset = super(DocSearchView, self).get_queryset()
         # further filter queryset based on some set of criteria
-        return queryset.filter(pub_date__gte=date(2015, 1, 1))
+        return queryset.filter(pub_date__gte=datetime.date(2015, 1, 1))
 
     def get_context_data(self, *args, **kwargs):
         context = super(DocSearchView, self).get_context_data(*args, **kwargs)

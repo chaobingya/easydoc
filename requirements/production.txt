@@ -1,0 +1,6 @@
+# PRECAUTION: avoid production dependencies that aren't in development
+
+-r base.txt
+
+mysqlclient==2.2.1
+uwsgi==2.0.23
